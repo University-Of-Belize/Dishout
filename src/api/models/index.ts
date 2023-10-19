@@ -3,16 +3,16 @@ import {
   auth_verify,
   auth_login,
   auth_reset,
-} from "./Authentication/authentication.ts";
-import { user_list, user_create, user_modify } from "./Admin/Users/users.ts";
-import { order_modify } from "./Admin/Order/order.ts";
-import { order_list, order_create, order_delete } from "./Order/order.ts";
+} from "./Authentication/authentication";
+import { user_list, user_create, user_modify } from "./Admin/Users/users";
+import admin_order_modify from "./Admin/Order/order"
+import { order_list, order_create, order_delete, order_modify } from "./Order/order";
 import {
   menu_list,
   menu_create,
   menu_delete,
   menu_modify,
-} from "./Menu/menu.ts";
+} from "./Menu/menu";
 
 class API {
   Authentication = {
@@ -29,7 +29,7 @@ class API {
       Modify: user_modify,
     },
     Order: {
-      Modify: order_modify,
+      Modify: admin_order_modify,
     },
   };
 
@@ -44,6 +44,7 @@ class API {
     List: order_list,
     Create: order_create,
     Delete: order_delete,
+    Modify: order_modify,
   };
 }
 
