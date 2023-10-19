@@ -1,0 +1,19 @@
+{
+  "name": "dishout",
+  "version": "0.0.1",
+  "description": "Food delivery/order management system",
+  "main": "./src/server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexDev404/dishout.git"
+  },
+  "author": "AzureSlate Technologies, AlexDev404",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/AlexDev404/dishout/issues"
+  },
+  "homepage": "https://github.com/AlexDev404/dishout#readme"
+}
