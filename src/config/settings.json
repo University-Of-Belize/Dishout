@@ -4,7 +4,27 @@
     "BRANCH": "dev"
   },
   "server": {
-    "port": 8080
+    "port": 8080,
+    "domain": "cafe.ub.edu.bz",
+    "nickname": "DishOut"
+  },
+  "auth": {
+    "activation": {
+      "token-length": 256,
+      "password-length": 8
+    },
+    "token-length": 64
+  },
+  "email": {
+    "username": "ubcafeteria",
+    "domain": "ub.edu.bz",
+    "display-name": "UB Cafeteria",
+    "dev-password": null,
+    "smtp": {
+      "server": "smtp.gmail.com",
+      "port": 465,
+      "https": true
+    }
   },
   "api": {
     "API_VERSION": "v0.1",

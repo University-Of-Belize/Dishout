@@ -5,14 +5,15 @@ import {
   auth_reset,
 } from "./Authentication/authentication";
 import { user_list, user_create, user_modify } from "./Admin/Users/users";
-import admin_order_modify from "./Admin/Order/order"
-import { order_list, order_create, order_delete, order_modify } from "./Order/order";
+import admin_order_modify from "./Admin/Order/order";
 import {
-  menu_list,
-  menu_create,
-  menu_delete,
-  menu_modify,
-} from "./Menu/menu";
+  order_list,
+  order_create,
+  order_delete,
+  order_modify,
+} from "./Order/order";
+import { menu_list } from "./Menu/menu";
+import { menu_create, menu_delete, menu_modify } from "./Admin/Menu/menu";
 
 class API {
   Authentication = {
@@ -31,13 +32,15 @@ class API {
     Order: {
       Modify: admin_order_modify,
     },
+    Menu: {
+      Delete: menu_delete,
+      Create: menu_create,
+      Modify: menu_modify,
+    },
   };
 
   Menu = {
     List: menu_list,
-    Delete: menu_delete,
-    Create: menu_create,
-    Modify: menu_modify,
   };
 
   Order = {
@@ -53,4 +56,3 @@ export const Authentication = api.Authentication;
 export const Admin = api.Admin;
 export const Order = api.Order;
 export const Menu = api.Menu;
-

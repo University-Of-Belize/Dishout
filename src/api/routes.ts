@@ -15,13 +15,13 @@ router.get("/menu/", (req: Express.Request, res: Express.Response) => {
 });
 
 router.delete("/menu/", (req: Express.Request, res: Express.Response) => {
-  Menu.Delete(req, res);
+  Admin.Menu.Delete(req, res);
 });
 router.post("/menu/", (req: Express.Request, res: Express.Response) => {
-  Menu.Create(req, res);
+  Admin.Menu.Create(req, res);
 });
 router.put("/menu/", (req: Express.Request, res: Express.Response) => {
-  Menu.Modify(req, res);
+  Admin.Menu.Modify(req, res);
 });
 
 // Admin
