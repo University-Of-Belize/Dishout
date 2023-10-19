@@ -1,0 +1,19 @@
+{
+  "trunk": {
+    "RS": "ALPHA",
+    "BRANCH": "dev"
+  },
+  "server": {
+    "port": 8080
+  },
+  "api": {
+    "API_VERSION": "v0.1",
+    "API_SVERSION": "v0"
+  },
+  "database": {
+    "mongoURI": "mongodb://127.0.0.1:27017/dishout"
+  },
+  "UI": {
+    "defaultAvatar": "https://st2.depositphotos.com/4111759/12123/v/950/depositphotos_121233262-stock-illustration-male-default-placeholder-avatar-profile.jpg"
+  }
+}

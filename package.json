@@ -4,7 +4,8 @@
   "description": "Food delivery/order management system",
   "main": "./src/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx ./src/server.ts --no-cache",
+    "dev": "nodemon"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,22 @@
   "bugs": {
     "url": "https://github.com/AlexDev404/dishout/issues"
   },
-  "homepage": "https://github.com/AlexDev404/dishout#readme"
+  "homepage": "https://github.com/AlexDev404/dishout#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "crypto-random-string": "^5.0.0",
+    "express": "^4.18.2",
+    "mongoose": "^7.6.3",
+    "nodemailer": "^6.9.6",
+    "nodemon": "^3.0.1",
+    "os": "^0.1.2",
+    "tsx": "^3.14.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.15",
+    "@types/express": "^4.17.20",
+    "@types/mongoose": "^5.11.97",
+    "@types/nodemailer": "^6.4.13"
+  }
 }
