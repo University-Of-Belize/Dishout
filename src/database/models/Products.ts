@@ -13,14 +13,14 @@ const menuSchema = new Schema({
     default: 0.0,
   },
   image: {
-    type: String,
+    type: String,   // URL
     required: false,
     default: "",
   },
   in_stock: {
-    type: Boolean,
+    type: Number,  // How many items do we have in-stock at the given moment?
     required: true,
-    default: false,
+    default: 0,  // Nada
   },
   description: {
     type: String,

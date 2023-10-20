@@ -1,6 +1,7 @@
 import config from "../../config/settings.json";
 
-class IWE_STRINGS {  // Info, Warning, Error Strings
+class IWE_STRINGS {
+  // Info, Warning, Error Strings
   Authentication = {
     EENFORCEMENT_FAILED: `Illegal password. Your password should be at least ${config.auth.activation["password-length"]} characters in length and follow the enforcement rules of there being AT LEAST\n
        1. An UPPERCASE character (Such as: ABC)\n
@@ -19,14 +20,14 @@ class IWE_STRINGS {  // Info, Warning, Error Strings
     EBADAUTH: "Incorrect username or password.",
   };
   Email = {
-   ENOTVERIFIED: `In order finish creating your ${config.server.nickname} account and help us verify that you're human, we need to verify your email address.`,
-   IDISCLAIMER: `You're receiving this email because you recently created a new ${config.server.nickname} account. If this wasn't you, please ignore this email.`,
-   IRESETPASSWORD: "Hi, it seems as if you requested a password reset link. Here you go! Please do not share this link with anyone. If you did not request this email, please ignore it.";
-  }
+    ENOTVERIFIED: `In order finish creating your ${config.server.nickname} account and help us verify that you're human, we need to verify your email address.`,
+    IDISCLAIMER: `You're receiving this email because you recently created a new ${config.server.nickname} account. If this wasn't you, please ignore this email.`,
+    IRESETPASSWORD:
+      "Hi, it seems as if you requested a password reset link. Here you go! Please do not share this link with anyone. If you did not request this email, please ignore it.",
+  };
   Friending = {
     ECANNOTADDYOURSELF: "You cannot add yourself",
-    ESENTREQUEST_PREVIOUSLY:
-      "You already sent a friend request to this user!",
+    ESENTREQUEST_PREVIOUSLY: "You already sent a friend request to this user!",
   };
   Generic = {
     EBADPARAMS: "The parameters provided are incorrect.",
@@ -39,7 +40,12 @@ class IWE_STRINGS {  // Info, Warning, Error Strings
     EFRIENDLYNOTFOUND:
       "Failed to find user, please make sure you didn't make any spelling errors!",
   };
-
+  Order = {
+    IOSTATUSQUEUED: "Your order has been queued.",
+    IOSTATUSACCEPTED: "Your order has been accepted.",
+    IOSTATUSDENIED: "Your order has been rejected.",
+    IOSTATUSDELAYED: "Your order has been delayed.",
+  };
 }
 
 const iwe_strings = new IWE_STRINGS();
