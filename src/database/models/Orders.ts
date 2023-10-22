@@ -5,6 +5,10 @@ const SchemaTypes = mongoose.Schema.Types;
 
 const ordersSchema = new Schema({
   // MongoDB sorts out IDs by default
+  order_code: {
+    type: String,
+    required: true  // Randomly chosen by the backend. UUIDv3
+  },
   order_from: {
     ref: Users,
     required: true,

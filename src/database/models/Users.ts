@@ -11,7 +11,6 @@ const usersSchema = new Schema({
     type: String,
     required: true,
   },
-
   password: {
     type: String,
     required: true,
@@ -36,6 +35,10 @@ const usersSchema = new Schema({
     default: [],
   },
   activation_token: {
+    type: String,
+    required: false,
+  },
+  token: {
     type: String,
     required: false,
   },

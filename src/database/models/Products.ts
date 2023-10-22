@@ -3,6 +3,10 @@ import Categories from "./Categories"
 const SchemaTypes = mongoose.Schema.Types;
 
 const menuSchema = new Schema({
+  slug: {
+    type: String,  // To display the product page we need a slug
+    required: true
+  },
   productName: {
     type: String,
     required: true,
