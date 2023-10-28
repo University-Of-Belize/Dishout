@@ -8,11 +8,13 @@ import { user_list, user_create, user_modify } from "./Admin/Users/users";
 import admin_order_modify from "./Admin/Order/order";
 import {
   order_list,
+  order_lookup,
   order_create,
   order_delete,
   order_modify,
 } from "./Order/order";
-import { menu_list } from "./Menu/menu";
+import { menu_list, menu_lookup } from "./Menu/menu";
+import { user_lookup } from "./User/user";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu/menu";
 
 class API {
@@ -41,13 +43,19 @@ class API {
 
   Menu = {
     List: menu_list,
+    Lookup: menu_lookup,
   };
 
   Order = {
     List: order_list,
+    Lookup: order_lookup,
     Create: order_create,
     Delete: order_delete,
     Modify: order_modify,
+  };
+
+  User = {
+    Lookup: user_lookup,
   };
 }
 
@@ -56,3 +64,4 @@ export const Authentication = api.Authentication;
 export const Admin = api.Admin;
 export const Order = api.Order;
 export const Menu = api.Menu;
+export const User = api.User;

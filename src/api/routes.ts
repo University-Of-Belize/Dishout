@@ -1,5 +1,5 @@
 import { Router } from "express"; // Our routing machine
-import { Admin, Authentication, Menu, Order } from "./models"; // Import our API models into memory
+import { Admin, Authentication, Menu, Order, User } from "./models"; // Import our API models into memory
 const router = Router(); // Initialize!
 
 // Our routes
@@ -14,6 +14,10 @@ router.get("/menu/", (req: Express.Request, res: Express.Response) => {
   Menu.List(req, res);
 });
 
+router.put("/menu/search", (req: Express.Request, res: Express.Response) => {
+  Menu.Lookup(req, res); // Users can lookup other menu items
+});
+
 router.delete("/menu/", (req: Express.Request, res: Express.Response) => {
   Admin.Menu.Delete(req, res);
 });
@@ -24,6 +28,13 @@ router.put("/menu/", (req: Express.Request, res: Express.Response) => {
   Admin.Menu.Modify(req, res);
 });
 
+// User
+router.get(
+  "/user/search",
+  (req: Express.Request, res: Express.Response) => {
+    User.Lookup(req, res); // Users can lookup other users
+  }
+);
 // Admin
 router.get(
   "/admin/user/manage",
@@ -65,6 +76,13 @@ router.put(
 ); // Modify user's order into queue
 
 // Order
+// Order search
+router.post(
+  "/order/search",
+  (req: Express.Request, res: Express.Response) => {
+    Order.Lookup(req, res);  // Users can lookup their orders
+  }
+);
 // Order History. Arbitrary tokens are accepted
 router.get("/order/history", (req: Express.Request, res: Express.Response) => {
   Order.List(req, res);
