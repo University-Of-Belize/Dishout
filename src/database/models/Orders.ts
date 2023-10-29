@@ -7,7 +7,8 @@ const ordersSchema = new Schema({
   // MongoDB sorts out IDs by default
   order_code: {
     type: String,
-    required: true  // Randomly chosen by the backend. UUIDv3
+    required: true,  // Randomly chosen by the backend. UUIDv4
+    unique: true,  // Two order codes must not be the same
   },
   order_from: {
     ref: Users,

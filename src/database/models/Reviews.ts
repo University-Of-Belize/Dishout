@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import Users from "./Users";
 // const SchemaTypes = mongoose.Schema.Types;
 
 const reviewsSchema = new Schema({
@@ -15,7 +14,7 @@ const reviewsSchema = new Schema({
     required: true,
   },
   reviewer: {
-    ref: Users,
+    ref: 'Users',
     required: true,
     default: "Anonymous",
   },

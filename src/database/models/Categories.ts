@@ -6,10 +6,12 @@ const categoriesSchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   alias: {
     type: String,
-    required: false
+    required: false,
+    unique: true,  // Neither that (forcing User Interface choices through the backend, I know, lol)
   },
   description: {   // Probably only shown to staff
     type: String,

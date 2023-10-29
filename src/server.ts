@@ -1,6 +1,6 @@
 import express from "express";
 import config from "./config/settings.json";
-import { Server } from "./util";
+import { LogServer } from "./util/Logger";
 import createDatabase from "./database";
 import cors from "cors";
 import routes from "./api/routes";
@@ -23,6 +23,6 @@ const ServerName = `DISHOUT.${process.env.NODE_ENV ?? "dev"}.${
 }`;
 
 const server = app.listen(port, () => {
-  Server(`Running on port ${port}\n`);
-  Server(`Hello! My name is: '${ServerName}'`);
+  LogServer(`Running on port ${port}\n`);
+  LogServer(`Hello! My name is: '${ServerName}'`);
 });

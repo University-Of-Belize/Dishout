@@ -6,10 +6,12 @@ const usersSchema = new Schema({
   id: {
     type: Number,
     required: true,
+    unique: true,  // Can't have the same ID, otherwise that would be weird
   },
   username: {
     type: String,
     required: true,
+    unique: true,  // Can't have the same username, otherwise that would be confusing
   },
   password: {
     type: String,
@@ -18,6 +20,7 @@ const usersSchema = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,  // Can't have the same email, otherwise that would be stupid
   },
   staff: {
     type: Boolean,
@@ -37,16 +40,23 @@ const usersSchema = new Schema({
   activation_token: {
     type: String,
     required: false,
+    unique: true,  // Can't have the same activation token, otherwise we would be able to activate two accounts at the same time
   },
   token: {
     type: String,
     required: false,
+    unique: true,  // Can't have the same user token, otherwise that would mean there would be an authentication overlap
+  },
+  reset_token: {
+    type: String,
+    required: false,
+    unique: true, // Can't have the same reset token
   },
   restrictions: {
-   type: Number,
-   required: true,
-   default: 0  // No restrictions
-  }
+    type: Number,
+    required: true,
+    default: 0, // No restrictions
+  },
 });
 export default mongoose.model("Users", usersSchema);
 export { usersSchema };

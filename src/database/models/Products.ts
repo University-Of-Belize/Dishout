@@ -1,15 +1,16 @@
 import mongoose, { Schema } from "mongoose";
-import Categories from "./Categories"
 const SchemaTypes = mongoose.Schema.Types;
 
 const menuSchema = new Schema({
   slug: {
-    type: String,  // To display the product page we need a slug
-    required: true
+    type: String, // To display the product page we need a slug
+    required: true,
+    unique: true,  // Can't have two of the same URLS
   },
   productName: {
     type: String,
     required: true,
+    unique: true,  // Nope, not gonna allow that
   },
   price: {
     type: SchemaTypes.Decimal128,
@@ -17,21 +18,22 @@ const menuSchema = new Schema({
     default: 0.0,
   },
   image: {
-    type: String,   // URL
+    type: String, // URL
     required: false,
     default: "",
   },
   in_stock: {
-    type: Number,  // How many items do we have in-stock at the given moment?
+    type: Number, // How many items do we have in-stock at the given moment?
     required: true,
-    default: 0,  // Nada
+    default: 0, // Nada
   },
   description: {
     type: String,
     required: false,
   },
   category: {
-    ref: Categories,
+  type: String,
+    ref: 'Categories',
     required: true,
   },
 });
