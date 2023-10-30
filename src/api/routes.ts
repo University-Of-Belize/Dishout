@@ -15,19 +15,10 @@ router.get("/menu/", (req: Express.Request, res: Express.Response) => {
   Menu.List(req, res);
 });
 
-router.put("/menu/search", (req: Express.Request, res: Express.Response) => {
+router.get("/menu/search", (req: Express.Request, res: Express.Response) => {
   Menu.Lookup(req, res); // Users can lookup other menu items
 });
 
-router.delete("/menu/", (req: Express.Request, res: Express.Response) => {
-  Admin.Menu.Delete(req, res);
-});
-router.post("/menu/", (req: Express.Request, res: Express.Response) => {
-  Admin.Menu.Create(req, res);
-});
-router.put("/menu/", (req: Express.Request, res: Express.Response) => {
-  Admin.Menu.Modify(req, res);
-});
 
 // User
 router.get(
@@ -48,16 +39,26 @@ router.post(
   (req: Express.Request, res: Express.Response) => {
     Admin.User.Create(req, res);
   }
-);
-router.put(
-  "/admin/user/manage",
+  );
+  router.put(
+    "/admin/user/manage",
   (req: Express.Request, res: Express.Response) => {
     Admin.User.Modify(req, res);
   }
-);
-
-// Promo
-router.get(
+  );
+  
+  // Menu
+  router.delete("/admin/menu/manage", (req: Express.Request, res: Express.Response) => {
+    Admin.Menu.Delete(req, res);
+  });
+  router.post("/admin/menu/manage", (req: Express.Request, res: Express.Response) => {
+    Admin.Menu.Create(req, res);
+  });
+  router.put("/admin/menu/manage", (req: Express.Request, res: Express.Response) => {
+    Admin.Menu.Modify(req, res);
+  });
+  // Promo
+  router.get(
   "/admin/promo/manage",
   (req: Express.Request, res: Express.Response) => {
     Admin.Promo.List(req, res);
@@ -77,28 +78,31 @@ router.put(
 );
 
 // Order management
+ // Accept user's order into queue
 router.post(
   "/admin/order/manage/",
   (req: Express.Request, res: Express.Response) => {
     Admin.Order.Modify(req, res);
   }
-); // Accept user's order into queue
+);
+// Decline user's order into queue
 router.delete(
   "/admin/order/manage/",
   (req: Express.Request, res: Express.Response) => {
     Admin.Order.Modify(req, res);
   }
-); // Decline user's order into queue
+); 
+// Modify user's order in queue
 router.put(
   "/admin/order/manage/",
   (req: Express.Request, res: Express.Response) => {
     Admin.Order.Modify(req, res);
   }
-); // Modify user's order into queue
+); 
 
 // Order
 // Order search
-router.post(
+router.get(
   "/order/search",
   (req: Express.Request, res: Express.Response) => {
     Order.Lookup(req, res);  // Users can lookup their orders

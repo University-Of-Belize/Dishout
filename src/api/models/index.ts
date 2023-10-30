@@ -4,20 +4,20 @@ import {
   auth_login,
   auth_forgot,
   auth_reset,
-} from "./Authentication/authentication";
-import { user_list, user_create, user_modify } from "./Admin/Users/users";
-import { promo_list, promo_create, promo_modify } from "./Admin/Promos/promos";
-import admin_order_modify from "./Admin/Order/order";
+} from "./Authentication";
+import { user_list, user_create, user_modify } from "./Admin/Users";
+import { promo_list, promo_create, promo_modify } from "./Admin/Promos";
+import admin_order_modify from "./Admin/Order";
 import {
   order_list,
   order_lookup,
   order_create,
   order_delete,
   order_modify,
-} from "./Order/order";
-import { menu_list, menu_lookup } from "./Menu/menu";
-import { user_lookup } from "./User/user";
-import { menu_create, menu_delete, menu_modify } from "./Admin/Menu/menu";
+} from "./Order";
+import { menu_list, menu_lookup } from "./Menu";
+import { user_lookup } from "./User";
+import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
 
 class API {
   Authentication = {
@@ -35,7 +35,7 @@ class API {
       Modify: user_modify,
     },
     Promo: {
-      List: promo_list,
+      List: promo_list,  // Lol regular users shouldn't see this
       Create: promo_create,
       Modify: promo_modify,
     },
@@ -63,7 +63,7 @@ class API {
   };
 
   User = {
-    Lookup: user_lookup,
+    Lookup: user_lookup, // You can surely search, but not list
   };
 }
 
