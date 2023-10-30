@@ -39,14 +39,14 @@ export function LogDatabase(message: string) {
 /**************************************/
 
 // WOW https://stackoverflow.com/questions/14934452/how-to-get-all-registered-routes-in-express
-export function printRoutes(path: any, layer: any) {
+export function LogRoutes(path: any, layer: any) {
   if (layer.route) {
     layer.route.stack.forEach(
-      printRoutes.bind(null, path.concat(split(layer.route.path)))
+      LogRoutes.bind(null, path.concat(split(layer.route.path)))
     );
   } else if (layer.name === "router" && layer.handle.stack) {
     layer.handle.stack.forEach(
-      printRoutes.bind(null, path.concat(split(layer.regexp)))
+      LogRoutes.bind(null, path.concat(split(layer.regexp)))
     );
   } else if (layer.method) {
     LogServer(
