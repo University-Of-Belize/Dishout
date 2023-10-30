@@ -2,15 +2,16 @@ import mongoose, { Schema } from "mongoose";
 const SchemaTypes = mongoose.Schema.Types;
 
 const menuSchema = new Schema({
+  // MongoDB generates IDs by default
   slug: {
     type: String, // To display the product page we need a slug
     required: true,
-    unique: true,  // Can't have two of the same URLS
+    unique: true, // Can't have two of the same URLS
   },
   productName: {
     type: String,
     required: true,
-    unique: true,  // Nope, not gonna allow that
+    unique: true, // Nope, not gonna allow that
   },
   price: {
     type: SchemaTypes.Decimal128,
@@ -32,10 +33,14 @@ const menuSchema = new Schema({
     required: false,
   },
   category: {
-  type: String,
-    ref: 'Categories',
+    type: SchemaTypes.ObjectId,
+    ref: "Categories",
     required: true,
   },
+  reviews: {
+    type: [{ type: Schema.Types.ObjectId, ref: "Reviews" }],  // Users don't have to have a cart. The cart is always cleared after orders are complete
+    required: false,
+  },
 });
-export default mongoose.model("Menu", menuSchema);
+export default mongoose.model("Products", menuSchema);
 export { menuSchema as productsSchema };

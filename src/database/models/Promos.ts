@@ -1,8 +1,10 @@
 import mongoose, { Schema } from "mongoose";
+const SchemaTypes = mongoose.Schema.Types;
 
 const promosSchema = new Schema({
-  // We're using a custom ID here because it's cool
-  id: {
+  // MongoDB generates IDs by default
+  // Promo Code
+  code: {
     type: String,
     required: true, // We don't want an empty promo code
     unique: true,
@@ -10,21 +12,29 @@ const promosSchema = new Schema({
   nickname: {
     type: String, // Semantic nickname
     required: false,
-    unique: true, // Not gonna allow that either
   },
   description: {
     type: String,
     required: false, // What's this promo for?
   },
+  discount_percentage: {
+    type: Number,
+    required: true,
+  },
+  start_date: {
+    type: Number,
+    required: true, // When does this promo start?
+  },
   expiry_date: {
     type: Number,
-    required: false, // Does this promo code expire? Or is it
+    required: false, // Does this promo code expire? Or is it indefinite
   },
   created_by: {
-    ref: 'Users',
+    type: SchemaTypes.ObjectId,
+    ref: "Users",
     required: true, // Who created this promotional code
   },
 });
 
 export default mongoose.model("Promos", promosSchema);
-export {promosSchema}
+export { promosSchema };

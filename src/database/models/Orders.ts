@@ -1,21 +1,21 @@
 import mongoose, { Schema } from "mongoose";
-import Users from "./Users";
-import Promos from "./Promos";
 const SchemaTypes = mongoose.Schema.Types;
 
 const ordersSchema = new Schema({
-  // MongoDB sorts out IDs by default
+  // MongoDB generates IDs by default
   order_code: {
     type: String,
-    required: true,  // Randomly chosen by the backend. UUIDv4
-    unique: true,  // Two order codes must not be the same
+    required: true, // Randomly chosen by the backend. UUIDv4
+    unique: true, // Two order codes must not be the same
   },
   order_from: {
-    ref: Users,
+    type: SchemaTypes.ObjectId,
+    ref: "Users",
     required: true,
   },
   override_by: {
-    ref: Users,
+    type: SchemaTypes.ObjectId,
+    ref: "Users",
     required: false,
   },
   order_date: {
@@ -28,7 +28,8 @@ const ordersSchema = new Schema({
     default: 0.0,
   },
   promo_code: {
-    ref: Promos,
+    type: SchemaTypes.ObjectId,
+    ref: "Promos",
     required: false,
   },
   is_accepted: {
@@ -37,7 +38,7 @@ const ordersSchema = new Schema({
     default: 0, // Queued by default. -1 for declined, 1 for accepted
   },
   delay_time: {
-    type: Number,  // Seconds
+    type: Number, // Seconds
     required: true,
     default: 0, // No delay
   },

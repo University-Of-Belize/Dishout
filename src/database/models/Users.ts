@@ -1,17 +1,17 @@
 import mongoose, { Schema } from "mongoose";
-import { productsSchema } from "./Products";
 const SchemaTypes = mongoose.Schema.Types;
 
 const usersSchema = new Schema({
+  // MongoDB generates IDs by default
   id: {
     type: Number,
     required: true,
-    unique: true,  // Can't have the same ID, otherwise that would be weird
+    unique: true, // Can't have the same ID, otherwise that would be weird
   },
   username: {
     type: String,
     required: true,
-    unique: true,  // Can't have the same username, otherwise that would be confusing
+    unique: true, // Can't have the same username, otherwise that would be confusing
   },
   password: {
     type: String,
@@ -20,7 +20,7 @@ const usersSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,  // Can't have the same email, otherwise that would be stupid
+    unique: true, // Can't have the same email, otherwise that would be stupid
   },
   staff: {
     type: Boolean,
@@ -33,24 +33,20 @@ const usersSchema = new Schema({
     default: 0.0,
   },
   cart: {
-    type: [productsSchema],
-    required: true,
-    default: [],
+    type: [{ type: Schema.Types.ObjectId, ref: "Products" }],  // Users don't have to have a cart. The cart is always cleared after orders are complete
+    required: false,
   },
   activation_token: {
     type: String,
     required: false,
-    unique: true,  // Can't have the same activation token, otherwise we would be able to activate two accounts at the same time
   },
   token: {
     type: String,
     required: false,
-    unique: true,  // Can't have the same user token, otherwise that would mean there would be an authentication overlap
   },
   reset_token: {
     type: String,
     required: false,
-    unique: true, // Can't have the same reset token
   },
   restrictions: {
     type: Number,

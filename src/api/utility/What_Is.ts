@@ -7,6 +7,8 @@ what: “object”,  // What
 [“property”, “property”, ...]  // Is
 }
 */
+// What is Express?
+import { Request } from "express";
 
 class WhatIs {
   what: string;
@@ -22,4 +24,12 @@ function what_is(what: string, is: any) {
   return new WhatIs(what, is);
 }
 
-export { what_is };
+function wis_array(req: Request) {
+  return Array.isArray(req.body["is"]) ? req.body["is"] : [];
+}
+
+function wis_string(req: Request) {
+  return typeof req.body["is"] === "string" ? req.body["is"] : "";
+}
+
+export { what_is, wis_array, wis_string };

@@ -9,6 +9,7 @@ class IWEU_STRINGS {
        3. A NUMBER (Such as: 123)\n4. And a SPECIAL CHARACTER (Such as: !@#)`,
     EINVALIDDOMAIN:
       "Invalid email domain. Only email addresses with the domain '@ub.edu.bz' are allowed.",
+    ENOACCESS: "You do not have permission to call this portion of the API.",
     EINVALIDEMAIL: "Invalid Email, please enter a valid email.",
     EINVALIDUNAME: "Invalid username, please enter a valid username.",
     EINVALIDPASWD: "Invalid password, please enter a valid password.",
@@ -59,6 +60,11 @@ class IWEU_STRINGS {
     IOSTATUSACCEPTED: "Your order has been accepted.",
     IOSTATUSDENIED: "Your order has been rejected.",
     IOSTATUSDELAYED: "Your order has been delayed.",
+  };
+  Promo = {
+    ECODEEXISTS: "Promo code already exists.",
+    ENICKEXISTS: "Promo nickname already exists.",
+    ENOTFOUND: "Promotion not found.",
   };
 }
 

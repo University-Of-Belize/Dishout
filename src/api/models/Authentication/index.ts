@@ -1,5 +1,4 @@
 import {
-  get_authorization_user,
   get_authorization,
 } from "../../utility/Authentication";
 import {
@@ -8,7 +7,8 @@ import {
   EmailTemplate,
 } from "../../../util/email";
 import User from "../../../database/models/Users";
-import { what_is } from "../../utility/What_Is";
+import { what_is, wis_string, wis_array } from "../../utility/What_Is";
+import what from "../../utility/Whats";
 import { LogError, LogInfo, LogWarn } from "../../../util/Logger";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import settings from "../../../config/settings.json";
@@ -19,12 +19,10 @@ import bcrypt from "bcryptjs";
 // Register a new user
 async function auth_register(req: Request, res: Response) {
   // Start the checks
-  if (req.body["what"] != "auth") {
+  if (req.body["what"] != what.public.auth) {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
-  const [email, username, password] = Array.isArray(req.body["is"])
-    ? req.body["is"]
-    : [];
+  const [email, username, password] = wis_array(req);
 
   if (
     !email ||
@@ -76,7 +74,7 @@ async function auth_register(req: Request, res: Response) {
       username,
       staff: false,
       credit: 0.0,
-      cart: [],
+      cart: undefined,
       activation_token: null,
       token: null,
       reset_token: null,
@@ -159,12 +157,10 @@ async function auth_verify(req: Request, res: Response) {
 // Login the user
 async function auth_login(req: Request, res: Response) {
   // Start the checks
-  if (req.body["what"] != "auth") {
+  if (req.body["what"] != what.public.auth) {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
-  const [username, password] = Array.isArray(req.body["is"])
-    ? req.body["is"]
-    : [];
+  const [username, password] = wis_array(req);
 
   try {
     const user =
@@ -204,7 +200,7 @@ async function auth_login(req: Request, res: Response) {
       user.reset_token = undefined; // If bro remembers his password we delete his reset token;
     }
     user.save(); // Save that shizzz
-    return res.json(what_is("auth", [user.id, user.token]));
+    return res.json(what_is(what.public.auth, [user.id, user.token]));
   } catch (err: any) {
     res.sendStatus(400); // Bad request
     LogError(err);
@@ -213,11 +209,11 @@ async function auth_login(req: Request, res: Response) {
 
 // Reset the password (request a reset link)
 async function auth_forgot(req: Request, res: Response) {
-  if (req.body["what"] != "auth") {
+  if (req.body["what"] != what.public.auth) {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
   let userRequest;
-  const [username, id] = Array.isArray(req.body["is"]) ? req.body["is"] : [];
+  const [username, id] = wis_array(req);
 
   try {
     userRequest =
@@ -260,10 +256,10 @@ async function auth_forgot(req: Request, res: Response) {
 }
 // Reset the password
 async function auth_reset(req: Request, res: Response) {
-  if (req.body["what"] != "auth") {
+  if (req.body["what"] != what.public.auth) {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
-  const text = typeof req.body["is"] === "string" ? req.body["is"] : "";
+  const text = wis_string(req);
   const reset_token = get_authorization(req);
 
   let userRequest;

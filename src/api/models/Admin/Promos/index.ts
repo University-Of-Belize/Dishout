@@ -1,7 +1,228 @@
-function promo_list(req: Express.Request, res: Express.Response) {}
-function promo_create(req: Express.Request, res: Express.Response) {}
-function promo_delete(req: Express.Request, res: Express.Response) {}
-function promo_modify(req: Express.Request, res: Express.Response) {}
+// Import our proper types
+import { Request, Response } from "express";
+// Import the promotion
+import Promo from "../../../../database/models/Promos";
+import { ErrorFormat, iwe_strings } from "../../../strings";
+import { get_authorization_user } from "../../../utility/Authentication";
+import what from "../../../utility/Whats";
+import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
+
+// List all promotions
+async function promo_list(req: Request, res: Response) {
+  // We don't need a body since we're doing the 'what_is' this time
+
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  // @ts-ignore
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
+  // Get all promotions from the database
+  const promotions = await Promo.find();
+
+  // Return the promotions as a JSON response
+  return res.json(what_is(what.private.promos, promotions));
+}
+
+// Create a new promotion
+async function promo_create(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] != what.private.promos) {
+    // Two underscores means it's an admin function
+    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
+  }
+
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  // @ts-ignore
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
+  // Extract information from the 'what_is' object
+  const [code, nickname, description, discount, start_date, end_date] =
+    wis_array(req);
+
+  // Start verification
+  if (
+    (code && typeof code != "string") ||
+    (nickname && typeof nickname != "string") ||
+    (description && typeof description != "string") ||
+    (end_date && !Number.isInteger(end_date))
+  ) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  if (!Number.isInteger(discount) || !Number.isInteger(start_date)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  // End verification
+
+  // Check if the code and description are unique
+  const existingPromo = await Promo.findOne({ code: code.toUpperCase() });
+  if (existingPromo) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Promo.ECODEEXISTS));
+  }
+  // Using this, we now create the promotion
+  const newPromo = await Promo.create({
+    code: code.toUpperCase(),
+    description: description,
+    discount_percentage: discount,
+    start_date: start_date,
+    expiry_date: end_date, // @ts-ignore
+    created_by: user._id,
+  });
+
+  // Add the nickname field if it is provided
+  if (nickname && nickname != null) {
+    newPromo.nickname = nickname;
+  }
+
+  await newPromo.save();
+  return res.json({
+    status: true,
+  });
+}
+// Delete a promotion
+// Delete a promotion
+async function promo_delete(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] != what.private.promos) {
+    // Two underscores means it's an admin function
+    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
+  }
+
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  // @ts-ignore
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
+  // Extract the promotion ID from the request body
+  const promoId = wis_string(req);
+
+  // Find the promotion by ID and delete it
+  const promo = await Promo.findOne({ code: promoId });
+  if (!promo) {
+    return res.status(404).json(ErrorFormat(iwe_strings.Promo.ENOTFOUND));
+  }
+  promo.deleteOne();
+  return res.json({
+    status: true,
+  });
+}
+
+// Modify a promotion
+async function promo_modify(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] != what.private.promos) {
+    // Two underscores means it's an admin function
+    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
+  }
+
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  // @ts-ignore
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
+  // Extract the fields to update from the request body
+  const [
+    code,
+    new_code,
+    nickname,
+    description,
+    discount,
+    start_date,
+    end_date,
+  ] = wis_array(req);
+
+  // Start verification
+  if (
+    (code && typeof code != "string") ||
+    (new_code && typeof new_code != "string") ||
+    (nickname && typeof nickname != "string") ||
+    (description && typeof description != "string") ||
+    (end_date && !Number.isInteger(end_date))
+  ) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  if (!Number.isInteger(discount) || !Number.isInteger(start_date)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  // End verification
+
+  // Find the promotion by ID and update it
+  const promo = await Promo.findOne({ code: code.toUpperCase() });
+  if (!promo) {
+    return res.status(404).json(ErrorFormat(iwe_strings.Promo.ENOTFOUND));
+  }
+  const code_used = await Promo.findOne({ code: new_code.toUpperCase() });
+  if (code_used) {
+    return res.status(406).json(ErrorFormat(iwe_strings.Promo.ECODEEXISTS));
+  }
+
+
+  // Update the promotion fields
+  if (new_code) {
+    promo.code = new_code.toUpperCase();
+  }
+  if (nickname) {
+    promo.nickname = nickname;
+  }
+  if (description) {
+    promo.description = description;
+  }
+  if (start_date) {
+    promo.start_date = start_date;
+  }
+  if (end_date) {
+    promo.expiry_date = end_date;
+  }
+
+  await promo.save();
+
+  return res.json({
+    status: true,
+  });
+}
 
 export { promo_create, promo_list, promo_delete, promo_modify };
-
