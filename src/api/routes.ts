@@ -56,6 +56,26 @@ router.put(
   }
 );
 
+// Promo
+router.get(
+  "/admin/promo/manage",
+  (req: Express.Request, res: Express.Response) => {
+    Admin.Promo.List(req, res);
+  }
+);
+router.post(
+  "/admin/promo/manage",
+  (req: Express.Request, res: Express.Response) => {
+    Admin.Promo.Create(req, res);
+  }
+);
+router.put(
+  "/admin/promo/manage",
+  (req: Express.Request, res: Express.Response) => {
+    Admin.Promo.Modify(req, res);
+  }
+);
+
 // Order management
 router.post(
   "/admin/order/manage/",

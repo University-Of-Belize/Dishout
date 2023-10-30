@@ -6,6 +6,7 @@ import {
   auth_reset,
 } from "./Authentication/authentication";
 import { user_list, user_create, user_modify } from "./Admin/Users/users";
+import { promo_list, promo_create, promo_modify } from "./Admin/Promos/promos";
 import admin_order_modify from "./Admin/Order/order";
 import {
   order_list,
@@ -32,6 +33,11 @@ class API {
       List: user_list,
       Create: user_create,
       Modify: user_modify,
+    },
+    Promo: {
+      List: promo_list,
+      Create: promo_create,
+      Modify: promo_modify,
     },
     Order: {
       Modify: admin_order_modify,
