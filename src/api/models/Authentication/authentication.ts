@@ -16,12 +16,15 @@ import cryptoRandomString from "crypto-random-string";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 
+// Register a new user
 async function auth_register(req: Request, res: Response) {
   // Start the checks
   if (req.body["what"] != "auth") {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
-  const [email, username, password] = req.body["is"];
+  const [email, username, password] = Array.isArray(req.body["is"])
+    ? req.body["is"]
+    : [];
 
   if (
     !email ||
@@ -118,11 +121,39 @@ async function auth_register(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
   }
 }
-function auth_verify(req: Request, res: Response) {
-  if (req.body["what"] != "auth") {
-    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
+
+// Verify after registering
+async function auth_verify(req: Request, res: Response) {
+  // We're just passing in the token through the header
+  const activation_token = get_authorization(req);
+  if (!activation_token) {
+    return res.sendStatus(422);
   }
-  const [username, password] = req.body["is"];
+
+  let userRequest;
+  try {
+    userRequest = await User.findOne({
+      activation_token,
+    });
+  } catch (error: any) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+  }
+
+  const user = userRequest;
+  try {
+    if (!user) {
+      return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+    }
+
+    user.activation_token = undefined;
+    await user.save();
+    return res.json({
+      status: true,
+    });
+  } catch (err: any) {
+    res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND2)); // Bad request
+    LogError(err);
+  }
 }
 
 // Login the user
@@ -131,7 +162,9 @@ async function auth_login(req: Request, res: Response) {
   if (req.body["what"] != "auth") {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
-  const [username, password] = req.body["is"];
+  const [username, password] = Array.isArray(req.body["is"])
+    ? req.body["is"]
+    : [];
 
   try {
     const user =
@@ -156,7 +189,7 @@ async function auth_login(req: Request, res: Response) {
         .json(ErrorFormat(iwe_strings.Authentication.ENEEDSACTIVATION));
     }
 
-    if (password !== user.password) {
+    if (!(await bcrypt.compare(password, user.password))) {
       return res
         .status(403)
         .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
@@ -177,11 +210,104 @@ async function auth_login(req: Request, res: Response) {
     LogError(err);
   }
 }
-function auth_reset(req: Request, res: Response) {
+
+// Reset the password (request a reset link)
+async function auth_forgot(req: Request, res: Response) {
   if (req.body["what"] != "auth") {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
-  const [username, password] = req.body["is"];
-}
+  let userRequest;
+  const [username, id] = Array.isArray(req.body["is"]) ? req.body["is"] : [];
 
-export { auth_login, auth_register, auth_reset, auth_verify };
+  try {
+    userRequest =
+      (await User.findOne({ username })) ??
+      (await User.findOne({ id: parseInt(id) }));
+  } catch (error: any) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+  }
+
+  const user = userRequest;
+  // console.log(user);  // debug
+  try {
+    if (!user) {
+      return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+    }
+
+    const RKey = `drk-${cryptoRandomString({
+      length: settings.auth.reset["token-length"],
+      type: "alphanumeric",
+    })}`;
+
+    user.reset_token = RKey;
+    await user.save();
+
+    await sendEmail(
+      user.email,
+      iwe_strings.Email.INEEDSRESET,
+      null,
+      EmailTemplate("PASSWORD_RESET", user.username, RKey)
+    );
+
+    return res.json({
+      message: iwe_strings.Email.IRESETSENT,
+      status: true,
+    });
+  } catch (err: any) {
+    res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+    LogError(err);
+  }
+}
+// Reset the password
+async function auth_reset(req: Request, res: Response) {
+  if (req.body["what"] != "auth") {
+    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
+  }
+  const text = typeof req.body["is"] === "string" ? req.body["is"] : "";
+  const reset_token = get_authorization(req);
+
+  let userRequest;
+  try {
+    userRequest = await User.findOne({
+      reset_token,
+    });
+  } catch (error: any) {
+    return res.sendStatus(400);
+  }
+
+  const user = userRequest;
+
+  if (!user) {
+    return res.sendStatus(400);
+  }
+
+  if (!text || typeof text !== "string") {
+    return res
+      .status(406)
+      .json(ErrorFormat(iwe_strings.Authentication.EINVALIDPASWD));
+  } else if (
+    text.length < settings.auth.activation["password-length"] ||
+    !iwe_strings.Authentication.UCOMPLEXITY.test(text)
+  ) {
+    return res
+      .status(406)
+      .json(ErrorFormat(iwe_strings.Authentication.EENFORCEMENT_FAILED));
+  }
+  if (bcrypt.compareSync(text, user.password)) {
+    return res.json({
+      message: iwe_strings.Authentication.EBADPSWD,
+      status: false,
+    });
+  }
+
+  const password = await bcrypt.hash(text, 10);
+
+  user.password = password;
+  user.reset_token = undefined;
+  await user.save();
+
+  return res.json({
+    status: true,
+  });
+}
+export { auth_login, auth_register, auth_forgot, auth_reset, auth_verify };

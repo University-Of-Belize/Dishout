@@ -2,6 +2,7 @@ import {
   auth_register,
   auth_verify,
   auth_login,
+  auth_forgot,
   auth_reset,
 } from "./Authentication/authentication";
 import { user_list, user_create, user_modify } from "./Admin/Users/users";
@@ -23,6 +24,7 @@ class API {
     Verify: auth_verify,
     Login: auth_login,
     Reset: auth_reset,
+    Request_Reset: auth_forgot,
   };
 
   Admin = {

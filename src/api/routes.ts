@@ -7,7 +7,8 @@ const router = Router(); // Initialize!
 router.post("/auth/signup", Authentication.Register);
 router.post("/auth/verify", Authentication.Verify);
 router.post("/auth/login", Authentication.Login);
-router.post("/auth/passwordreset", Authentication.Reset);
+router.post("/auth/passwordreset", Authentication.Request_Reset);
+router.patch("/auth/passwordreset", Authentication.Reset);
 
 // Menu
 router.get("/menu/", (req: Express.Request, res: Express.Response) => {

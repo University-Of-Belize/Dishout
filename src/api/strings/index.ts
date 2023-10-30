@@ -7,15 +7,17 @@ class IWEU_STRINGS {
        1. An UPPERCASE character (Such as: ABC)\n
        2. A LOWERCASE character (Such as: abc)\n
        3. A NUMBER (Such as: 123)\n4. And a SPECIAL CHARACTER (Such as: !@#)`,
-    EINVALIDDOMAIN: "Invalid email domain. Only email addresses with the domain '@ub.edu.bz' are allowed.",
+    EINVALIDDOMAIN:
+      "Invalid email domain. Only email addresses with the domain '@ub.edu.bz' are allowed.",
     EINVALIDEMAIL: "Invalid Email, please enter a valid email.",
     EINVALIDUNAME: "Invalid username, please enter a valid username.",
     EINVALIDPASWD: "Invalid password, please enter a valid password.",
+    EBADPSWD: "Please choose a different password.",
     ETAKEN: "Username is taken or email is already registered.",
     EDISABLED:
-    "Your account has been disabled. Please do not create a new account. Instead, contact an administrator for assistance.",
+      "Your account has been disabled. Please do not create a new account. Instead, contact an administrator for assistance.",
     ENEEDSACTIVATION:
-    "In order to continue, your account requires activation. Check your inbox for further instructions.",
+      "In order to continue, your account requires activation. Check your inbox for further instructions.",
     ENEEDSACTIVATION2:
       "Please activate your account to continue. Check your inbox for further instructions.",
     EBADAUTH: "Incorrect username or password.",
@@ -26,6 +28,8 @@ class IWEU_STRINGS {
   };
   Email = {
     ENEEDSACTIVATION: `${config.server.nickname} — Please Verify Your Account To Continue`,
+    INEEDSRESET: `${config.server.nickname} — Your Password Reset Link`,
+    IRESETSENT: "Reset link sent. Please check your inbox.",
     ENOTVERIFIED: `In order finish creating your ${config.server.nickname} account and help us verify that you're human, we need to verify your email address.`,
     IDISCLAIMER: `You're receiving this email because you recently created a new ${config.server.nickname} account. If this wasn't you, please ignore this email.`,
     IRESETPASSWORD:
@@ -46,6 +50,7 @@ class IWEU_STRINGS {
   };
   Users = {
     ENOTFOUND: "The specified user could not be found using the provided ID.",
+    ENOTFOUND2: "That user was not found.",
     EFRIENDLYNOTFOUND:
       "Failed to find user, please make sure you didn't make any spelling errors!",
   };
