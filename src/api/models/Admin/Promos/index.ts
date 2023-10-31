@@ -5,12 +5,12 @@ import Promo from "../../../../database/models/Promos";
 import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import what from "../../../utility/Whats";
-import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
+import { wis_array } from "../../../utility/What_Is";
 import { delete_object, list_object } from "../../../utility/batchRequest";
 
 // List all promotions
 async function promo_list(req: Request, res: Response) {
-await list_object(req, res, Promo, what.private.promos)
+  await list_object(req, res, Promo, what.private.promos, false, true);
 }
 
 // Create a new promotion
@@ -80,10 +80,17 @@ async function promo_create(req: Request, res: Response) {
     status: true,
   });
 }
-// Delete a promotion
+
 // Delete a promotion
 async function promo_delete(req: Request, res: Response) {
-  await delete_object(req, res, Promo, "code", what.private.promos, iwe_strings.Promo.ENOTFOUND);
+  await delete_object(
+    req,
+    res,
+    Promo,
+    "code",
+    what.private.promos,
+    iwe_strings.Promo.ENOTFOUND
+  );
 }
 
 // Modify a promotion
@@ -145,7 +152,6 @@ async function promo_modify(req: Request, res: Response) {
   if (code_used) {
     return res.status(406).json(ErrorFormat(iwe_strings.Promo.ECODEEXISTS));
   }
-
 
   // Update the promotion fields
   if (new_code) {

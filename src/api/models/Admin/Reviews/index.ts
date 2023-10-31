@@ -9,7 +9,7 @@ import { get_authorization_user } from "../../../utility/Authentication";
 import mongoose from "mongoose";
 
 async function review_list(req: Request, res: Response) {
-  await list_object(req, res, Review, what.private.review);
+  await list_object(req, res, Review, what.private.review, false, true);
 }
 async function review_delete(req: Request, res: Response) {
   await delete_object(

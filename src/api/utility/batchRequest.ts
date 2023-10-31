@@ -68,13 +68,13 @@ async function __data_table_trigger_list(
   req: Request,
   res: Response,
   Model: Model<any>,
-  whats: string
+  whats: string, public_access:boolean | undefined, staff_required: boolean | undefined
 ) {
   // We don't need a body since we're doing the 'what_is' this time
 
   // Check our authentication token and see if it matches up to a staff member
   const user = await get_authorization_user(req);
-  if (!user) {
+  if (!user && !public_access) {
     return res
       .status(403)
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
@@ -82,7 +82,7 @@ async function __data_table_trigger_list(
 
   // Is this person a staff member?
   // @ts-ignore
-  if (!user.staff) {
+  if (!user.staff && staff_required) {
     return res
       .status(403)
       .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
