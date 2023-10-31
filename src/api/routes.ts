@@ -1,4 +1,4 @@
-import { Router } from "express"; // Our routing machine
+import { Router, Request, Response } from "express"; // Our routing machine
 import {
   Admin,
   Authentication,
@@ -8,7 +8,6 @@ import {
   Category,
   Review,
 } from "./models"; // Import our API models into memory
-import { Request, Response } from "express";
 import { LogRoutes } from "../util/Logger";
 const router = Router(); // Initialize!
 
@@ -73,11 +72,14 @@ router.put("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.Modify(req, res);
 });
 // Review
+router.get("/admin/review/manage", (req: Request, res: Response) => {
+  Admin.Review.List(req, res);
+});
 router.delete("/admin/review/manage", (req: Request, res: Response) => {
-  Admin.Menu.Delete(req, res);
+  Admin.Review.Delete(req, res);
 });
 router.put("/admin/review/manage", (req: Request, res: Response) => {
-  Admin.Menu.Modify(req, res);
+  Admin.Review.Modify(req, res);
 });
 // Menu
 router.post("/admin/menu/manage", (req: Request, res: Response) => {

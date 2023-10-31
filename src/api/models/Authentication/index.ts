@@ -95,12 +95,12 @@ async function auth_register(req: Request, res: Response) {
       EmailTemplate("ACTIVATE", username, activationToken)
     );
 
-    LogInfo(`
-        Email: ${email}\n
-        Username: ${username}\n
-        Password/Token: ${password}\n
-        Activated: ${user.activation_token ? "No" : "Yes"}\n
-        `);
+    // LogInfo(`
+    //     Email: ${email}\n
+    //     Username: ${username}\n
+    //     Password/Token: ${password}\n
+    //     Activated: ${user.activation_token ? "No" : "Yes"}\n
+    //     `);
 
     return res.json({
       status: true,

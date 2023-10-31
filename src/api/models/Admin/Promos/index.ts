@@ -6,32 +6,11 @@ import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import what from "../../../utility/Whats";
 import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
+import { delete_object, list_object } from "../../../utility/batchRequest";
 
 // List all promotions
 async function promo_list(req: Request, res: Response) {
-  // We don't need a body since we're doing the 'what_is' this time
-
-  // Check our authentication token and see if it matches up to a staff member
-  const user = await get_authorization_user(req);
-  if (!user) {
-    return res
-      .status(403)
-      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
-  }
-
-  // Is this person a staff member?
-  // @ts-ignore
-  if (!user.staff) {
-    return res
-      .status(403)
-      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
-  }
-
-  // Get all promotions from the database
-  const promotions = await Promo.find();
-
-  // Return the promotions as a JSON response
-  return res.json(what_is(what.private.promos, promotions));
+await list_object(req, res, Promo, what.private.promos)
 }
 
 // Create a new promotion
@@ -104,40 +83,7 @@ async function promo_create(req: Request, res: Response) {
 // Delete a promotion
 // Delete a promotion
 async function promo_delete(req: Request, res: Response) {
-  // Check our 'what_is'
-  if (req.body["what"] != what.private.promos) {
-    // Two underscores means it's an admin function
-    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
-  }
-
-  // Check our authentication token and see if it matches up to a staff member
-  const user = await get_authorization_user(req);
-  if (!user) {
-    return res
-      .status(403)
-      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
-  }
-
-  // Is this person a staff member?
-  // @ts-ignore
-  if (!user.staff) {
-    return res
-      .status(403)
-      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
-  }
-
-  // Extract the promotion ID from the request body
-  const promoId = wis_string(req);
-
-  // Find the promotion by ID and delete it
-  const promo = await Promo.findOne({ code: promoId });
-  if (!promo) {
-    return res.status(404).json(ErrorFormat(iwe_strings.Promo.ENOTFOUND));
-  }
-  promo.deleteOne();
-  return res.json({
-    status: true,
-  });
+  await delete_object(req, res, Promo, "code", what.private.promos, iwe_strings.Promo.ENOTFOUND);
 }
 
 // Modify a promotion

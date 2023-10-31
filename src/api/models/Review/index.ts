@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Review from "../../../database/models/Reviews";
+import Product from "../../../database/models/Products";
 import mongoose from "mongoose";
 
 import { ErrorFormat, iwe_strings } from "../../strings";
@@ -21,8 +22,30 @@ async function review_create(req: Request, res: Response) {
       .status(403)
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
+
   // Extract information from the request body
   const [productId, rating, content] = wis_array(req);
+
+  // Check if productId is a valid MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  // Check if productId corresponds to an existing Product
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res.status(404).json(ErrorFormat(iwe_strings.Review.EPRODNOEXISTS));
+  }
+
+  // Check if rating is a valid integer
+  if (!Number.isInteger(rating)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  // Check if content is a string
+  if (typeof content !== "string") {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
 
   // Create a new review
   const newReview = await Review.create({

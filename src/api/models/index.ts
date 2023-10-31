@@ -18,7 +18,7 @@ import {
   order_modify,
 } from "./Order";
 import { review_create } from "./Review";
-import { review_delete, review_modify } from "./Admin/Reviews";
+import { review_list, review_delete, review_modify } from "./Admin/Reviews";
 import { menu_list, menu_lookup } from "./Menu";
 import { user_lookup } from "./User";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
@@ -54,6 +54,7 @@ class API {
       Modify: admin_order_modify,
     },
     Review: {
+      List: review_list,
       Delete: review_delete,
       Modify: review_modify,
     },

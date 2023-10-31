@@ -66,6 +66,11 @@ class IWEU_STRINGS {
     ENICKEXISTS: "Promo nickname already exists.",
     ENOTFOUND: "Promotion not found.",
   };
+  Review = {
+    ENOTFOUND: "Review not found.",
+    EPRODNOEXISTS: "Product not found.",
+    EUNAUTHORIZED: "You do not own this review."
+  };
 }
 
 const iwe_strings = new IWEU_STRINGS();
