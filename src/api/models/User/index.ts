@@ -14,6 +14,6 @@ what: "user",
 is: string // remove something from the cart
 
 */
-function cart_delete(req: Request, res: Response){}
+function cart_delete(req: Express.Request, res: Response){}
 
 export { cart_delete, cart_modify };
