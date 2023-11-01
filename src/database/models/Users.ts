@@ -33,7 +33,8 @@ const usersSchema = new Schema({
     default: 0.0,
   },
   cart: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Products" }],  // Users don't have to have a cart. The cart is always cleared after orders are complete
+    type: [{{ type: Schema.Types.ObjectId, ref: "Products" }, {type: Number}}],  // Users don't have to have a cart. The cart is always cleared after orders are complete
+    // Cart: [{product, quantity}]
     required: false,
   },
   activation_token: {
