@@ -34,13 +34,17 @@ const ordersSchema = new Schema({
   },
   is_accepted: {
     type: Boolean,
-    required: true,
-    default: 0, // Queued by default. -1 for declined, 1 for accepted
+    required: false,  // We should not accept orders by default. Undefined means queued
+    // Queued by default. false for declined, true for accepted
   },
   delay_time: {
     type: Number, // Seconds
     required: true,
     default: 0, // No delay
+  },
+  products: {
+    type: [{ type: SchemaTypes.ObjectId, ref: "Products" }],  // Users don't have to have a cart. The cart is always cleared after orders are complete
+    required: false,
   },
 });
 export default mongoose.model("Orders", ordersSchema);

@@ -56,10 +56,14 @@ class IWEU_STRINGS {
       "Failed to find user, please make sure you didn't make any spelling errors!",
   };
   Order = {
+    EONOEXISTS: "Order not found.",
+    IDELETE: "Order deleted successfully.",
+    IACCEPT: "Order accepted.",
     IOSTATUSQUEUED: "Your order has been queued.",
     IOSTATUSACCEPTED: "Your order has been accepted.",
     IOSTATUSDENIED: "Your order has been rejected.",
     IOSTATUSDELAYED: "Your order has been delayed.",
+    IOSTATUSMODIFIED: "A staff member has issued an update your order.",
   };
   Promo = {
     ECODEEXISTS: "Promo code already exists.",
@@ -69,7 +73,7 @@ class IWEU_STRINGS {
   Review = {
     ENOTFOUND: "Review not found.",
     EPRODNOEXISTS: "Product not found.",
-    EUNAUTHORIZED: "You do not own this review."
+    EUNAUTHORIZED: "You do not own this review.",
   };
   Category = {
     ENOTFOUND: "Category not found.",

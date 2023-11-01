@@ -27,7 +27,7 @@ async function review_create(req: Request, res: Response) {
   const [productId, rating, content] = wis_array(req);
 
   // Check if productId is a valid MongoDB ObjectId
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  if (typeof productId != "string" || !mongoose.Types.ObjectId.isValid(productId)) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
