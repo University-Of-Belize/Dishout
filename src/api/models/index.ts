@@ -26,8 +26,10 @@ import {
 import { order_list, order_create, order_delete, order_modify } from "./Order";
 import { review_create } from "./Review";
 import { review_list, review_delete, review_modify } from "./Admin/Reviews";
+import { order_manage } from "./Admin/Order";
 import { menu_list } from "./Menu";
 import { global_lookup } from "./Search";
+import { cart_modify, cart_delete } from "./User";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
 
 class API {
@@ -58,7 +60,7 @@ class API {
       Modify: category_modify,
     },
     Order: {
-      Modify: order_modify,
+      Modify: order_manage,
     },
     Review: {
       List: review_list,
@@ -93,6 +95,12 @@ class API {
 
   Search = {
     Lookup: global_lookup, // You can surely search, but not list
+  };
+  User = {
+  Cart: {
+    Modify: cart_modify, // "Add to cart"
+    Delete: cart_delete, // Remove items from cart or empty it completely
+    },
   };
 }
 
