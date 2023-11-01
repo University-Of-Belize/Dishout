@@ -5,17 +5,25 @@ import {
   auth_forgot,
   auth_reset,
 } from "./Authentication";
-import { user_list, user_create, user_delete, user_modify } from "./Admin/Users";
-import { promo_list, promo_create, promo_delete, promo_modify } from "./Admin/Promos";
-import admin_order_modify from "./Admin/Order";
-import { category_list } from "./Categories";
-import { category_create, category_delete, category_modify } from "./Admin/Categories";
 import {
-  order_lookup,
-  order_create,
-  order_delete,
-  order_modify,
-} from "./Order";
+  user_list,
+  user_create,
+  user_delete,
+  user_modify,
+} from "./Admin/Users";
+import {
+  promo_list,
+  promo_create,
+  promo_delete,
+  promo_modify,
+} from "./Admin/Promos";
+import { category_list } from "./Categories";
+import {
+  category_create,
+  category_delete,
+  category_modify,
+} from "./Admin/Categories";
+import { order_list, order_create, order_delete, order_modify } from "./Order";
 import { review_create } from "./Review";
 import { review_list, review_delete, review_modify } from "./Admin/Reviews";
 import { menu_list } from "./Menu";
@@ -50,7 +58,7 @@ class API {
       Modify: category_modify,
     },
     Order: {
-      Modify: admin_order_modify,
+      Modify: order_modify,
     },
     Review: {
       List: review_list,
@@ -65,15 +73,15 @@ class API {
   };
 
   Menu = {
-    List: menu_list
+    List: menu_list,
     // Lookup: menu_lookup,
   };
   Category = {
     List: category_list, // Lol regular users shouldn't see this
   };
   Order = {
-    // List: order_list,
-    Lookup: order_lookup,
+    List: order_list,
+    // Lookup: order_lookup,
     Create: order_create,
     Delete: order_delete,
     Modify: order_modify,

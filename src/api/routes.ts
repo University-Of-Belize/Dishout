@@ -105,10 +105,10 @@ router.get("/category/", (req: Request, res: Response) => {
   Category.List(req, res);
 });
 // Order
-// Order History. Arbitrary tokens are accepted
-router.get("/order/history", (req: Request, res: Response) => {
-  Order.List(req, res);
-});
+// Order History. Arbitrary tokens are accepted --- superceded by search
+// router.get("/order/history", (req: Request, res: Response) => {
+//   Order.List(req, res);
+// });
 // Users can lookup their orders
 // router.get("/order/search", (req: Request, res: Response) => {
 //   Order.Lookup(req, res);
