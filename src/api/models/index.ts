@@ -11,7 +11,6 @@ import admin_order_modify from "./Admin/Order";
 import { category_list } from "./Categories";
 import { category_create, category_delete, category_modify } from "./Admin/Categories";
 import {
-  order_list,
   order_lookup,
   order_create,
   order_delete,
@@ -19,8 +18,8 @@ import {
 } from "./Order";
 import { review_create } from "./Review";
 import { review_list, review_delete, review_modify } from "./Admin/Reviews";
-import { menu_list, menu_lookup } from "./Menu";
-import { user_lookup } from "./User";
+import { menu_list } from "./Menu";
+import { global_lookup } from "./Search";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
 
 class API {
@@ -66,14 +65,14 @@ class API {
   };
 
   Menu = {
-    List: menu_list,
-    Lookup: menu_lookup,
+    List: menu_list
+    // Lookup: menu_lookup,
   };
   Category = {
     List: category_list, // Lol regular users shouldn't see this
   };
   Order = {
-    List: order_list,
+    // List: order_list,
     Lookup: order_lookup,
     Create: order_create,
     Delete: order_delete,
@@ -84,8 +83,8 @@ class API {
     Create: review_create,
   };
 
-  User = {
-    Lookup: user_lookup, // You can surely search, but not list
+  Search = {
+    Lookup: global_lookup, // You can surely search, but not list
   };
 }
 
@@ -94,6 +93,6 @@ export const Authentication = api.Authentication;
 export const Admin = api.Admin;
 export const Order = api.Order;
 export const Menu = api.Menu;
-export const User = api.User;
+export const Search = api.Search;
 export const Category = api.Category;
 export const Review = api.Review;

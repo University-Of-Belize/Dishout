@@ -71,6 +71,10 @@ class IWEU_STRINGS {
     EPRODNOEXISTS: "Product not found.",
     EUNAUTHORIZED: "You do not own this review."
   };
+  Category = {
+    ENOTFOUND: "Category not found.",
+    EEXISTS: "Category or alias exists. Please choose another name or alias.",
+  };
 }
 
 const iwe_strings = new IWEU_STRINGS();

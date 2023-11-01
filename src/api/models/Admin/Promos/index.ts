@@ -42,17 +42,17 @@ async function promo_create(req: Request, res: Response) {
     wis_array(req);
 
   // Start verification
-  if (
-    (code && typeof code != "string") ||
-    (nickname && typeof nickname != "string") ||
-    (description && typeof description != "string") ||
-    (end_date && !Number.isInteger(end_date))
-  ) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-  }
-  if (!Number.isInteger(discount) || !Number.isInteger(start_date)) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-  }
+  const testFailed = check_values(
+    res,
+    code,
+    undefined,
+    nickname,
+    description,
+    discount,
+    start_date,
+    end_date
+  );
+  if (testFailed) return;
   // End verification
 
   // Check if the code and description are unique
@@ -129,18 +129,18 @@ async function promo_modify(req: Request, res: Response) {
   ] = wis_array(req);
 
   // Start verification
-  if (
-    (code && typeof code != "string") ||
-    (new_code && typeof new_code != "string") ||
-    (nickname && typeof nickname != "string") ||
-    (description && typeof description != "string") ||
-    (end_date && !Number.isInteger(end_date))
-  ) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-  }
-  if (!Number.isInteger(discount) || !Number.isInteger(start_date)) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-  }
+
+  const testFailed = check_values(
+    res,
+    code,
+    new_code,
+    nickname,
+    description,
+    discount,
+    start_date,
+    end_date
+  );
+  if (testFailed) return;
   // End verification
 
   // Find the promotion by ID and update it
@@ -175,6 +175,35 @@ async function promo_modify(req: Request, res: Response) {
   return res.json({
     status: true,
   });
+}
+
+function check_values(
+  res: Response,
+  code: string,
+  new_code: string | undefined,
+  nickname: string,
+  description: string,
+  discount: number,
+  start_date: number,
+  end_date: number
+) {
+  if (
+    !code ||
+    typeof code != "string" ||
+    (new_code && typeof new_code != "string") ||
+    !nickname ||
+    typeof nickname != "string" ||
+    !description ||
+    typeof description != "string" ||
+    !end_date ||
+    !Number.isInteger(end_date)
+  ) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  if (!Number.isInteger(discount) || !Number.isInteger(start_date)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  return 0; // Tests passed; No errors
 }
 
 export { promo_create, promo_list, promo_delete, promo_modify };

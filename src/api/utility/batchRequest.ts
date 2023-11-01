@@ -6,13 +6,24 @@ import { get_authorization_user } from "./Authentication";
 import { ErrorFormat, iwe_strings } from "../strings";
 
 // Object deletion
+/**
+ * @brief Delete a document in the database effectively.
+ * @param req Express Request
+ * @param res Express Response
+ * @param Model Mongoose Model
+ * @param field field to query by when deleting the document
+ * @param whats The required 'what' in the request body
+ * @param ENOTFOUND The error message to send if the document is not found
+ * @param is_not_objectid Are we NOT querying by an ObjectId?
+ */
 async function __data_table_trigger_delete(
   req: Request,
   res: Response,
   Model: Model<any>,
   field: string,
   whats: string,
-  ENOTFOUND: string
+  ENOTFOUND: string,
+  is_not_objectid: boolean = false
 ) {
   // Check our 'what_is'
   if (req.body["what"] != whats) {
@@ -38,9 +49,11 @@ async function __data_table_trigger_delete(
 
   // Extract the promotion ID from the request body
   const objectId = wis_string(req);
-  // Check if objectId is a valid MongoDB ObjectId
-  if (!mongoose.Types.ObjectId.isValid(objectId)) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  // Check if objectId is a valid MongoDB ObjectId if is_not_object is false
+  if (!is_not_objectid) {
+    if (!mongoose.Types.ObjectId.isValid(objectId)) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
   }
   let query = `{ "${field}": "${objectId}" }`; // Hack-ish
   let object;
@@ -68,7 +81,9 @@ async function __data_table_trigger_list(
   req: Request,
   res: Response,
   Model: Model<any>,
-  whats: string, public_access:boolean | undefined, staff_required: boolean | undefined
+  whats: string,
+  public_access: boolean | undefined,
+  staff_required: boolean | undefined
 ) {
   // We don't need a body since we're doing the 'what_is' this time
 

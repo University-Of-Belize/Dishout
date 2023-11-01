@@ -6,6 +6,7 @@ import { iwe_strings, ErrorFormat } from "../../../strings";
 // Generic batch request
 import { delete_object, list_object } from "../../../utility/batchRequest";
 import { get_authorization_user } from "../../../utility/Authentication";
+import { wis_array } from "../../../utility/What_Is";
 import mongoose from "mongoose";
 
 async function review_list(req: Request, res: Response) {
@@ -38,8 +39,9 @@ async function review_modify(req: Request, res: Response) {
   }
 
   // Extract information from the request body
-  const [id, rating, comment] = req.body["is"];
+  const [id, rating, comment] = wis_array(req);
 
+  // We don't have a check_values here because, we're cdoing a comparison in only one function; not multiple
   // Check if ID is a valid string/ObjectId
   if (typeof id != "string" || !mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));

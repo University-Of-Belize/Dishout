@@ -3,8 +3,7 @@ import {
   Admin,
   Authentication,
   Menu,
-  Order,
-  User,
+  Order, Search,
   Category,
   Review,
 } from "./models"; // Import our API models into memory
@@ -98,9 +97,9 @@ router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);
 });
 
-router.get("/menu/search", (req: Request, res: Response) => {
-  Menu.Lookup(req, res); // Users can lookup other menu items
-});
+// router.get("/menu/search", (req: Request, res: Response) => {
+//   Menu.Lookup(req, res); // Users can lookup other menu items
+// });
 // Category
 router.get("/category/", (req: Request, res: Response) => {
   Category.List(req, res);
@@ -111,9 +110,9 @@ router.get("/order/history", (req: Request, res: Response) => {
   Order.List(req, res);
 });
 // Users can lookup their orders
-router.get("/order/search", (req: Request, res: Response) => {
-  Order.Lookup(req, res);
-});
+// router.get("/order/search", (req: Request, res: Response) => {
+//   Order.Lookup(req, res);
+// });
 
 // Order placement. Arbitrary tokens are accepted
 router.post("/order/place", (req: Request, res: Response) => {
@@ -130,9 +129,9 @@ router.put("/order/place", (req: Request, res: Response) => {
 router.post("/review/create", (req: Request, res: Response) => {
   Review.Create(req, res);
 });
-// User
-router.get("/user/search", (req: Request, res: Response) => {
-  User.Lookup(req, res); // Users can lookup other users
+// Search
+router.get("/search", (req: Request, res: Response) => {
+  Search.Lookup(req, res); // Users can lookup other users
 });
 
 // Print the routes for reference
