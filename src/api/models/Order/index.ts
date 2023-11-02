@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { list_object } from "../../utility/batchRequest";
 import Order from "../../../database/models/Orders";
+import Product from "../../../database/models/Menu";
 import what from "../../utility/Whats";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
@@ -26,43 +27,47 @@ async function order_create(req: Request, res: Response) {
   // Check our authentication token and see if it matches up to a staff member
   const user = await get_authorization_user(req);
   if (!user) {
-    return res.status(403).json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
-.// @ts-ignore
+  // @ts-ignore
   if (!user.cart || user.cart.length === 0) {
     return res.status(400).json(ErrorFormat(iwe_strings.Order.EEMPTYCART));
   }
-  
-  const promo_code = wis_string(req);
-    
-  
 
-  const order = new Order({  
-  
-  order_code: null,
-  order_date: Math.floor(Date.now() / 1000),
-  total_amount: 0,
-  promo_code: promo_code,
-  // @ts-ignore
-    order_from: user._id,  // @ts-ignore
+  const promo_code = wis_string(req);
+
+  const order = new Order({
+    order_code: null,
+    order_date: Math.floor(Date.now() / 1000),
+    total_amount: 0,
+    promo_code: promo_code,
+    // @ts-ignore
+    order_from: user._id, // @ts-ignore
     products: user.cart,
     status: iwe_strings.Order.IOSTATUSQUEUED,
   });
 
-// @ts-ignore
+  // @ts-ignore
   user.cart = undefined;
-  
-  if(!order) { return res.status(500).json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR))}
-  
+
+  if (!order) {
+    return res
+      .status(500)
+      .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
+  }
+
   let totalAmount: number = 0;
-  
-for (const product of order.products) {
-  totalAmount += product.price;
-}
-order.total_amount = totalAmount;
-  
-  
+  let cart_product;
+
+  for (const product of order.products) {
+    cart_product = Product.findOne({ product });
+    totalAmount += parseFloat(cart_product.price);
+  }
+  order.total_amount = totalAmount;
+
   // @ts-ignore
   await user.save();
 
@@ -73,10 +78,6 @@ order.total_amount = totalAmount;
 
   res.status(201).json(order);
 }
-function order_delete(req: Request, res: Response){
-
-}
-function order_modify(req: Request, res: Response){
-
-}
+function order_delete(req: Request, res: Response) {}
+function order_modify(req: Request, res: Response) {}
 export { order_list, order_create, order_delete, order_modify };
