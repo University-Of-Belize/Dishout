@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { list_object } from "../../utility/batchRequest";
 import Order from "../../../database/models/Orders";
-import Product from "../../../database/models/Menu";
+import Product from "../../../database/models/Products";
 import what from "../../utility/Whats";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
@@ -70,7 +70,6 @@ async function order_create(req: Request, res: Response) {
 
   // @ts-ignore
   await user.save();
-
   await order.save();
 
   // Send email notification to user
