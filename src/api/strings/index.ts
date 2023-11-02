@@ -22,6 +22,7 @@ class IWEU_STRINGS {
     ENEEDSACTIVATION2:
       "Please activate your account to continue. Check your inbox for further instructions.",
     EBADAUTH: "Incorrect username or password.",
+    EBLOCKED: "Sorry, you've been blocked from our services.",
     EOOPS:
       "Oops! Looks like something went wrong on our end! Please try that again.",
     UCOMPLEXITY:
@@ -64,6 +65,7 @@ class IWEU_STRINGS {
     IOSTATUSDENIED: "Your order has been rejected.",
     IOSTATUSDELAYED: "Your order has been delayed.",
     IOSTATUSMODIFIED: "A staff member has issued an update your order.",
+    EEMPTYCART: "The shopping cart is empty",
   };
   Promo = {
     ECODEEXISTS: "Promo code already exists.",

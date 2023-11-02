@@ -1,6 +1,4 @@
-import {
-  get_authorization,
-} from "../../utility/Authentication";
+import { get_authorization } from "../../utility/Authentication";
 import {
   generateActivationToken,
   sendEmail,
@@ -189,6 +187,12 @@ async function auth_login(req: Request, res: Response) {
       return res
         .status(403)
         .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+    }
+
+    if (user.restrictions == -1) {
+      return res
+        .status(403)
+        .json(ErrorFormat(iwe_strings.Authentication.EBLOCKED));
     }
 
     // Create a login
