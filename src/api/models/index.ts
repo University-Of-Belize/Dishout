@@ -29,7 +29,7 @@ import { review_list, review_delete, review_modify } from "./Admin/Reviews";
 import { order_manage } from "./Admin/Order";
 import { menu_list } from "./Menu";
 import { global_lookup } from "./Search";
-import { cart_modify, cart_delete } from "./User";
+import { cart_list, cart_modify, cart_delete } from "./User";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
 
 class API {
@@ -98,6 +98,7 @@ class API {
   };
   User = {
   Cart: {
+    List: cart_list, // "What's in my cart?"
     Modify: cart_modify, // "Add to cart"
     Delete: cart_delete, // Remove items from cart or empty it completely
     },

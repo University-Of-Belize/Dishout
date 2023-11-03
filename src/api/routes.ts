@@ -137,6 +137,10 @@ router.get("/search", (req: Request, res: Response) => {
 });
 
 // User
+// What's in my cart?
+router.get("/user/cart", (req: Request, res: Response) => {
+  User.Cart.List(req, res);
+});
 // Cart modify
 router.post("/user/cart", (req: Request, res: Response) => {
   User.Cart.Modify(req, res);

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import what from "../../utility/Whats";
-import { what_is, wis_array } from "../../utility/What_Is";
+import { what_is, wis_array, wis_string } from "../../utility/What_Is";
 import { get_authorization_user } from "../../utility/Authentication";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import User from "../../../database/models/Users";
@@ -26,7 +26,7 @@ async function cart_modify(req: Request, res: Response) {
 
   // Value check. Does this belong here?
   const [item, quantity] = wis_array(req);
-  
+
   // Check if ID is a valid string/ObjectId
   if (typeof item != "string" || !mongoose.Types.ObjectId.isValid(item)) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
@@ -35,18 +35,32 @@ async function cart_modify(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
   // Is this a valid cart item?
-  const product = Product.findById(item);
+  const product = await Product.findById(item);
   if (!product) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
   }
-  
+
+  console.log(product);
+  // Decrease the quantity by how much we ordered. If there's to little give an error
+  if (product.in_stock == 0) {
+    return res.status(406).json(ErrorFormat(iwe_strings.Product.EOUTOFSTOCK));
+  }
+  if (product.in_stock - quantity < 0) {
+    return res.status(406).json(ErrorFormat(iwe_strings.Product.ETOOMANY));
+  }
+
+  // Decrease the quantity
+  product.in_stock = product.in_stock - quantity;
+
   // Populate the cart with the product
   // @ts-ignore
-  user.cart.push({product, quantity})
-  
+  user.cart.push({ product: product._id, quantity: quantity });
+
+  // Save and return
   // @ts-ignore
   user.save();
-  res.json({status: true})
+  product.save();
+  res.json({ status: true });
 }
 
 // Remove from the cart or empty it completely
@@ -59,6 +73,91 @@ what: "user",
 is: string // remove something from the cart
 
 */
-function cart_delete(req: Express.Request, res: Response) {}
+async function cart_delete(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] !== what.public.user) {
+    // Two underscores means it's an admin function
+    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+  }
 
-export { cart_delete, cart_modify };
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Value check. Does this belong here?
+  const item_index = wis_string(req) || null;
+
+  // Check if ID is a valid number or null
+  if (typeof item_index !== "number" && item_index !== null) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  // If null then that means we want to empty the cart
+  if (item_index === null) {
+    // Go through the cart, putting back the items
+    // @ts-ignore
+    let totalQuantity = 0;
+    let cart_product;
+
+    // Loop through all of the products and get all the quanities for each item while putting them back
+    // @ts-ignore
+    // for (const product of user.cart) {
+    //   cart_product = await Product.findById(product.product);
+    //   if (cart_product) {
+    //     cart_product.in_stock = cart_product.in_stock + product.quantity;
+    //     console.log(cart_product.in_stock);
+    //     await cart_product.save();
+    //   }
+    // }
+
+    // [OPTIMIZED]: Create an array of product ids and their quantities
+    let productUpdates = user.cart.map((item) => ({
+      updateOne: {
+        filter: { _id: item.product },
+        update: { $inc: { in_stock: item.quantity } },
+      },
+    }));
+
+    // Update all products in one go
+    await Product.bulkWrite(productUpdates);
+
+    // Empty the cart
+    // @ts-ignore
+    user.cart = undefined;
+    // @ts-ignore
+    user.save();
+    return res.json({ status: true });
+  }
+
+  if (item_index <= -1) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  // Populate the cart with the product
+  // @ts-ignore
+  user.cart.splice(item_index, 1);
+
+  // Save and return
+  // @ts-ignore
+  user.save();
+  res.json({ status: true });
+}
+
+async function cart_list(req: Request, res: Response) {
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // @ts-ignore
+  return res.json(what_is(what.public.user, user.cart));
+}
+
+export { cart_delete, cart_modify, cart_list };

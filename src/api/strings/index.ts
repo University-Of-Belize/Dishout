@@ -82,7 +82,9 @@ class IWEU_STRINGS {
     EEXISTS: "Category or alias exists. Please choose another name or alias.",
   };
   Product = {
-    ENOTFOUND: "Product not found."
+    ENOTFOUND: "Product not found.",
+    EOUTOFSTOCK: "Product out of stock.",
+    ETOOMANY: "Your request exceeds our maximum availability of that product.",
   };
 }
 

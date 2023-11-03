@@ -24,7 +24,7 @@
     "username": "2022156465",
     "domain": "ub.edu.bz",
     "display-name": "UB Cafeteria",
-    "dev-password": "snwg pwsw itux ibny",
+    "dev-password": null,
     "smtp": {
       "server": "smtp.gmail.com",
       "port": 465,
