@@ -112,3 +112,4 @@ export const Menu = api.Menu;
 export const Search = api.Search;
 export const Category = api.Category;
 export const Review = api.Review;
+export const User = api.User;

@@ -97,7 +97,7 @@ async function __data_table_trigger_list(
 
   // Is this person a staff member?
   // @ts-ignore
-  if (!user.staff && staff_required) {
+  if (staff_required && !user?.staff) {
     return res
       .status(403)
       .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));

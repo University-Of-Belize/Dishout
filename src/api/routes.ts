@@ -3,9 +3,11 @@ import {
   Admin,
   Authentication,
   Menu,
-  Order, Search,
+  Order,
+  Search,
   Category,
   Review,
+  User,
 } from "./models"; // Import our API models into memory
 import { LogRoutes } from "../util/Logger";
 const router = Router(); // Initialize!
@@ -132,6 +134,17 @@ router.post("/review/create", (req: Request, res: Response) => {
 // Search
 router.get("/search", (req: Request, res: Response) => {
   Search.Lookup(req, res); // Users can lookup other users
+});
+
+// User
+// Cart modify
+router.post("/user/cart", (req: Request, res: Response) => {
+  User.Cart.Modify(req, res);
+});
+
+// Cart delete
+router.delete("/user/cart", (req: Request, res: Response) => {
+  User.Cart.Delete(req, res);
 });
 
 // Print the routes for reference

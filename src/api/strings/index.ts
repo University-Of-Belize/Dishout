@@ -81,6 +81,9 @@ class IWEU_STRINGS {
     ENOTFOUND: "Category not found.",
     EEXISTS: "Category or alias exists. Please choose another name or alias.",
   };
+  Product = {
+    ENOTFOUND: "Product not found."
+  };
 }
 
 const iwe_strings = new IWEU_STRINGS();
