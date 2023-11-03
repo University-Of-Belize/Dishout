@@ -6,6 +6,8 @@ import what from "../../utility/Whats";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
 import { wis_string } from "../../utility/What_Is";
+import { uuid } from "uuidv4";
+import { Decimal128 } from "mongoose";
 
 async function order_list(req: Request, res: Response) {
   await list_object(req, res, Order, what.public.order, true, false);
@@ -19,7 +21,7 @@ async function order_list(req: Request, res: Response) {
 
 async function order_create(req: Request, res: Response) {
   // Check our 'what_is'
-  if (req.body["what"] !== what.private.category) {
+  if (req.body["what"] !== what.public.order) {
     // Two underscores means it's an admin function
     return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
@@ -40,32 +42,38 @@ async function order_create(req: Request, res: Response) {
   const promo_code = wis_string(req);
 
   const order = new Order({
-    order_code: null,
+    order_code: uuid(),
     order_date: Math.floor(Date.now() / 1000),
     total_amount: 0,
     promo_code: promo_code,
     // @ts-ignore
     order_from: user._id, // @ts-ignore
     products: user.cart,
-    status: iwe_strings.Order.IOSTATUSQUEUED,
   });
 
   // @ts-ignore
   user.cart = undefined;
 
-  if (!order) {
+  if (!order ?? !order.products) {
     return res
       .status(500)
       .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
   }
 
-  let totalAmount: number = 0;
+  // @ts-ignore
+  let totalAmount: Decimal128 = 0;
   let cart_product;
 
+  // Loop through all of the products and dump it into the cart
   for (const product of order.products) {
-    cart_product = Product.findOne({ product });
-    totalAmount += parseFloat(cart_product.price);
+    cart_product = await Product.findOne({ _id: product });
+    if (cart_product) {
+      // @ts-ignore
+      totalAmount = cart_product.price;
+    }
   }
+
+  // @ts-ignore
   order.total_amount = totalAmount;
 
   // @ts-ignore
@@ -79,4 +87,5 @@ async function order_create(req: Request, res: Response) {
 }
 function order_delete(req: Request, res: Response) {}
 function order_modify(req: Request, res: Response) {}
+
 export { order_list, order_create, order_delete, order_modify };

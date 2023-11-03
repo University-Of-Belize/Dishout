@@ -62,14 +62,14 @@ router.put("/admin/category/manage", (req: Request, res: Response) => {
 router.post("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.Modify(req, res);
 });
-// Decline user's order into queue
-router.delete("/admin/order/manage/", (req: Request, res: Response) => {
-  Admin.Order.Modify(req, res);
-});
-// Modify user's order in queue
-router.put("/admin/order/manage/", (req: Request, res: Response) => {
-  Admin.Order.Modify(req, res);
-});
+// // Decline user's order into queue
+// router.delete("/admin/order/manage/", (req: Request, res: Response) => {
+//   Admin.Order.Modify(req, res);
+// });
+// // Modify user's order in queue
+// router.put("/admin/order/manage/", (req: Request, res: Response) => {
+//   Admin.Order.Modify(req, res);
+// });
 // Review
 router.get("/admin/review/manage", (req: Request, res: Response) => {
   Admin.Review.List(req, res);
