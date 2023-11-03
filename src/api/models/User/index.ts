@@ -3,7 +3,6 @@ import what from "../../utility/Whats";
 import { what_is, wis_array, wis_string } from "../../utility/What_Is";
 import { get_authorization_user } from "../../utility/Authentication";
 import { ErrorFormat, iwe_strings } from "../../strings";
-import User from "../../../database/models/Users";
 import Product from "../../../database/models/Products";
 import mongoose from "mongoose";
 // Add to the cart
@@ -40,13 +39,15 @@ async function cart_modify(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
   }
 
-  console.log(product);
   // Decrease the quantity by how much we ordered. If there's to little give an error
   if (product.in_stock == 0) {
     return res.status(406).json(ErrorFormat(iwe_strings.Product.EOUTOFSTOCK));
   }
   if (product.in_stock - quantity < 0) {
     return res.status(406).json(ErrorFormat(iwe_strings.Product.ETOOMANY));
+  }
+  if (quantity < 0) {
+    return res.status(406).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
   // Decrease the quantity
@@ -60,11 +61,13 @@ async function cart_modify(req: Request, res: Response) {
   // @ts-ignore
   user.save();
   product.save();
-  res.json({ status: true });
+  res.json(what_is(what.public.user, product));
 }
 
 // Remove from the cart or empty it completely
 /*
+@Note Couldn't get it to accept both real integers and string integers. Built diff I guess
+
 what: "user",
 is: null // Delete the entire cart
 
@@ -89,19 +92,19 @@ async function cart_delete(req: Request, res: Response) {
   }
 
   // Value check. Does this belong here?
-  const item_index = wis_string(req) || null;
+  const item_index = parseInt(wis_string(req));
 
-  // Check if ID is a valid number or null
-  if (typeof item_index !== "number" && item_index !== null) {
+  // Check if item_index is undefined or not a valid number
+  if (Number.isNaN(item_index) && wis_string(req) !== undefined) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
   // If null then that means we want to empty the cart
-  if (item_index === null) {
+  if (item_index == undefined) {
     // Go through the cart, putting back the items
     // @ts-ignore
-    let totalQuantity = 0;
-    let cart_product;
+    // let totalQuantity = 0;
+    // let cart_product;
 
     // Loop through all of the products and get all the quanities for each item while putting them back
     // @ts-ignore
@@ -137,7 +140,17 @@ async function cart_delete(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
-  // Populate the cart with the product
+  // Put back the item
+  // @ts-ignore
+  const item_to_putback = await Product.findById(user.cart[item_index].product);
+  // Weird
+  if (!item_to_putback) {
+    return res
+      .status(500)
+      .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
+  }
+
+  // Remove item from the cart by index
   // @ts-ignore
   user.cart.splice(item_index, 1);
 
