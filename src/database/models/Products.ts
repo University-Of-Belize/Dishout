@@ -38,7 +38,7 @@ const menuSchema = new Schema({
     required: true,
   },
   reviews: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Reviews" }],  // Users don't have to have a cart. The cart is always cleared after orders are complete
+    type: [{ type: Schema.Types.ObjectId, ref: "Reviews" }], // Users don't have to have a cart. The cart is always cleared after orders are complete
     required: false,
   },
 });
