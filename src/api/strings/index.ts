@@ -81,6 +81,7 @@ class IWEU_STRINGS {
     ENOTFOUND: "Review not found.",
     EPRODNOEXISTS: "Product not found.",
     EUNAUTHORIZED: "You do not own this review.",
+    ERANGEERROR: "Rating must be an integer between 1 and 5.",
   };
   Category = {
     ENOTFOUND: "Category not found.",

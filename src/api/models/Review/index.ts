@@ -50,15 +50,26 @@ async function review_create(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
+  // Check if rating is a valid integer between 1 and 5
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Review.ERANGEERROR));
+  }
+
   // Create a new review
   const newReview = await Review.create({
     // @ts-ignore
     reviewer: user._id,
     rating: rating,
     content: content,
-    productId: new mongoose.Types.ObjectId(productId),
+    product: productId,
   });
 
+  // Attach it to the product
+  // @ts-ignore
+  product.reviews.push(newReview);
+
+  await product.save();
+  await newReview.save();
   // Return the new review as a JSON response
   return res.json(what_is(what.public.review, newReview));
 }
