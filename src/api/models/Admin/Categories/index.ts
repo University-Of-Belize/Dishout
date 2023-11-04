@@ -113,7 +113,7 @@ async function category_modify(req: Request, res: Response) {
   // Find the category by its ID
   const category = await Category.findOne({ name });
   if (!category) {
-    return res.status(404).json({ message: "Category not found." });
+    return res.status(404).json(ErrorFormat(iwe_strings.Category.ENOTFOUND));
   }
 
   // Update the category's name

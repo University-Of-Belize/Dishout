@@ -47,7 +47,7 @@ async function __data_table_trigger_delete(
       .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
   }
 
-  // Extract the promotion ID from the request body
+  // Extract the object ID from the request body
   const objectId = wis_string(req);
   // Check if objectId is a valid MongoDB ObjectId if is_not_object is false
   if (!is_not_objectid) {
@@ -57,7 +57,7 @@ async function __data_table_trigger_delete(
   }
   let query = `{ "${field}": "${objectId}" }`; // Hack-ish
   let object;
-  // Find the promotion by ID and delete it
+  // Find the object by ID and delete it
   try {
     object = await Model.findOne(JSON.parse(query));
   } catch (error) {
@@ -103,10 +103,10 @@ async function __data_table_trigger_list(
       .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
   }
 
-  // Get all promotions from the database
+  // Get all objects from the database
   const object = await Model.find();
 
-  // Return the promotions as a JSON response
+  // Return the objects as a JSON response
   return res.json(what_is(whats, object));
 }
 

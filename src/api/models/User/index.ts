@@ -118,7 +118,7 @@ async function cart_delete(req: Request, res: Response) {
     // }
 
     // [OPTIMIZED]: Create an array of product ids and their quantities
-    let productUpdates = user.cart.map((item) => ({
+    const productUpdates = user.cart.map((item) => ({
       updateOne: {
         filter: { _id: item.product },
         update: { $inc: { in_stock: item.quantity } },
@@ -136,7 +136,7 @@ async function cart_delete(req: Request, res: Response) {
     return res.json({ status: true });
   }
 
-  if (item_index <= -1) {
+  if (item_index < 0) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
@@ -160,6 +160,7 @@ async function cart_delete(req: Request, res: Response) {
   res.json({ status: true });
 }
 
+// Not using the function "delete_object" here, because, it's different.
 async function cart_list(req: Request, res: Response) {
   // Check our authentication token and see if it matches up to a staff member
   const user = await get_authorization_user(req);

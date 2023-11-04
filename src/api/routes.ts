@@ -64,7 +64,7 @@ router.put("/admin/category/manage", (req: Request, res: Response) => {
 router.post("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.Modify(req, res);
 });
-// // Decline user's order into queue
+// // Decline user's order into queue (superceeded by above)
 // router.delete("/admin/order/manage/", (req: Request, res: Response) => {
 //   Admin.Order.Modify(req, res);
 // });
