@@ -50,7 +50,7 @@ async function promo_create(req: Request, res: Response) {
     description,
     discount,
     start_date,
-    end_date
+    end_date,
   );
   if (testFailed) return;
   // End verification
@@ -89,7 +89,7 @@ async function promo_delete(req: Request, res: Response) {
     Promo,
     "code",
     what.private.promos,
-    iwe_strings.Promo.ENOTFOUND
+    iwe_strings.Promo.ENOTFOUND,
   );
 }
 
@@ -138,7 +138,7 @@ async function promo_modify(req: Request, res: Response) {
     description,
     discount,
     start_date,
-    end_date
+    end_date,
   );
   if (testFailed) return;
   // End verification
@@ -185,7 +185,7 @@ function check_values(
   description: string,
   discount: number,
   start_date: number,
-  end_date: number
+  end_date: number,
 ) {
   if (
     !code ||

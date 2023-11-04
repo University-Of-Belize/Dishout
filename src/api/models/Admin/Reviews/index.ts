@@ -19,7 +19,7 @@ async function review_delete(req: Request, res: Response) {
     Review,
     "_id",
     what.private.review,
-    iwe_strings.Review.ENOTFOUND
+    iwe_strings.Review.ENOTFOUND,
   );
 }
 

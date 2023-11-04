@@ -29,7 +29,7 @@ async function sendEmail(
   email: string,
   subject: string,
   body: string | null,
-  html_body: string | null
+  html_body: string | null,
 ) {
   let transporter = nodemailer.createTransport({
     host: config.email.smtp.server,
@@ -59,7 +59,7 @@ function EmailTemplate(email_type: string, name: string | null, token: string) {
   switch (email_type) {
     case "ACTIVATE":
       const VerificationTemplate = fs.readFileSync(
-        path.join(__dirname, "verify.html")
+        path.join(__dirname, "verify.html"),
       );
       // These are used in the template ------------------------------------
       const VerificationLink = `https://${config.server.domain}/auth/verify?activation_token=${token}`;
@@ -71,7 +71,7 @@ function EmailTemplate(email_type: string, name: string | null, token: string) {
 
     case "PASSWORD_RESET":
       const PasswordTemplate = fs.readFileSync(
-        path.join(__dirname, "reset.html")
+        path.join(__dirname, "reset.html"),
       );
       // These are used in the template ------------------------------------
       title = IWE.Email.IRESETPASSWORD;

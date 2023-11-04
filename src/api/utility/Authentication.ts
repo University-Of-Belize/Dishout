@@ -13,16 +13,16 @@ function get_authorization(req: Request): AuthorizationToken {
 
 // Get the header, return the user
 async function get_authorization_user(
-    req: Request
+  req: Request,
 ): Promise<typeof User | null> {
-    const token: AuthorizationToken = get_authorization(req);
+  const token: AuthorizationToken = get_authorization(req);
 
-    if (token) { // @ts-ignore
-        const user: typeof User = await User.findOne({ token });
-        return user ?? null;
-    }
-    return null;
+  if (token) {
+    // @ts-ignore
+    const user: typeof User = await User.findOne({ token });
+    return user ?? null;
+  }
+  return null;
 }
-
 
 export { get_authorization, get_authorization_user };

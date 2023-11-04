@@ -95,7 +95,7 @@ async function order_create(req: Request, res: Response) {
   let totalAmount = products.reduce(
     // @ts-ignore
     (total, product) => total + parseFloat(product.price),
-    0
+    0,
   );
 
   // @ts-ignore
@@ -111,7 +111,7 @@ async function order_create(req: Request, res: Response) {
     user.email,
     `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSQUEUED}`,
     null, //@ts-ignore
-    `Hi ${user.username}, <br/>${iwe_strings.Order.IOSTATUSQUEUED}`
+    `Hi ${user.username}, <br/>${iwe_strings.Order.IOSTATUSQUEUED}`,
   );
 
   res.status(201).json(what_is(what.public.order, order));
@@ -126,7 +126,7 @@ async function order_delete(req: Request, res: Response) {
     "order_code",
     what.public.order,
     iwe_strings.Order.EONOEXISTS,
-    true
+    true,
   );
 }
 
@@ -155,7 +155,7 @@ async function order_modify(req: Request, res: Response) {
     product_action,
     index,
     productID,
-    quantity
+    quantity,
   );
   if (testFailed) return;
 
@@ -220,7 +220,6 @@ async function order_modify(req: Request, res: Response) {
           // Do some magic
           // @ts-ignore
           if (productID == order.products[index].product.toString()) {
-            
             product.in_stock = // @ts-ignore
               product.in_stock + order.products[index].quantity; // Do a restore
           }
@@ -233,7 +232,7 @@ async function order_modify(req: Request, res: Response) {
           // @ts-ignore
           if (productID != order.products[index].product.toString()) {
             const product = await Product.findById(
-              order.products[index].product
+              order.products[index].product,
             ); // @ts-ignore
             product.in_stock = product.in_stock + oldQ; // Do a restore on the old one
             // @ts-ignore
@@ -260,7 +259,7 @@ async function order_modify(req: Request, res: Response) {
   await product.save();
   await order.save();
   return res.json(
-    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, order])
+    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, order]),
   );
 }
 
@@ -271,7 +270,7 @@ function check_values(
   product_action?: string,
   index?: number,
   productID?: mongoose.Schema.Types.ObjectId,
-  quantity?: number
+  quantity?: number,
 ) {
   if (
     (orderID && Number.isNaN(orderID)) ||

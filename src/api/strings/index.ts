@@ -58,7 +58,8 @@ class IWEU_STRINGS {
   };
   Order = {
     EONOEXISTS: "Order not found.",
-    EBADINDEX: "The provided index is out of range. Please provide an index that is within the acceptable range of the products array.",
+    EBADINDEX:
+      "The provided index is out of range. Please provide an index that is within the acceptable range of the products array.",
     IDELETE: "Order deleted successfully.",
     IPDELETE: "Product deleted successfully.",
     IPMODIFY: "Product modified successfully.",
@@ -69,7 +70,7 @@ class IWEU_STRINGS {
     IOSTATUSDELAYED: "Your order has been delayed.",
     IOSTATUSMODIFIED: "A staff member has issued an update your order.",
     EEMPTYCART: "The shopping cart is empty",
-    ENOPERMS: "You do not own this order."
+    ENOPERMS: "You do not own this order.",
   };
   Promo = {
     ECODEEXISTS: "Promo code already exists.",
@@ -87,10 +88,13 @@ class IWEU_STRINGS {
   };
   Product = {
     ENOTFOUND: "Product not found.",
+    EEXISTS: "A menu with this slug or product name already exists.",
     EOUTOFSTOCK: "Product out of stock.",
     ETOOMANY: "Your request exceeds our maximum availability of that product.",
-    ETOOLITTLE: "Your request is below the minimum availability of that product.",
-    EBADPROMO: "Your request contains an invalid promo code ID. Please remove the offending code and try again.",
+    ETOOLITTLE:
+      "Your request is below the minimum availability of that product.",
+    EBADPROMO:
+      "Your request contains an invalid promo code ID. Please remove the offending code and try again.",
   };
 }
 

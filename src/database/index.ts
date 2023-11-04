@@ -4,7 +4,7 @@ import { LogDatabase, LogError } from "../util/Logger";
 import config from "../config/settings.json";
 
 const DatabaseURL = process.env.DATABASE_URL ?? config.database.mongoURI;
-mongoose.set("strictQuery", true);  // We want some strict queries
+mongoose.set("strictQuery", true); // We want some strict queries
 
 export default async function connectDB() {
   try {

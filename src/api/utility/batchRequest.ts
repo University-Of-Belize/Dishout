@@ -23,7 +23,7 @@ async function __data_table_trigger_delete(
   field: string,
   whats: string,
   ENOTFOUND: string,
-  is_not_objectid: boolean = false
+  is_not_objectid: boolean = false,
 ) {
   // Check our 'what_is'
   if (req.body["what"] != whats) {
@@ -83,7 +83,7 @@ async function __data_table_trigger_list(
   Model: Model<any>,
   whats: string,
   public_access: boolean | undefined,
-  staff_required: boolean | undefined
+  staff_required: boolean | undefined,
 ) {
   // We don't need a body since we're doing the 'what_is' this time
 

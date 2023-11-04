@@ -5,7 +5,7 @@ import Menu from "../../../../database/models/Products";
 import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import what from "../../../utility/Whats";
-import { wis_array } from "../../../utility/What_Is";
+import { what_is, wis_array } from "../../../utility/What_Is";
 import { delete_object } from "../../../utility/batchRequest";
 import mongoose from "mongoose";
 
@@ -44,10 +44,16 @@ async function menu_create(req: Request, res: Response) {
     image,
     in_stock,
     description,
-    category
+    category,
   );
 
   if (testFailed) return;
+
+  // Check if a document with the same slug or product name already exists
+  const existingMenu = await Menu.findOne({ $or: [{ slug }, { productName }] });
+  if (existingMenu) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Product.EEXISTS));
+  }
 
   // create the menu
   const newMenu = await Menu.create({
@@ -56,14 +62,14 @@ async function menu_create(req: Request, res: Response) {
     price: price,
     // image: image,
     in_stock: in_stock,
-    // description: description,  // @ts-ignore
+    // description: description,
     category: category,
   });
 
-  if (image && image != null) {
+  if (image) {
     newMenu.image = image;
   }
-  if (description && description != null) {
+  if (description) {
     newMenu.description = description;
   }
 
@@ -80,15 +86,15 @@ async function menu_delete(req: Request, res: Response) {
     res,
     Menu,
     "slug",
-    what.public.menu,
-    iwe_strings.Product.ENOTFOUND
+    what.private.menu,
+    iwe_strings.Product.ENOTFOUND,
   );
 }
 
 // modify menu
 async function menu_modify(req: Request, res: Response) {
   // Check our 'what_is'
-  if (req.body["what"] != what.public.menu) {
+  if (req.body["what"] != what.private.menu) {
     // Two underscores means it's an admin function
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
@@ -109,8 +115,16 @@ async function menu_modify(req: Request, res: Response) {
   }
 
   // extract fields to update
-  const [category, slug, productName, description, image, price, in_stock] =
-    wis_array(req);
+  const [
+    old_slug,
+    category,
+    slug,
+    productName,
+    description,
+    image,
+    price,
+    in_stock,
+  ] = wis_array(req);
 
   // verify
   const testFailed = check_values(
@@ -121,13 +135,14 @@ async function menu_modify(req: Request, res: Response) {
     image,
     in_stock,
     description,
-    category
+    category,
+    old_slug,
   );
 
   if (testFailed) return;
 
   // find menu by the slug
-  const menu = await Menu.findOne({ slug: slug });
+  const menu = await Menu.findOne({ slug: old_slug });
   if (!menu) {
     return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
   }
@@ -157,9 +172,9 @@ async function menu_modify(req: Request, res: Response) {
 
   await menu.save();
 
-  return res.json({
-    status: true,
-  });
+  return res.json(
+    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, menu]),
+  );
 }
 
 function check_values(
@@ -170,9 +185,11 @@ function check_values(
   image: string,
   in_stock: number,
   description: string,
-  category: string
+  category: string,
+  old_slug?: string,
 ) {
   if (
+    (old_slug && typeof old_slug != "string") ||
     !slug ||
     typeof slug != "string" ||
     !productName ||

@@ -97,10 +97,10 @@ class API {
     Lookup: global_lookup, // You can surely search, but not list
   };
   User = {
-  Cart: {
-    List: cart_list, // "What's in my cart?"
-    Modify: cart_modify, // "Add to cart"
-    Delete: cart_delete, // Remove items from cart or empty it completely
+    Cart: {
+      List: cart_list, // "What's in my cart?"
+      Modify: cart_modify, // "Add to cart"
+      Delete: cart_delete, // Remove items from cart or empty it completely
     },
   };
 }

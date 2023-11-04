@@ -47,7 +47,7 @@ async function category_create(req: Request, res: Response) {
     undefined,
     description,
     alias,
-    hidden
+    hidden,
   );
   if (testFailed) return;
 
@@ -70,7 +70,7 @@ async function category_delete(req: Request, res: Response) {
     "name",
     what.private.category,
     iwe_strings.Category.ENOTFOUND,
-    true
+    true,
   );
 }
 
@@ -106,17 +106,19 @@ async function category_modify(req: Request, res: Response) {
     newname,
     description,
     alias,
-    hidden
+    hidden,
   );
   if (testFailed) return;
-  
+
   // Find the category by its ID
   const category = await Category.findOne({ name });
   if (!category) {
     return res.status(404).json(ErrorFormat(iwe_strings.Category.ENOTFOUND));
   }
   // Find dupes with the same alias OR name
-  const category_dupe = await Category.findOne({ $or: [{ name }, { alias: name }] });
+  const category_dupe = await Category.findOne({
+    $or: [{ name }, { alias: name }],
+  });
   if (category_dupe) {
     return res.status(400).json(ErrorFormat(iwe_strings.Category.EEXISTS));
   }
@@ -147,7 +149,7 @@ function check_values(
   newname: string | undefined,
   description: string,
   alias: string,
-  hidden: boolean
+  hidden: boolean,
 ) {
   // Check if categoryName is a string
   if (!categoryName || typeof categoryName !== "string") {

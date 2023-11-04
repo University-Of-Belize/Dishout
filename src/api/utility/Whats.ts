@@ -12,7 +12,7 @@ const WhatDB = {
     review: "__review",
     category: "__category",
     order: "__order",
-    menu: "__menu"
+    menu: "__menu",
   },
 };
 
