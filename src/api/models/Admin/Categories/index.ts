@@ -115,6 +115,11 @@ async function category_modify(req: Request, res: Response) {
   if (!category) {
     return res.status(404).json(ErrorFormat(iwe_strings.Category.ENOTFOUND));
   }
+  // Find dupes with the same alias OR name
+  const category_dupe = await Category.findOne({ $or: [{ name }, { alias: name }] });
+  if (category_dupe) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Category.EEXISTS));
+  }
 
   // Update the category's name
   if (name) {
