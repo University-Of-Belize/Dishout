@@ -34,6 +34,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.10",
     "@types/bad-words": "^3.0.2",
     "@types/bcryptjs": "^2.4.5",
     "@types/cors": "^2.8.15",

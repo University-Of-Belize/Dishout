@@ -14,6 +14,7 @@ const limiter = rateLimit({
   limit: 100, // Limit each IP to 100 requests per 15 minutes.
   standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  validate: { xForwardedForHeader: false },
   // store: ... , // Use an external store for consistency across multiple server instances.
 });
 
@@ -34,7 +35,7 @@ const ServerName = `DISHOUT.${process.env.NODE_ENV ?? "dev"}.${
   process.pid
 }`;
 
-const server = app.listen(port, () => {
+app.listen(port, () => {
   LogServer(`Running on port ${port}\n`);
   LogServer(`Hello! My name is: '${ServerName}'`);
 });
