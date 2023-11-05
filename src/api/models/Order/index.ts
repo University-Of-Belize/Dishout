@@ -145,8 +145,16 @@ async function order_modify(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
-  const [orderID, promo_code, { product_action, index, productID, quantity }] =
-    wis_array(req);
+  const [
+    orderID,
+    promo_code,
+    {
+      product_action = null,
+      index = null,
+      productID = null,
+      quantity = null,
+    } = {},
+  ] = wis_array(req);
 
   const testFailed = check_values(
     res,

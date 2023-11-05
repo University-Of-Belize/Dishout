@@ -28,6 +28,22 @@ async function review_delete(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  // @ts-ignore
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
   // Find the product that has this review
   const product = await Product.findOne({ reviews: review_id });
 

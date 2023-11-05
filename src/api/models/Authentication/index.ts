@@ -13,6 +13,12 @@ import settings from "../../../config/settings.json";
 import cryptoRandomString from "crypto-random-string";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import Filter from "bad-words";
+
+/***** BAD WORDS FILTER *****/
+const filter = new Filter();
+filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.com/package/bad-words#remove-words-from-the-blacklist
+/************************** */
 
 // Register a new user
 async function auth_register(req: Request, res: Response) {
@@ -25,14 +31,20 @@ async function auth_register(req: Request, res: Response) {
   if (
     !email ||
     typeof email !== "string" ||
-    !iwe_strings.Email.UDETECT.test(email)
+    !iwe_strings.Email.UDETECT.test(email) ||
+    email.trim() === ""
   ) {
     return res
       .status(406)
       .json(ErrorFormat(iwe_strings.Authentication.EINVALIDEMAIL));
   }
 
-  if (!username || typeof username !== "string") {
+  if (
+    !username ||
+    typeof username !== "string" ||
+    username.trim() === "" ||
+    filter.isProfane(username)
+  ) {
     return res
       .status(406)
       .json(ErrorFormat(iwe_strings.Authentication.EINVALIDUNAME));
@@ -42,7 +54,8 @@ async function auth_register(req: Request, res: Response) {
     !password ||
     typeof password !== "string" ||
     password.length < settings.auth.activation["password-length"] ||
-    !iwe_strings.Authentication.UCOMPLEXITY.test(password)
+    !iwe_strings.Authentication.UCOMPLEXITY.test(password) ||
+    password.trim() === ""
   ) {
     return res
       .status(406)
@@ -64,7 +77,7 @@ async function auth_register(req: Request, res: Response) {
 
   try {
     const userID = Math.round(new Date().getTime() / 1000).toString();
-    const user = await User.create({
+    await User.create({
       // Create a new user
       id: userID,
       email,
@@ -100,7 +113,7 @@ async function auth_register(req: Request, res: Response) {
     //     Activated: ${user.activation_token ? "No" : "Yes"}\n
     //     `);
 
-    return res.json({
+    return res.status(201).json({
       status: true,
       message: iwe_strings.Authentication.ENEEDSACTIVATION2,
     });
@@ -190,6 +203,9 @@ async function auth_login(req: Request, res: Response) {
     }
 
     if (user.restrictions == -1) {
+      // Lockout the user
+      user.reset_token, user.activation_token, (user.token = undefined);
+      user.save();
       return res
         .status(403)
         .json(ErrorFormat(iwe_strings.Authentication.EBLOCKED));
@@ -197,13 +213,13 @@ async function auth_login(req: Request, res: Response) {
 
     // Create a login
     user.token = `dtk-${cryptoRandomString({
-      length: 45,
+      length: settings.auth["token-length"],
       type: "alphanumeric",
     })}`; // generate and return random token if password is correct
     if (user.reset_token) {
       user.reset_token = undefined; // If bro remembers his password we delete his reset token;
     }
-    user.save(); // Save that shizzz
+    await user.save(); // Save that shizzz
     return res.json(what_is(what.public.auth, [user.id, user.token]));
   } catch (err: any) {
     res.sendStatus(400); // Bad request

@@ -10,7 +10,7 @@ class IWEU_STRINGS {
     EINVALIDDOMAIN:
       "Invalid email domain. Only email addresses with the domain '@ub.edu.bz' are allowed.",
     ENOACCESS: "You do not have permission to call this portion of the API.",
-    EINVALIDEMAIL: "Invalid Email, please enter a valid email.",
+    EINVALIDEMAIL: "Invalid email, please enter a valid email.",
     EINVALIDUNAME: "Invalid username, please enter a valid username.",
     EINVALIDPASWD: "Invalid password, please enter a valid password.",
     EBADPSWD: "Please choose a different password.",
@@ -52,6 +52,7 @@ class IWEU_STRINGS {
   };
   Users = {
     ENOTFOUND: "The specified user could not be found using the provided ID.",
+    IDELETE: "User deleted successfully.",
     ENOTFOUND2: "That user was not found.",
     EFRIENDLYNOTFOUND:
       "Failed to find user, please make sure you didn't make any spelling errors!",

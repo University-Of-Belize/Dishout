@@ -13,6 +13,7 @@ const WhatDB = {
     category: "__category",
     order: "__order",
     menu: "__menu",
+    user: "__user",
   },
 };
 

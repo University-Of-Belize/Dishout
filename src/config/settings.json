@@ -7,7 +7,7 @@
     "port": 8080,
     "domain": "cafe.ub.edu.bz",
     "nickname": "DishOut",
-    "excludedBadWords": ["hell"],
+    "excludedBadWords": ["hell", "crap"],
     "defaultReviewer": "6545572beff9c32417937c73"
   },
   "auth": {
@@ -16,6 +16,9 @@
       "password-length": 8,
       "token-expiry": 86400000,
       "hash-rounds": 10
+    },
+    "lockout": {
+      "token-length": 256
     },
     "reset": {
       "token-length": 128
