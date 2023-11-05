@@ -91,8 +91,8 @@ async function cart_delete(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
-  // Value check. Does this belong here?
-  const item_index = parseInt(wis_string(req));
+  // Value check. Answers the question: Does this belong here?
+  let item_index: number | string = wis_string(req); // Using 'let' because, we'll modify this later
 
   // Check if item_index is undefined or not a valid number
   if (Number.isNaN(item_index) && wis_string(req) !== undefined) {
@@ -100,7 +100,7 @@ async function cart_delete(req: Request, res: Response) {
   }
 
   // If null then that means we want to empty the cart
-  if (item_index == undefined) {
+  if (item_index == undefined || item_index == "") {
     // Go through the cart, putting back the items
     // @ts-ignore
     // let totalQuantity = 0;
@@ -136,7 +136,11 @@ async function cart_delete(req: Request, res: Response) {
     return res.json({ status: true });
   }
 
-  if (item_index < 0) {
+  // Parse the integer
+  item_index = parseInt(item_index);
+
+  // @ts-ignore
+  if (item_index < 0 || item_index > user.cart.length - 1) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 

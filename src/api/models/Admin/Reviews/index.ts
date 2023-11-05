@@ -49,8 +49,10 @@ async function review_delete(req: Request, res: Response) {
 
   if (product) {
     // Remove the review from the product's reviews array
+    // @ts-ignore
     const index = product.reviews.indexOf(review_id);
     if (index > -1) {
+      // @ts-ignore
       product.reviews.splice(index, 1);
       await product.save();
     }

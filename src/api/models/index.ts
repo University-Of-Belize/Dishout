@@ -27,7 +27,7 @@ import { order_list, order_create, order_delete, order_modify } from "./Order";
 import { review_create } from "./Review";
 import { review_list, review_delete, review_modify } from "./Admin/Reviews";
 import { order_manage } from "./Admin/Order";
-import { menu_list } from "./Menu";
+import { menu_list, slug_exists } from "./Menu";
 import { global_lookup } from "./Search";
 import { cart_list, cart_modify, cart_delete } from "./User";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
@@ -77,6 +77,9 @@ class API {
   Menu = {
     List: menu_list,
     // Lookup: menu_lookup,
+    Slug: {
+      Exist: slug_exists, // List all the slugs
+    },
   };
   Category = {
     List: category_list, // Lol regular users shouldn't see this

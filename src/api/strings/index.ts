@@ -95,13 +95,16 @@ class IWEU_STRINGS {
   };
   Product = {
     ENOTFOUND: "Product not found.",
-    EEXISTS: "A menu with this slug or product name already exists.",
+    EEXISTS: "A product with this slug or product name already exists.",
     EOUTOFSTOCK: "Product out of stock.",
     ETOOMANY: "Your request exceeds our maximum availability of that product.",
     ETOOLITTLE:
       "Your request is below the minimum availability of that product.",
     EBADPROMO:
       "Your request contains an invalid promo code ID. Please remove the offending code and try again.",
+  };
+  Search = {
+    UTOKENIZE: /[^a-zA-Z0-9]/,
   };
 }
 

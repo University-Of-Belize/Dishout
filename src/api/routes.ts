@@ -1,15 +1,36 @@
-import { Router, Request, Response } from "express"; // Our routing machine
+import { Request, Response, Router } from "express"; // Our routing machine
+import settings from "../config/settings.json";
+import { LogError, LogRoutes } from "../util/Logger";
 import {
   Admin,
   Authentication,
+  Category,
   Menu,
   Order,
-  Search,
-  Category,
   Review,
+  Search,
   User,
 } from "./models"; // Import our API models into memory
-import { LogRoutes } from "../util/Logger";
+import { initialize_engine as initialize_search } from "./models/Search";
+let engine: any; // It's going to be assigned soon, anyway.
+(async () => {
+  try {
+    engine = await initialize_search();
+  } catch (error) {
+    LogError("Failed to initialize engine.");
+  }
+  setInterval(
+    async () => {
+      try {
+        // Run the indexer every now and then
+        engine = await initialize_search();
+      } catch (error) {
+        LogError("Failed to initialize engine.");
+      }
+    }, // @ts-ignore
+    parseInt(settings.search.indexing_interval) * 1000, // In seconds
+  );
+})();
 const router = Router(); // Initialize!
 
 // Our routes
@@ -98,6 +119,10 @@ router.put("/admin/menu/manage", (req: Request, res: Response) => {
 router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);
 });
+// Menu
+router.get("/menu/slugs", (req: Request, res: Response) => {
+  Menu.Slug.Exist(req, res);
+});
 
 // router.get("/menu/search", (req: Request, res: Response) => {
 //   Menu.Lookup(req, res); // Users can lookup other menu items
@@ -133,7 +158,7 @@ router.post("/review/create", (req: Request, res: Response) => {
 });
 // Search
 router.get("/search", (req: Request, res: Response) => {
-  Search.Lookup(req, res); // Users can lookup other users
+  Search.Lookup(req, res, engine); // Users can lookup other users
 });
 
 // User
