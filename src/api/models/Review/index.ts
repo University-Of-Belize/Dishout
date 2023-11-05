@@ -2,11 +2,18 @@ import { Request, Response } from "express";
 import Review from "../../../database/models/Reviews";
 import Product from "../../../database/models/Products";
 import mongoose from "mongoose";
+import Filter from "bad-words";
 
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
 import what from "../../utility/Whats";
+import settings from "../../../config/settings.json";
 import { wis_array, what_is } from "../../utility/What_Is";
+
+/***** BAD WORDS FILTER *****/
+const filter = new Filter();
+filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.com/package/bad-words#remove-words-from-the-blacklist
+/************************** */
 
 async function review_create(req: Request, res: Response) {
   // Check our 'what_is'
@@ -60,7 +67,8 @@ async function review_create(req: Request, res: Response) {
     // @ts-ignore
     reviewer: user._id,
     rating: rating,
-    content: content,
+    content: filter.clean(content),
+    original_content: content,
     product: productId,
   });
 
@@ -71,6 +79,13 @@ async function review_create(req: Request, res: Response) {
   await product.save();
   await newReview.save();
   // Return the new review as a JSON response
-  return res.json(what_is(what.public.review, newReview));
+  return res.json(
+    what_is(what.public.review, [
+      filter.isProfane(content)
+        ? iwe_strings.Review.WPROFFOUND
+        : iwe_strings.Review.ICREATE,
+      newReview,
+    ]),
+  );
 }
 export { review_create };

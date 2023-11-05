@@ -82,6 +82,11 @@ class IWEU_STRINGS {
     EPRODNOEXISTS: "Product not found.",
     EUNAUTHORIZED: "You do not own this review.",
     ERANGEERROR: "Rating must be an integer between 1 and 5.",
+    EASPNOEXIST: "Associated product or review does not exist.",
+    IMODIFY: "Review modified sucessfully.",
+    ICREATE: "Review created sucessfully.",
+    WPROFFOUND:
+      "Our filters detected that your review was contained profane language, so was modified in order to comply with the platform's standards.",
   };
   Category = {
     ENOTFOUND: "Category not found.",

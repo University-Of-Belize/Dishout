@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import settings from "../../config/settings.json";
 const SchemaTypes = mongoose.Schema.Types;
 
 const reviewsSchema = new Schema({
@@ -7,7 +8,10 @@ const reviewsSchema = new Schema({
     type: String,
     required: true,
   },
-
+  original_content: {
+    type: String,
+    required: true,
+  },
   rating: {
     // 1...5
     type: Number,
@@ -22,7 +26,7 @@ const reviewsSchema = new Schema({
     type: SchemaTypes.ObjectId,
     ref: "Users",
     required: true,
-    default: "Anonymous",
+    default: settings.server.defaultReviewer,
   },
   hidden: {
     type: Boolean,

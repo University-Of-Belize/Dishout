@@ -6,7 +6,9 @@
   "server": {
     "port": 8080,
     "domain": "cafe.ub.edu.bz",
-    "nickname": "DishOut"
+    "nickname": "DishOut",
+    "excludedBadWords": ["hell"],
+    "defaultReviewer": "6545572beff9c32417937c73"
   },
   "auth": {
     "activation": {

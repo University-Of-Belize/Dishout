@@ -1,18 +1,47 @@
 import { Request, Response } from "express";
 // Import the review
 import Review from "../../../../database/models/Reviews";
+import Product from "../../../../database/models/Products";
 import what from "../../../utility/Whats";
 import { iwe_strings, ErrorFormat } from "../../../strings";
 // Generic batch request
 import { delete_object, list_object } from "../../../utility/batchRequest";
 import { get_authorization_user } from "../../../utility/Authentication";
-import { wis_array } from "../../../utility/What_Is";
+import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
+import settings from "../../../../config/settings.json";
+import Filter from "bad-words";
 import mongoose from "mongoose";
+
+/***** BAD WORDS FILTER *****/
+const filter = new Filter();
+filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.com/package/bad-words#remove-words-from-the-blacklist
+/************************** */
 
 async function review_list(req: Request, res: Response) {
   await list_object(req, res, Review, what.private.review, false, true);
 }
 async function review_delete(req: Request, res: Response) {
+  const review_id = wis_string(req);
+
+  // Check if review_id is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(review_id)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  // Find the product that has this review
+  const product = await Product.findOne({ reviews: review_id });
+
+  if (product) {
+    // Remove the review from the product's reviews array
+    const index = product.reviews.indexOf(review_id);
+    if (index > -1) {
+      product.reviews.splice(index, 1);
+      await product.save();
+    }
+  } else {
+    return res.status(400).json(ErrorFormat(iwe_strings.Review.EASPNOEXIST));
+  }
+  // Delete the review
   await delete_object(
     req,
     res,
@@ -22,7 +51,6 @@ async function review_delete(req: Request, res: Response) {
     iwe_strings.Review.ENOTFOUND,
   );
 }
-
 async function review_modify(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] != what.private.review) {
@@ -41,7 +69,12 @@ async function review_modify(req: Request, res: Response) {
   // Extract information from the request body
   const [id, rating, comment] = wis_array(req);
 
-  // We don't have a check_values here because, we're cdoing a comparison in only one function; not multiple
+  // Check if rating is a valid integer between 1 and 5
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Review.ERANGEERROR));
+  }
+
+  // We don't have a check_values here because, we're doing a comparison in only one function; not multiple
   // Check if ID is a valid string/ObjectId
   if (typeof id != "string" || !mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
@@ -74,14 +107,22 @@ async function review_modify(req: Request, res: Response) {
     review.rating = rating;
   }
   if (comment !== undefined) {
-    review.content = comment;
+    review.content = filter.clean(comment);
+    review.original_content = comment;
   }
 
   // Save the updated review
   await review.save();
 
   // Return the updated review as a JSON response
-  return res.json(review);
+  return res.json(
+    what_is(what.private.review, [
+      filter.isProfane(comment)
+        ? iwe_strings.Review.WPROFFOUND
+        : iwe_strings.Review.IMODIFY,
+      review,
+    ]),
+  );
 }
 
 export { review_list, review_delete, review_modify };
