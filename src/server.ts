@@ -8,7 +8,7 @@ import routes from "./api/routes";
 
 const app = express();
 const port = process.env.PORT ?? config.server.port;
-app.set("trust proxy", true); // Trust the fly.io proxy
+app.set("trust proxy", true); // I dont like this, but it's needed for rate limiting (which doesn't work, apparently)
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes (in milliseconds)
