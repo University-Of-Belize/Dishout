@@ -9,6 +9,7 @@ import MiniSearch from "minisearch";
 import { LogInfo } from "../../../util/Logger";
 import { get_authorization_user } from "../../utility/Authentication";
 import { iwe_strings } from "../../strings";
+import settings from "../../../config/settings.json";
 
 async function global_lookup(
   req: Request,
@@ -40,17 +41,7 @@ async function global_lookup(
       if (
         // @ts-ignore
         !user?.staff &&
-        [
-          "order_code",
-          "code",
-          "alias",
-          "original_content",
-          "order_from",
-          "override_by",
-          "category",
-          "reviewer",
-          "product",
-        ].includes(filter as string)
+        settings.search["excluded-terms"].includes(filter as string)
       ) {
         // Your code here
         shouldDisplay = false;
@@ -75,49 +66,8 @@ async function initialize_engine() {
 
   // Create a new MiniSearch instance
   const miniSearch = new MiniSearch({
-    fields: [
-      "id",
-      "username",
-      "email",
-      "name",
-      "description",
-      "order_code",
-      "productName",
-      "code",
-      "alias",
-      "content",
-      "original_content",
-      "order_from",
-      "override_by",
-      "created_by",
-      "category",
-      "reviewer",
-      "product",
-      "slug",
-    ], // fields to index for full-text search
-    storeFields: [
-      "username",
-      "email",
-      "id",
-      "name",
-      "description",
-      "order_code",
-      "productName",
-      "code",
-      "alias",
-      "content",
-      "original_content",
-      "order_from",
-      "override_by",
-      "category",
-      "reviewer",
-      "product",
-      "image",
-      "in_stock",
-      "price",
-      "reviews",
-      "slug",
-    ], // fields to return with search results
+    fields: settings.search["searchable-filters"], // fields to index for full-text search
+    storeFields: settings.search["visible-fields"], // fields to return with search results
     searchOptions: { prefix: true, fuzzy: 0.2 },
     extractField: (document, fieldName) => {
       // If field name is 'pubYear', extract just the year from 'pubDate'

@@ -37,8 +37,8 @@
     }
   },
   "api": {
-    "API_VERSION": "v0.1",
-    "API_SVERSION": "v0"
+    "API_VERSION": "v1.0",
+    "API_SVERSION": "v1"
   },
   "database": {
     "mongoURI": "mongodb://127.0.0.1:27017/dishout"
@@ -47,6 +47,60 @@
     "defaultAvatar": "https://st2.depositphotos.com/4111759/12123/v/950/depositphotos_121233262-stock-illustration-male-default-placeholder-avatar-profile.jpg"
   },
   "search": {
-    "indexing_interval": 180
+    "indexing-interval": 180,
+    "excluded-terms": [
+      "order_code",
+      "code",
+      "alias",
+      "original_content",
+      "order_from",
+      "override_by",
+      "category",
+      "reviewer",
+      "product"
+    ],
+    "searchable-filters": [
+      "id",
+      "username",
+      "email",
+      "name",
+      "description",
+      "order_code",
+      "productName",
+      "code",
+      "alias",
+      "content",
+      "original_content",
+      "order_from",
+      "override_by",
+      "created_by",
+      "category",
+      "reviewer",
+      "product",
+      "slug"
+    ],
+    "visible-fields": [
+      "username",
+      "email",
+      "id",
+      "name",
+      "description",
+      "order_code",
+      "productName",
+      "code",
+      "alias",
+      "content",
+      "original_content",
+      "order_from",
+      "override_by",
+      "category",
+      "reviewer",
+      "product",
+      "image",
+      "in_stock",
+      "price",
+      "reviews",
+      "slug"
+    ]
   }
 }

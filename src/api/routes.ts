@@ -28,7 +28,7 @@ let engine: any; // It's going to be assigned soon, anyway.
         LogError("Failed to initialize engine.");
       }
     }, // @ts-ignore
-    parseInt(settings.search.indexing_interval) * 1000, // In seconds
+    parseInt(settings.search["indexing-interval"]) * 1000, // In seconds
   );
 })();
 const router = Router(); // Initialize!
@@ -119,7 +119,7 @@ router.put("/admin/menu/manage", (req: Request, res: Response) => {
 router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);
 });
-// Menu
+// Check if a specific item exists
 router.get("/menu/slugs", (req: Request, res: Response) => {
   Menu.Slug.Exist(req, res);
 });
