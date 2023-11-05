@@ -25,8 +25,7 @@ async function global_lookup(
   }
 
   // Get query parameters from the URL
-  const { namespace, filter, q } = req.query;
-  console.log(namespace, filter, q);
+  const { filter, q } = req.query;
   // Perform a search
   const results = engine.search(q as string, {
     filter: (result) => {

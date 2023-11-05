@@ -120,7 +120,7 @@ router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);
 });
 // Check if a specific item exists
-router.get("/menu/slugs", (req: Request, res: Response) => {
+router.get("/menu/slug", (req: Request, res: Response) => {
   Menu.Slug.Exist(req, res);
 });
 

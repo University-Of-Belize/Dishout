@@ -7,7 +7,7 @@ import {
 import User from "../../../database/models/Users";
 import { what_is, wis_string, wis_array } from "../../utility/What_Is";
 import what from "../../utility/Whats";
-import { LogError, LogInfo, LogWarn } from "../../../util/Logger";
+import { LogError, LogWarn } from "../../../util/Logger";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import settings from "../../../config/settings.json";
 import cryptoRandomString from "crypto-random-string";
@@ -106,13 +106,6 @@ async function auth_register(req: Request, res: Response) {
       EmailTemplate("ACTIVATE", username, activationToken),
     );
 
-    // LogInfo(`
-    //     Email: ${email}\n
-    //     Username: ${username}\n
-    //     Password/Token: ${password}\n
-    //     Activated: ${user.activation_token ? "No" : "Yes"}\n
-    //     `);
-
     return res.status(201).json({
       status: true,
       message: iwe_strings.Authentication.ENEEDSACTIVATION2,
@@ -204,7 +197,7 @@ async function auth_login(req: Request, res: Response) {
 
     if (user.restrictions == -1) {
       // Lockout the user
-      user.reset_token, user.activation_token, (user.token = undefined);
+      user.reset_token, user.activation_token, user.token = undefined;
       user.save();
       return res
         .status(403)

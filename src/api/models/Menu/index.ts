@@ -9,14 +9,13 @@ async function menu_list(req: Request, res: Response) {
 }
 
 async function slug_exists(req: Request, res: Response) {
-  const slug = req.params.id;
-
+  const slug = req.query.id;
   try {
     const product = await Product.findOne({ slug });
     if (product) {
-      res.status(200);
+      res.sendStatus(200);
     } else {
-      res.status(404);
+      res.sendStatus(404);
     }
   } catch (err) {
     res.status(500).send(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
