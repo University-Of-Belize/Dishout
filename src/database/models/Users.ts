@@ -22,6 +22,10 @@ const usersSchema = new Schema({
     required: true,
     unique: true, // Can't have the same email, otherwise that would be stupid
   },
+  profile_picture: {
+    type: String,
+    required: false
+  },
   staff: {
     type: Boolean,
     required: true,
