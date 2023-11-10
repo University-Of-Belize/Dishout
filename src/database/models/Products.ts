@@ -41,6 +41,11 @@ const menuSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "Reviews" }], // IDs of all reviews ever created on a product
     required: false,
   },
+  search_terms: {
+    // Makes things easier to search for
+    type: [{ type: String }],
+    required: false,
+  },
 });
 export default mongoose.model("Products", menuSchema);
 export { menuSchema as productsSchema };

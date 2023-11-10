@@ -77,7 +77,8 @@
       "category",
       "reviewer",
       "product",
-      "slug"
+      "slug",
+      "search_terms"
     ],
     "visible-fields": [
       "username",
@@ -100,7 +101,8 @@
       "in_stock",
       "price",
       "reviews",
-      "slug"
+      "slug",
+      "search_terms"
     ]
   }
 }
