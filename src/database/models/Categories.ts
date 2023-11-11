@@ -18,6 +18,10 @@ const categoriesSchema = new Schema({
     type: String,
     required: true,
   },
+  // image: {
+  //   type: String,
+  //   required: true,
+  // },
   hidden: {
     type: Boolean,
     required: true,
