@@ -58,7 +58,10 @@ async function initialize_engine() {
   // Get all objects from the database
   const allCategories = await Categories.find();
   const allOrders = await Orders.find().populate(["order_from", "override_by"]);
-  const allProducts = await Products.find().populate(["category", "reviews", "reviews.reviewer"]);
+  const allProducts = await Products.find().populate(["category", "reviews", {
+    path: "reviews.reviewer",
+    model: "Users"
+  }]);
   const allPromos = await Promos.find().populate("created_by");
   const allReviews = await Reviews.find().populate(["reviewer", "product"]);
   const allUsers = await Users.find();
