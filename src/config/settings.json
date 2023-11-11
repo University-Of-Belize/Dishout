@@ -57,7 +57,8 @@
       "override_by",
       "category",
       "reviewer",
-      "product"
+      "product",
+      "password"
     ],
     "searchable-filters": [
       "id",

@@ -14,7 +14,7 @@ import settings from "../../../config/settings.json";
 async function global_lookup(
   req: Request,
   res: Response,
-  engine: MiniSearch<any>,
+  engine: MiniSearch<any>
 ) {
   let shouldDisplay = false;
   // Quietly check for staff access
@@ -31,10 +31,10 @@ async function global_lookup(
     filter: (result) => {
       shouldDisplay =
         result.match[(q as string).toLowerCase()]?.includes(
-          (filter as string).toLowerCase(),
+          (filter as string).toLowerCase()
         ) ||
         Object.keys(result.match).some((element) =>
-          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element),
+          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element)
         );
       //   console.log(user?.staff, shouldDisplay, result); // Debug ONLY
       if (
@@ -57,7 +57,10 @@ async function global_lookup(
 async function initialize_engine() {
   // Get all objects from the database
   const allCategories = await Categories.find();
-  const allOrders = await Orders.find().populate(["order_from", "override_by"]);
+  const allOrders = await Orders.find().populate([
+    { path: "order_from", model: "Users" },
+    { path: "override_by", model: "Users" },
+  ]);
   const allProducts = await Products.find().populate([
     {
       path: "category",
@@ -71,8 +74,14 @@ async function initialize_engine() {
       },
     },
   ]);
-  const allPromos = await Promos.find().populate("created_by");
-  const allReviews = await Reviews.find().populate(["reviewer", "product"]);
+  const allPromos = await Promos.find().populate({
+    path: "created_by",
+    model: "Users",
+  });
+  const allReviews = await Reviews.find().populate([
+    { path: "reviewer", model: "Users" },
+    { path: "product", model: "Products" },
+  ]);
   const allUsers = await Users.find();
 
   // Create a new MiniSearch instance
