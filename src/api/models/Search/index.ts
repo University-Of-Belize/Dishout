@@ -45,7 +45,7 @@ async function global_lookup(
         // Your code here
         shouldDisplay = false;
       }
-      console.log(shouldDisplay);
+      // console.log(shouldDisplay);
       return shouldDisplay;
     },
   });
