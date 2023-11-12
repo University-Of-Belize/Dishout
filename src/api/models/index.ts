@@ -74,10 +74,10 @@ class API {
       Modify: menu_modify,
     },
   };
-  
-  Dash: {
-    List: dash_list
-  },
+
+  Dash = {
+    List: dash_list,
+  };
   Menu = {
     List: menu_list,
     Random: menu_random,
