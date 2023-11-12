@@ -33,7 +33,19 @@ async function menu_random(req: Request, res: Response) {
     const count = await Product.countDocuments();
     const random = Math.floor(Math.random() * count);
 
-    const menu = await Product.find().skip(random).limit(limit).exec();
+    const menu = await Product.find().populate([
+      {
+        path: "category",
+        model: "Categories",
+      },
+      {
+        path: "reviews",
+        populate: {
+          path: "reviewer",
+          model: "Users",
+        },
+      },
+    ]).skip(random).limit(limit).exec();
 
     res.json(what_is(what.public.menu, menu));
   } catch (err) {
