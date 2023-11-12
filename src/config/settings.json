@@ -109,6 +109,7 @@
   "dashboard": {
     "admin": [
       [
+        "super",
         [
           "User management",
           "Product wizard",
@@ -122,6 +123,7 @@
     ],
     "customer": [
       [
+        "standard",
         ["User management", "Review management", "View what's queued"],
         ["user", "message", "list"]
       ],
