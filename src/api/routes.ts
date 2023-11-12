@@ -123,6 +123,9 @@ router.get("/menu/", (req: Request, res: Response) => {
 router.get("/menu/slug", (req: Request, res: Response) => {
   Menu.Slug.Exist(req, res);
 });
+router.get("/menu/random", (req: Request, res: Response) => {
+  Menu.Random(req, res);
+});
 
 // router.get("/menu/search", (req: Request, res: Response) => {
 //   Menu.Lookup(req, res); // Users can lookup other menu items
