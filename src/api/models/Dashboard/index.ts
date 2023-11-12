@@ -1,11 +1,11 @@
 // Import our proper types
 import { Request, Response } from "express";
 // Import the promotion
-import { ErrorFormat, iwe_strings } from "../../../strings";
-import { get_authorization_user } from "../../../utility/Authentication";
-import what from "../../../utility/Whats";
-import { what_is, wis_array } from "../../../utility/What_Is";
-import settings from "../../../../config/settings.json"
+import settings from "../../../config/settings.json";
+import { ErrorFormat, iwe_strings } from "../../strings";
+import { get_authorization_user } from "../../utility/Authentication";
+import { what_is } from "../../utility/What_Is";
+import what from "../../utility/Whats";
 
 // modify menu
 async function dash_list(req: Request, res: Response) {
@@ -28,3 +28,4 @@ async function dash_list(req: Request, res: Response) {
 }
 
 export { dash_list };
+

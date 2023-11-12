@@ -1,37 +1,37 @@
 import {
-  auth_register,
-  auth_verify,
-  auth_login,
-  auth_forgot,
-  auth_reset,
-} from "./Authentication";
-import {
-  user_list,
-  user_create,
-  user_delete,
-  user_modify,
-} from "./Admin/Users";
-import {
-  promo_list,
-  promo_create,
-  promo_delete,
-  promo_modify,
-} from "./Admin/Promos";
-import { category_list } from "./Categories";
-import {
   category_create,
   category_delete,
   category_modify,
 } from "./Admin/Categories";
-import { order_list, order_create, order_delete, order_modify } from "./Order";
-import { review_create } from "./Review";
-import { review_list, review_delete, review_modify } from "./Admin/Reviews";
-import { order_manage } from "./Admin/Order";
-import { menu_list, menu_random, slug_exists } from "./Menu";
-import { global_lookup } from "./Search";
-import { cart_list, cart_modify, cart_delete } from "./User";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
-import { dash_list } from "./Admin/Dashboard";
+import { order_manage } from "./Admin/Order";
+import {
+  promo_create,
+  promo_delete,
+  promo_list,
+  promo_modify,
+} from "./Admin/Promos";
+import { review_delete, review_list, review_modify } from "./Admin/Reviews";
+import {
+  user_create,
+  user_delete,
+  user_list,
+  user_modify,
+} from "./Admin/Users";
+import {
+  auth_forgot,
+  auth_login,
+  auth_register,
+  auth_reset,
+  auth_verify,
+} from "./Authentication";
+import { category_list } from "./Categories";
+import { dash_list } from "./Dashboard";
+import { menu_list, menu_random, slug_exists } from "./Menu";
+import { order_create, order_delete, order_list, order_modify } from "./Order";
+import { review_create } from "./Review";
+import { global_lookup } from "./Search";
+import { cart_delete, cart_list, cart_modify } from "./User";
 
 class API {
   Authentication = {
@@ -116,6 +116,7 @@ class API {
 const api = new API();
 export const Authentication = api.Authentication;
 export const Admin = api.Admin;
+export const Dash = api.Dash;
 export const Order = api.Order;
 export const Menu = api.Menu;
 export const Search = api.Search;
