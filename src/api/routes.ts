@@ -115,6 +115,10 @@ router.put("/admin/menu/manage", (req: Request, res: Response) => {
 });
 
 // User-API
+// Dashboard
+router.get("/dash", (req: Request, res: Response) => {
+  Admin.Dash.List(req, res);
+});
 // Menu
 router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);

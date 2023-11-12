@@ -31,6 +31,7 @@ import { menu_list, menu_random, slug_exists } from "./Menu";
 import { global_lookup } from "./Search";
 import { cart_list, cart_modify, cart_delete } from "./User";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
+import { dash_list } from "./Admin/Dashboard";
 
 class API {
   Authentication = {
@@ -73,7 +74,10 @@ class API {
       Modify: menu_modify,
     },
   };
-
+  
+  Dash: {
+    List: dash_list
+  },
   Menu = {
     List: menu_list,
     Random: menu_random,

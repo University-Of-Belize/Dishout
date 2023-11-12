@@ -14,6 +14,7 @@ const WhatDB = {
     order: "__order",
     menu: "__menu",
     user: "__user",
+    dash: "__dash",
   },
 };
 

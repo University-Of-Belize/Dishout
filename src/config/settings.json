@@ -105,5 +105,27 @@
       "slug",
       "search_terms"
     ]
+  },
+  "dashboard": {
+    "admin": [
+      [
+        [
+          "User management",
+          "Product wizard",
+          "View what's queued",
+          "Start a new category",
+          "Create a new user"
+        ],
+        ["user", "hamburger", "list", "plus", "plus"]
+      ],
+      []
+    ],
+    "customer": [
+      [
+        ["User management", "Review management", "View what's queued"],
+        ["user", "message", "list"]
+      ],
+      []
+    ]
   }
 }
