@@ -177,12 +177,12 @@ async function auth_login(req: Request, res: Response) {
     }
 
     if (user.activation_token) {
-      await generateActivationToken(user.email);
+      const newAT = await generateActivationToken(user.email);
       await sendEmail(
         user.email,
         iwe_strings.Email.ENEEDSACTIVATION,
         null,
-        EmailTemplate("ACTIVATE", user.username, user.activation_token),
+        EmailTemplate("ACTIVATE", user.username, newAT),
       );
       return res
         .status(403)
