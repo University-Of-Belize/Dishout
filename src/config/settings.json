@@ -119,7 +119,16 @@
         ],
         ["user", "hamburger", "list", "plus", "plus"]
       ],
-      []
+      [
+        "4x",
+        [
+          "/admin/dashboard/user/",
+          "/admin/dashboard/products/manage",
+          "/admin/dashboard/order",
+          "/admin/dashboard/category/manage",
+          "/admin/dashboard/user/manage"
+        ]
+      ]
     ],
     "customer": [
       [
@@ -127,7 +136,14 @@
         ["User management", "Review management", "View what's queued"],
         ["user", "message", "list"]
       ],
-      []
+      [
+        "4x",
+        [
+          "/admin/dashboard/user/",
+          "/admin/dashboard/review/manage",
+          "/admin/dashboard/order"
+        ]
+      ]
     ]
   }
 }
