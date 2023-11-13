@@ -11,7 +11,8 @@ const categoriesSchema = new Schema({
   alias: {
     type: String,
     required: false,
-    unique: true, // Neither that (forcing User Interface choices through the backend, I know, lol)
+    unique: false, // Set unique to false // Neither that (forcing User Interface choices through the backend, I know, lol)
+    sparse: true, // Add this line to make the index sparse
   },
   description: {
     // Probably only shown to staff
