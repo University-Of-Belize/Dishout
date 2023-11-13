@@ -21,6 +21,20 @@ filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.co
 /************************** */
 
 async function user_list(req: Request, res: Response) {
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  // @ts-ignore
+  if (staff_required && !user?.staff) {
+    return res  // Some overlay permitting limited access to non-staff members. We're just giving them access to themselves
+      .json(what_is(what.private.user, user))
+  }
   await list_object(req, res, User, what.private.user, false, true);
 }
 async function user_create(req: Request, res: Response) {
@@ -126,7 +140,8 @@ async function user_create(req: Request, res: Response) {
   return res.status(201).json(what_is(what.private.user, newUser));
 }
 
-// Users can delete themselves too, because suicide is a decision
+// Users can't really (at all) delete themseleves. They have to request deletion from a staff member
+// Because, I'm too lazy to add that in right now, so I'm just going to make it an admin function :/
 async function user_delete(req: Request, res: Response) {
   await delete_object(
     req,
@@ -137,6 +152,9 @@ async function user_delete(req: Request, res: Response) {
     iwe_strings.Users.ENOTFOUND,
   );
 }
+
+// Users can edit only their username and password
+// Other admin functions are not allowed
 async function user_modify(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] != what.private.user) {
@@ -196,7 +214,7 @@ async function user_modify(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
   }
 
-  // Is this person a staff member?
+  // Is this person a staff member? We only allow users to edit themselves
   // @ts-ignore
   if (!user.staff && user._id != user_._id) {
     return res
