@@ -182,7 +182,7 @@ async function auth_login(req: Request, res: Response) {
         user.email,
         iwe_strings.Email.ENEEDSACTIVATION,
         null,
-        EmailTemplate("ACTIVATE", user.username, newAT),
+        EmailTemplate("ACTIVATE", user.username, newAT == -1 ? user.activation_token : newAT == undefined ? user.activation_token : newAT),
       );
       return res
         .status(403)
