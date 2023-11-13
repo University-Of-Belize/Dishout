@@ -72,7 +72,7 @@ async function auth_register(req: Request, res: Response) {
 
   const hashedPassword = await bcrypt.hash(
     password,
-    settings.auth.activation["hash-rounds"],
+    settings.auth.activation["hash-rounds"]
   );
 
   try {
@@ -103,7 +103,7 @@ async function auth_register(req: Request, res: Response) {
       email,
       iwe_strings.Authentication.ENEEDSACTIVATION,
       null,
-      EmailTemplate("ACTIVATE", username, activationToken),
+      EmailTemplate("ACTIVATE", username, activationToken)
     );
 
     return res.status(201).json({
@@ -182,7 +182,15 @@ async function auth_login(req: Request, res: Response) {
         user.email,
         iwe_strings.Email.ENEEDSACTIVATION,
         null,
-        EmailTemplate("ACTIVATE", user.username, newAT == -1 ? user.activation_token : newAT == undefined ? user.activation_token : newAT),
+        EmailTemplate(
+          "ACTIVATE",
+          user.username,
+          newAT == -1
+            ? user.activation_token
+            : newAT == undefined
+            ? user.activation_token
+            : newAT
+        )
       );
       return res
         .status(403)
@@ -197,7 +205,7 @@ async function auth_login(req: Request, res: Response) {
 
     if (user.restrictions == -1) {
       // Lockout the user
-      user.reset_token, user.activation_token, user.token = undefined;
+      user.reset_token, user.activation_token, (user.token = undefined);
       user.save();
       return res
         .status(403)
@@ -255,7 +263,7 @@ async function auth_forgot(req: Request, res: Response) {
       user.email,
       iwe_strings.Email.INEEDSRESET,
       null,
-      EmailTemplate("PASSWORD_RESET", user.username, RKey),
+      EmailTemplate("PASSWORD_RESET", user.username, RKey)
     );
 
     return res.json({
