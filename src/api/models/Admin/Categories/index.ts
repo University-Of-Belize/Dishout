@@ -31,10 +31,12 @@ async function category_create(req: Request, res: Response) {
 
   // Extract the category name from the request body
   const [categoryName, description, alias, hidden] = wis_array(req);
+  let alias_: string | undefined = alias;
+  if (alias == null) alias_ = undefined;
 
   // Check if categoryName corresponds to an existing Category
   const category = await Category.findOne({
-    $or: [{ name: categoryName }, { alias: alias }],
+    $or: [{ name: categoryName }, { alias: alias_ }],
   });
   if (category) {
     return res.status(400).json(ErrorFormat(iwe_strings.Category.EEXISTS));
@@ -47,7 +49,7 @@ async function category_create(req: Request, res: Response) {
     undefined,
     description,
     alias,
-    hidden,
+    hidden
   );
   if (testFailed) return;
 
@@ -70,7 +72,7 @@ async function category_delete(req: Request, res: Response) {
     "name",
     what.private.category,
     iwe_strings.Category.ENOTFOUND,
-    true,
+    true
   );
 }
 
@@ -99,6 +101,8 @@ async function category_modify(req: Request, res: Response) {
 
   // Extract the category id and new name from the request body
   const [name, newname, description, alias, hidden] = wis_array(req);
+  let alias_: string | undefined = alias;
+  if (alias == null) alias_ = undefined;
 
   const testFailed = check_values(
     res,
@@ -106,7 +110,7 @@ async function category_modify(req: Request, res: Response) {
     newname,
     description,
     alias,
-    hidden,
+    hidden
   );
   if (testFailed) return;
 
@@ -131,7 +135,7 @@ async function category_modify(req: Request, res: Response) {
     category.description = description;
   }
   if (alias) {
-    category.alias = alias;
+    category.alias = alias_;
   }
   if (hidden) {
     category.hidden = hidden;
@@ -149,7 +153,7 @@ function check_values(
   newname: string | undefined,
   description: string,
   alias: string,
-  hidden: boolean,
+  hidden: boolean
 ) {
   // Check if categoryName is a string
   if (!categoryName || typeof categoryName !== "string") {
