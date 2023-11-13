@@ -31,7 +31,7 @@ async function user_list(req: Request, res: Response) {
 
   // Is this person a staff member?
   // @ts-ignore
-  if (staff_required && !user?.staff) {
+  if (!user?.staff) {
     return res  // Some overlay permitting limited access to non-staff members. We're just giving them access to themselves
       .json(what_is(what.private.user, user))
   }
