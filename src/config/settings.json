@@ -59,7 +59,9 @@
       "reviewer",
       "product",
       "password",
-      "token"
+      "token",
+      "activation_token",
+      "reset_token"
     ],
     "searchable-filters": [
       "id",
