@@ -58,7 +58,8 @@
       "category",
       "reviewer",
       "product",
-      "password"
+      "password",
+      "token"
     ],
     "searchable-filters": [
       "id",
