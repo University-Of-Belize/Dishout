@@ -89,6 +89,7 @@ async function initialize_engine() {
     fields: settings.search["searchable-filters"], // fields to index for full-text search
     storeFields: settings.search["visible-fields"], // fields to return with search results
     searchOptions: { prefix: true, fuzzy: 0.2 },
+    boost: { "productName": 10 },
     extractField: (document, fieldName) => {
       // If field name is 'pubYear', extract just the year from 'pubDate'
       if (fieldName === "reviews") {

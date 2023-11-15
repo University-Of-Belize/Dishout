@@ -58,7 +58,10 @@
       "category",
       "reviewer",
       "product",
-      "password"
+      "password",
+      "token",
+      "activation_token",
+      "reset_token"
     ],
     "searchable-filters": [
       "id",
@@ -70,6 +73,7 @@
       "productName",
       "code",
       "alias",
+      "staff",
       "content",
       "original_content",
       "order_from",
@@ -98,6 +102,7 @@
       "category",
       "reviewer",
       "product",
+      "staff",
       "image",
       "in_stock",
       "price",
