@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import what from "../../utility/Whats";
-import { what_is, wis_array, wis_string } from "../../utility/What_Is";
-import { get_authorization_user } from "../../utility/Authentication";
-import { ErrorFormat, iwe_strings } from "../../strings";
-import Product from "../../../database/models/Products";
 import mongoose from "mongoose";
+import Product from "../../../database/models/Products";
+import { ErrorFormat, iwe_strings } from "../../strings";
+import { get_authorization_user } from "../../utility/Authentication";
+import { what_is, wis_array, wis_string } from "../../utility/What_Is";
+import what from "../../utility/Whats";
 // Add to the cart
 // Note (unrelated to API): Frontend groups array of productIds
 // This function should: Take in the user's cart as an array in "is" and user.cart.push(productId);
@@ -26,15 +26,20 @@ async function cart_modify(req: Request, res: Response) {
   // Value check. Does this belong here?
   const [item, quantity] = wis_array(req);
 
+  let product;
   // Check if ID is a valid string/ObjectId
-  if (typeof item != "string" || !mongoose.Types.ObjectId.isValid(item)) {
+  if (typeof item != "string") {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  if (!mongoose.Types.ObjectId.isValid(item)) {
+    product = await Product.findOne({ slug: item });
+  } else {
+    product = await Product.findById(item);
   }
   if (!quantity || typeof quantity != "number") {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
-  // Is this a valid cart item?
-  const product = await Product.findById(item);
+  // Does this product even exist?
   if (!product) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
   }
@@ -185,4 +190,5 @@ async function cart_list(req: Request, res: Response) {
   return res.json(what_is(what.public.user, user.cart));
 }
 
-export { cart_delete, cart_modify, cart_list };
+export { cart_delete, cart_list, cart_modify };
+

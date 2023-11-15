@@ -32,8 +32,8 @@ async function user_list(req: Request, res: Response) {
   // Is this person a staff member?
   // @ts-ignore
   if (!user?.staff) {
-    return res  // Some overlay permitting limited access to non-staff members. We're just giving them access to themselves
-      .json(what_is(what.private.user, user))
+    return res  // Some overlay permitting limited access to non-staff members. We're just giving them access to themselves (must be array)
+      .json(what_is(what.private.user, [user]))
   }
   await list_object(req, res, User, what.private.user, false, true);
 }
