@@ -174,6 +174,13 @@ async function cart_list(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
+  // Populate the "product" field in the cart
+  // @ts-ignore
+  await user.populate({
+    path: "cart.product",
+    model: "Products",
+  });
+  
   // @ts-ignore
   return res.json(what_is(what.public.user, user.cart));
 }
