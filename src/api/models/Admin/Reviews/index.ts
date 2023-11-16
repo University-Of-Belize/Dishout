@@ -18,7 +18,13 @@ filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.co
 /************************** */
 
 async function review_list(req: Request, res: Response) {
-  await list_object(req, res, Review, what.private.review, false, true);
+  await list_object(req, res, Review, what.private.review, false, true, [{
+    path: "reviewer",
+    model: "Users",
+  }, {
+    path: "product",
+    model: "Products",
+  }]);
 }
 async function review_delete(req: Request, res: Response) {
   const review_id = wis_string(req);
