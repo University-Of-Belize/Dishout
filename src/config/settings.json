@@ -108,7 +108,8 @@
       "price",
       "reviews",
       "slug",
-      "search_terms"
+      "search_terms",
+      "profile_picture"
     ]
   },
   "dashboard": {
