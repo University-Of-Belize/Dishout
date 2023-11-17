@@ -89,6 +89,7 @@ async function menu_delete(req: Request, res: Response) {
     "slug",
     what.private.menu,
     iwe_strings.Product.ENOTFOUND,
+    true,
     Reviews,
     "product",
   );
