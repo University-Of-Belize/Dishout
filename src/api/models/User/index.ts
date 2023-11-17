@@ -185,10 +185,9 @@ async function cart_list(req: Request, res: Response) {
     path: "cart.product",
     model: "Products",
   });
-  
+
   // @ts-ignore
   return res.json(what_is(what.public.user, user.cart));
 }
 
 export { cart_delete, cart_list, cart_modify };
-

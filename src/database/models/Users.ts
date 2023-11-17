@@ -24,7 +24,7 @@ const usersSchema = new Schema({
   },
   profile_picture: {
     type: String,
-    required: false
+    required: false,
   },
   staff: {
     type: Boolean,

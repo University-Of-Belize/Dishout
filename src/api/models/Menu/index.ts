@@ -6,7 +6,12 @@ import { ErrorFormat, iwe_strings } from "../../strings";
 import { what_is } from "../../utility/What_Is";
 
 async function menu_list(req: Request, res: Response) {
-  await list_object(req, res, Product, what.public.menu, true, false);
+  await list_object(req, res, Product, what.public.menu, true, false, [
+    {
+      path: "category",
+      model: "Categories",
+    },
+  ]);
 }
 
 async function slug_exists(req: Request, res: Response) {
@@ -29,29 +34,32 @@ async function menu_random(req: Request, res: Response) {
     if (isNaN(limit)) {
       limit = 1;
     }
-    
+
     const count = await Product.countDocuments();
     const random = Math.floor(Math.random() * count);
 
-    const menu = await Product.find().populate([
-      {
-        path: "category",
-        model: "Categories",
-      },
-      {
-        path: "reviews",
-        populate: {
-          path: "reviewer",
-          model: "Users",
+    const menu = await Product.find()
+      .populate([
+        {
+          path: "category",
+          model: "Categories",
         },
-      },
-    ]).skip(random).limit(limit).exec();
+        {
+          path: "reviews",
+          populate: {
+            path: "reviewer",
+            model: "Users",
+          },
+        },
+      ])
+      .skip(random)
+      .limit(limit)
+      .exec();
 
     res.json(what_is(what.public.menu, menu));
   } catch (err) {
     res.status(500).send(err);
   }
 }
-
 
 export { menu_list, slug_exists, menu_random };

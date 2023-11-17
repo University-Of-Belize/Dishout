@@ -9,7 +9,7 @@ import what from "../../utility/Whats";
 
 // modify menu
 async function dash_list(req: Request, res: Response) {
-// Get the dashboard
+  // Get the dashboard
   // Check our authentication token and see if it matches up to a staff member
   const user = await get_authorization_user(req);
   if (!user) {
@@ -28,4 +28,3 @@ async function dash_list(req: Request, res: Response) {
 }
 
 export { dash_list };
-

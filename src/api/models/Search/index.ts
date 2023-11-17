@@ -14,7 +14,7 @@ import settings from "../../../config/settings.json";
 async function global_lookup(
   req: Request,
   res: Response,
-  engine: MiniSearch<any>
+  engine: MiniSearch<any>,
 ) {
   let shouldDisplay = false;
   // Quietly check for staff access
@@ -31,10 +31,10 @@ async function global_lookup(
     filter: (result) => {
       shouldDisplay =
         result.match[(q as string).toLowerCase()]?.includes(
-          (filter as string).toLowerCase()
+          (filter as string).toLowerCase(),
         ) ||
         Object.keys(result.match).some((element) =>
-          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element)
+          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element),
         );
       //   console.log(user?.staff, shouldDisplay, result); // Debug ONLY
       if (
@@ -89,7 +89,7 @@ async function initialize_engine() {
     fields: settings.search["searchable-filters"], // fields to index for full-text search
     storeFields: settings.search["visible-fields"], // fields to return with search results
     searchOptions: { prefix: true, fuzzy: 0.2 },
-    boost: { "productName": 10 },
+    boost: { productName: 10 },
     extractField: (document, fieldName) => {
       // If field name is 'pubYear', extract just the year from 'pubDate'
       if (fieldName === "reviews") {

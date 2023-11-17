@@ -15,6 +15,8 @@ import { ErrorFormat, iwe_strings } from "../strings";
  * @param whats The required 'what' in the request body
  * @param ENOTFOUND The error message to send if the document is not found
  * @param is_not_objectid Are we NOT querying by an ObjectId?
+ * @param RefModel: Model<any> The model of the referencing documents
+ * @param refField: string he field in the referencing documents that contains the reference
  */
 async function __data_table_trigger_delete(
   req: Request,
@@ -24,6 +26,8 @@ async function __data_table_trigger_delete(
   whats: string,
   ENOTFOUND: string,
   is_not_objectid: boolean = false,
+  RefModel?: Model<any>, // The model of the referencing documents
+  refField?: string, // The field in the referencing documents that contains the reference
 ) {
   // Check our 'what_is'
   if (req.body["what"] != whats) {
@@ -69,7 +73,10 @@ async function __data_table_trigger_delete(
   if (!object) {
     return res.status(404).json(ErrorFormat(ENOTFOUND));
   }
-
+  // Delete all documents that reference the object
+  if (RefModel && refField) {
+    await RefModel.deleteMany({ [refField]: object._id });
+  }
   object.deleteOne();
   return res.json({
     status: true,
@@ -83,7 +90,8 @@ async function __data_table_trigger_list(
   Model: Model<any>,
   whats: string,
   public_access: boolean | undefined,
-  staff_required: boolean | undefined, populationArray: [] | undefined
+  staff_required: boolean | undefined,
+  populationArray: [] | undefined,
 ) {
   // We don't need a body since we're doing the 'what_is' this time
 

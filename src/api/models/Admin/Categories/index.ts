@@ -49,7 +49,7 @@ async function category_create(req: Request, res: Response) {
     undefined,
     description,
     alias,
-    hidden
+    hidden,
   );
   if (testFailed) return;
 
@@ -72,7 +72,7 @@ async function category_delete(req: Request, res: Response) {
     "name",
     what.private.category,
     iwe_strings.Category.ENOTFOUND,
-    true
+    true,
   );
 }
 
@@ -110,7 +110,7 @@ async function category_modify(req: Request, res: Response) {
     newname,
     description,
     alias,
-    hidden
+    hidden,
   );
   if (testFailed) return;
 
@@ -153,7 +153,7 @@ function check_values(
   newname: string | undefined,
   description: string,
   alias: string,
-  hidden: boolean
+  hidden: boolean,
 ) {
   // Check if categoryName is a string
   if (!categoryName || typeof categoryName !== "string") {

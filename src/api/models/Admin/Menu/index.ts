@@ -2,6 +2,7 @@
 import { Request, Response } from "express";
 // Import the promotion
 import Menu from "../../../../database/models/Products";
+import Reviews from "../../../../database/models/Reviews";
 import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import what from "../../../utility/Whats";
@@ -88,6 +89,8 @@ async function menu_delete(req: Request, res: Response) {
     "slug",
     what.private.menu,
     iwe_strings.Product.ENOTFOUND,
+    Reviews,
+    "product",
   );
 }
 
