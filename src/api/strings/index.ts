@@ -87,7 +87,7 @@ class IWEU_STRINGS {
     IMODIFY: "Review modified sucessfully.",
     ICREATE: "Review created sucessfully.",
     WPROFFOUND:
-      "Our filters detected that your review was contained profane language, so was modified in order to comply with the platform's standards. It was hidden from public view automatically.",
+      "Our filters detected that your review contained profane language, so was modified in order to comply with the platform's standards. <b>It was hidden from public view automatically.</b>",
   };
   Category = {
     ENOTFOUND: "Category not found.",
