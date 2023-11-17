@@ -28,7 +28,16 @@ async function review_list(req: Request, res: Response) {
   // Is this person a staff member?
   // @ts-ignore
   if (!user?.staff) {
-    const userReviews = await Review.find({ reviewer: user._id });
+    const userReviews = await Review.find({ reviewer: user._id }).populate([
+      {
+        path: "reviewer",
+        model: "Users",
+      },
+      {
+        path: "product",
+        model: "Products",
+      },
+    ]);
     return res // Some overlay permitting limited access to non-staff members. We're just giving them access to themselves (must be array)
       .json(what_is(what.private.user, userReviews));
   }
