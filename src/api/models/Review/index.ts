@@ -70,6 +70,8 @@ async function review_create(req: Request, res: Response) {
     content: filter.clean(content),
     original_content: content,
     product: productId,
+    // By request: Hide reviews that are profane automatically
+    hidden: filter.isProfane(content),
   });
 
   // Attach it to the product
