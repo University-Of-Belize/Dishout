@@ -10,7 +10,12 @@ import { delete_object, list_object } from "../../../utility/batchRequest";
 
 // List all promotions
 async function promo_list(req: Request, res: Response) {
-  await list_object(req, res, Promo, what.private.promos, false, true);
+  await list_object(req, res, Promo, what.private.promos, false, true, [
+    {
+      path: "created_by",
+      model: "Users",
+    }
+  ]);
 }
 
 // Create a new promotion
