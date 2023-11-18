@@ -12,7 +12,10 @@ class IWEU_STRINGS {
     ENOACCESS: "You do not have permission to call this portion of the API.",
     EINVALIDEMAIL: "Invalid email, please enter a valid email.",
     EINVALIDUNAME: "Invalid username, please enter a valid username.",
-    EINVALIDPASWD: "Invalid password, please enter a valid password.",
+    EINVALIDPASWD: `Invalid password, please enter a valid password. Your password should be at least ${config.auth.activation["password-length"]} characters in length and follow the enforcement rules of there being AT LEAST\n
+    1. An UPPERCASE character (Such as: ABC)\n
+    2. A LOWERCASE character (Such as: abc)\n
+    3. A NUMBER (Such as: 123)\n4. And a SPECIAL CHARACTER (Such as: !@#)`,
     EBADPSWD: "Please choose a different password.",
     ETAKEN: "Username is taken or email is already registered.",
     EDISABLED:
@@ -56,6 +59,10 @@ class IWEU_STRINGS {
     ENOTFOUND2: "That user was not found.",
     EFRIENDLYNOTFOUND:
       "Failed to find user, please make sure you didn't make any spelling errors!",
+    ECANTUNSTAFFROOT: "You cannot demote the root account.",
+    ECANTDELETEROOT: "You cannot delete the root account.",
+    ECANTLOCKOUTROOT: "You cannot disable the root account.",
+    ECANTBLOCKROOT: "You cannot restrict the root account."
   };
   Order = {
     EONOEXISTS: "Order not found.",
