@@ -24,7 +24,8 @@ filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.co
 async function user_find(req: Request, res: Response) {
   // We can also search by ID
   const id = req.query.user_id;
-  let user; // Later
+  const authenticatedUser = await get_authorization_user(req);
+  let user; // Later defined
 
   if (id) {
     if (!mongoose.Types.ObjectId.isValid(id as string)) {
@@ -34,11 +35,18 @@ async function user_find(req: Request, res: Response) {
     if (!user) {
       return res
         .status(403)
-        .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+        .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+    } // Redact the token only if querying other users
+    // @ts-ignore
+    if (user._id != authenticatedUser?._id) {
+      // @ts-ignore
+      user.token = undefined;// @ts-ignore
+      user.reset_token = undefined;// @ts-ignore
+      user.activation_token = undefined; // Remove token on public route
     }
   }
-  else {
-    user = await get_authorization_user(req);
+  else { // Check for authenticated user
+    user = authenticatedUser;
     if (!user) {
       return res
         .status(403)
@@ -53,11 +61,6 @@ async function user_find(req: Request, res: Response) {
       model: "Products",
     });
   }
-
-  // @ts-ignore
-  user.token = undefined;// @ts-ignore
-  user.reset_token = undefined;// @ts-ignore
-  user.activation_token = undefined; // Remove token on public route
 
   // @ts-ignore
   return res.json(what_is(what.public.user, user));
