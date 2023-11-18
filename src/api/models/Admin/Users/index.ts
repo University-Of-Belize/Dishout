@@ -36,9 +36,10 @@ async function user_find(req: Request, res: Response) {
       return res
         .status(403)
         .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
-    } // Redact the token only if querying other users
+    }
+    // Redact the token only if querying other users
     // @ts-ignore
-    if (user._id != authenticatedUser?._id) {
+    if (user._id.toString() != authenticatedUser?._id.toString()) {
       // @ts-ignore
       user.token = undefined;// @ts-ignore
       user.reset_token = undefined;// @ts-ignore
