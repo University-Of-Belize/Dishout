@@ -23,11 +23,11 @@ filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.co
 
 async function user_find(req: Request, res: Response) {
   // We can also search by ID
-  const id: string = req.params.user_id;
+  const id = req.query.user_id;
   let user; // Later
 
   if (id) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id as string)) {
       return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
     }
     user = await User.findById(id);
@@ -44,7 +44,7 @@ async function user_find(req: Request, res: Response) {
         .status(403)
         .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
     }
-    
+
     // User will always be defined
     // Populate the "product" field in the cart
     // @ts-ignore
@@ -53,8 +53,11 @@ async function user_find(req: Request, res: Response) {
       model: "Products",
     });
   }
+
   // @ts-ignore
-  user.token = undefined; // Remove token on public route
+  user.token = undefined;// @ts-ignore
+  user.reset_token = undefined;// @ts-ignore
+  user.activation_token = undefined; // Remove token on public route
 
   // @ts-ignore
   return res.json(what_is(what.public.user, user));
