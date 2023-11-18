@@ -23,7 +23,7 @@ filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.co
 
 async function user_find(req: Request, res: Response) {
   // We can also search by ID
-  const id: string = req.params.id;
+  const id: string = req.params.user_id;
   let user; // Later
 
   if (id) {
