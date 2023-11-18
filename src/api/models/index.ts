@@ -13,6 +13,7 @@ import {
 } from "./Admin/Promos";
 import { review_delete, review_list, review_modify } from "./Admin/Reviews";
 import {
+  user_find,
   user_create,
   user_delete,
   user_list,
@@ -44,6 +45,7 @@ class API {
 
   Admin = {
     User: {
+      Find: user_find, // Find a user by ID
       List: user_list,
       Create: user_create,
       Delete: user_delete,

@@ -14,11 +14,51 @@ import { list_object, delete_object } from "../../../utility/batchRequest";
 import Filter from "bad-words";
 import bcrypt from "bcryptjs";
 import cryptoRandomString from "crypto-random-string";
+import mongoose from "mongoose";
 
 /***** BAD WORDS FILTER *****/
 const filter = new Filter();
 filter.removeWords(...settings.server.excludedBadWords); // https://www.npmjs.com/package/bad-words#remove-words-from-the-blacklist
 /************************** */
+
+async function user_find(req: Request, res: Response) {
+  // We can also search by ID
+  const id: string = req.params.id;
+  let user; // Later
+
+  if (id) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
+    user = await User.findById(id);
+    if (!user) {
+      return res
+        .status(403)
+        .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+    }
+  }
+  else {
+    user = await get_authorization_user(req);
+    if (!user) {
+      return res
+        .status(403)
+        .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+    }
+    
+    // User will always be defined
+    // Populate the "product" field in the cart
+    // @ts-ignore
+    await user.populate({
+      path: "cart.product",
+      model: "Products",
+    });
+  }
+  // @ts-ignore
+  user.token = undefined; // Remove token on public route
+
+  // @ts-ignore
+  return res.json(what_is(what.public.user, user));
+}
 
 async function user_list(req: Request, res: Response) {
   // Check our authentication token and see if it matches up to a staff member
@@ -399,4 +439,4 @@ function check_values(
   return null;
 }
 
-export { user_create, user_delete, user_list, user_modify };
+export { user_find, user_create, user_delete, user_list, user_modify };

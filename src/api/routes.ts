@@ -45,6 +45,9 @@ router.patch("/auth/passwordreset", Authentication.Reset);
 
 // Admin-API
 // User
+router.get("/admin/user/lookup", (req: Request, res: Response) => {
+  Admin.User.Find(req, res);
+});
 router.get("/admin/user/manage", (req: Request, res: Response) => {
   Admin.User.List(req, res);
 });
