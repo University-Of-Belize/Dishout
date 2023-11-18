@@ -221,7 +221,7 @@ async function auth_login(req: Request, res: Response) {
       user.reset_token = undefined; // If bro remembers his password we delete his reset token;
     }
     await user.save(); // Save that shizzz
-    return res.json(what_is(what.public.auth, [user.id, user.token]));
+    return res.json(what_is(what.public.auth, [user._id, user.token]));
   } catch (err: any) {
     res.sendStatus(400); // Bad request
     LogError(err);
