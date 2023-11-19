@@ -124,7 +124,7 @@ async function category_modify(req: Request, res: Response) {
     $or: [{ name: newname }, { alias: alias_ }],
   });
   // We can't dupe if we're editing the same category
-  if (category_dupe && category_dupe._id != category._id) {
+  if (category_dupe && category_dupe._id.toString() != category._id.toString()) {
     return res.status(400).json(ErrorFormat(iwe_strings.Category.EEXISTS));
   }
 
