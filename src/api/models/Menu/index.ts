@@ -45,7 +45,7 @@ async function menu_find(req: Request, res: Response) {
     model: "Users",
   }, {
     path: "reviews.product",
-    model: "Product",
+    model: "Products",
   }]);
 
 
