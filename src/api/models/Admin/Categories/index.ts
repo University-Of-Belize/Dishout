@@ -102,7 +102,7 @@ async function category_modify(req: Request, res: Response) {
   // Extract the category id and new name from the request body
   const [name, newname, description, alias, hidden] = wis_array(req);
   let alias_: string | undefined = alias;
-  if (alias == null) alias_ = undefined;
+  if (alias === null) alias_ = undefined;
 
   const testFailed = check_values(
     res,
