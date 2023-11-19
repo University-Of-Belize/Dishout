@@ -23,14 +23,16 @@ async function menu_find(req: Request, res: Response) {
         .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
     }
 
-  }
-  menu = await Product.findOne({ slug });
-  if (!menu) {
-    return res
-      .status(400)
-      .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  } else {
+    menu = await Product.findOne({ slug });
+    if (!menu) {
+      return res
+        .status(400)
+        .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
   }
 
+  // Menu will always be defined beyond this point
   // @ts-ignore
   await menu.populate([{
     path: "category",
