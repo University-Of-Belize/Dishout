@@ -171,13 +171,13 @@ async function menu_modify(req: Request, res: Response) {
     menu.description = description;
   }
   if (category) {
-    menu.description = category;
+    menu.category = category;
   }
 
   await menu.save();
 
   return res.json(
-    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, menu]),
+    what_is(what.private.menu, [iwe_strings.Order.IPMODIFY, menu]),
   );
 }
 
