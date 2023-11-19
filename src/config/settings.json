@@ -129,7 +129,7 @@
         "4x",
         [
           "/admin/dashboard/user/",
-          "/admin/dashboard/products/manage",
+          "/admin/dashboard/product/manage",
           "/admin/dashboard/order/",
           "/admin/dashboard/category/manage",
           "/admin/dashboard/user/manage"
