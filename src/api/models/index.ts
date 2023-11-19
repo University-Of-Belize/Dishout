@@ -4,7 +4,7 @@ import {
   category_modify,
 } from "./Admin/Categories";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
-import { order_list, order_manage } from "./Admin/Order";
+import { order_list as __order_list, order_manage } from "./Admin/Order";
 import {
   promo_create,
   promo_delete,
@@ -63,7 +63,7 @@ class API {
       Modify: category_modify,
     },
     Order: {
-      List: order_list,
+      List: __order_list,
       Modify: order_manage,
     },
     Review: {

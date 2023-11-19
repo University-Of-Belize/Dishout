@@ -85,10 +85,10 @@ router.put("/admin/category/manage", (req: Request, res: Response) => {
   Admin.Category.Modify(req, res);
 });
 // Order
-// Accept user's order into queue
 router.get("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.List(req, res);
 });
+// Accept user's order into queue
 router.post("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.Modify(req, res);
 });
