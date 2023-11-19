@@ -20,7 +20,7 @@ async function menu_find(req: Request, res: Response) {
     if (!menu) {
       return res
         .status(403)
-        .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+        .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
     }
 
   }
@@ -28,17 +28,17 @@ async function menu_find(req: Request, res: Response) {
   if (!menu) {
     return res
       .status(403)
-      .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+      .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
   // @ts-ignore
-  await menu.populate({
+  await menu.populate([{
     path: "category",
     model: "Categories",
   }, {
     path: "reviews",
     model: "Reviews",
-  });
+  }]);
 
 
   // @ts-ignore
