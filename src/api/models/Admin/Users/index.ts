@@ -34,7 +34,7 @@ async function user_find(req: Request, res: Response) {
     user = await User.findById(id);
     if (!user) {
       return res
-        .status(403)
+        .status(404)
         .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
     }
     // Redact the token only if querying other users

@@ -19,7 +19,7 @@ async function menu_find(req: Request, res: Response) {
     menu = await Product.findById(id);
     if (!menu) {
       return res
-        .status(403)
+        .status(400)
         .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
     }
 
@@ -27,7 +27,7 @@ async function menu_find(req: Request, res: Response) {
   menu = await Product.findOne({ slug });
   if (!menu) {
     return res
-      .status(403)
+      .status(400)
       .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
