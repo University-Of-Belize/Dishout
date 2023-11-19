@@ -40,6 +40,12 @@ async function menu_find(req: Request, res: Response) {
   }, {
     path: "reviews",
     model: "Reviews",
+  }, {
+    path: "reviews.reviewer",
+    model: "Users",
+  }, {
+    path: "reviews.product",
+    model: "Product",
   }]);
 
 
