@@ -154,7 +154,7 @@ async function promo_modify(req: Request, res: Response) {
     return res.status(404).json(ErrorFormat(iwe_strings.Promo.ENOTFOUND));
   }
   const code_used = await Promo.findOne({ code: new_code.toUpperCase() });
-  if (code_used) {
+  if (code_used && code_used._id.toString() != promo._id.toString()) {
     return res.status(406).json(ErrorFormat(iwe_strings.Promo.ECODEEXISTS));
   }
 
