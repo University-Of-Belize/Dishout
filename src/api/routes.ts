@@ -124,6 +124,10 @@ router.get("/dash", (req: Request, res: Response) => {
   Dash.List(req, res);
 });
 // Menu
+router.get("/menu/lookup", (req: Request, res: Response) => {
+  Menu.Find(req, res);
+});
+// Menu
 router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);
 });

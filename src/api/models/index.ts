@@ -28,7 +28,7 @@ import {
 } from "./Authentication";
 import { category_list } from "./Categories";
 import { dash_list } from "./Dashboard";
-import { menu_list, menu_random, slug_exists } from "./Menu";
+import { menu_find, menu_list, menu_random, slug_exists } from "./Menu";
 import { order_create, order_delete, order_list, order_modify } from "./Order";
 import { review_create } from "./Review";
 import { global_lookup } from "./Search";
@@ -81,6 +81,7 @@ class API {
     List: dash_list,
   };
   Menu = {
+    Find: menu_find,
     List: menu_list,
     Random: menu_random,
     // Lookup: menu_lookup,

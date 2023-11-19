@@ -10,6 +10,7 @@ import { what_is, wis_array } from "../../../utility/What_Is";
 import { delete_object } from "../../../utility/batchRequest";
 import mongoose from "mongoose";
 
+// Create a new product
 async function menu_create(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] != what.private.menu) {

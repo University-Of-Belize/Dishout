@@ -4,6 +4,46 @@ import Product from "../../../database/models/Products";
 import what from "../../utility/Whats";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { what_is } from "../../utility/What_Is";
+import mongoose from "mongoose";
+
+async function menu_find(req: Request, res: Response) {
+  // We can also search by ID
+  const id = req.query.product_id;
+  const slug = req.query.slug;
+  let menu;
+
+  if (id) {
+    if (!mongoose.Types.ObjectId.isValid(id as string)) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
+    menu = await Product.findById(id);
+    if (!menu) {
+      return res
+        .status(403)
+        .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+    }
+
+  }
+  menu = await Product.findOne({ slug });
+  if (!menu) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+  }
+
+  // @ts-ignore
+  await menu.populate({
+    path: "category",
+    model: "Categories",
+  }, {
+    path: "reviews",
+    model: "Reviews",
+  });
+
+
+  // @ts-ignore
+  return res.json(what_is(what.public.menu, menu));
+}
 
 async function menu_list(req: Request, res: Response) {
   await list_object(req, res, Product, what.public.menu, true, false, [
@@ -62,4 +102,4 @@ async function menu_random(req: Request, res: Response) {
   }
 }
 
-export { menu_list, slug_exists, menu_random };
+export { menu_find, menu_list, slug_exists, menu_random };
