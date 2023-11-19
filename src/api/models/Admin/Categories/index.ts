@@ -123,7 +123,8 @@ async function category_modify(req: Request, res: Response) {
   const category_dupe = await Category.findOne({
     $or: [{ name: newname }, { alias: alias_ }],
   });
-  if (category_dupe) {
+  // We can't dupe if we're editing the same category
+  if (category_dupe && category_dupe.name != category.name) {
     return res.status(400).json(ErrorFormat(iwe_strings.Category.EEXISTS));
   }
 
@@ -137,7 +138,7 @@ async function category_modify(req: Request, res: Response) {
   if (alias) {
     category.alias = alias_;
   }
-  if (hidden) {
+  if (typeof hidden === 'boolean') {
     category.hidden = hidden;
   }
   // Save the updated category
