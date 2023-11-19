@@ -39,14 +39,12 @@ async function menu_find(req: Request, res: Response) {
     model: "Categories",
   }, {
     path: "reviews",
-    model: "Reviews",
-  }, {
-    path: "reviews.reviewer",
-    model: "Users",
-  }, {
-    path: "reviews.product",
-    model: "Products",
-  }]);
+    populate: {
+      path: "reviewer",
+      model: "Users",
+    }
+  }
+  ]);
 
 
   // @ts-ignore
