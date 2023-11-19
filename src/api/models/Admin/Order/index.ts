@@ -28,7 +28,7 @@ async function order_list(req: Request, res: Response) {
       path: "override_by",
       model: "Users",
     }, {
-      path: "products",
+      path: "products.product",
       model: "Products",
     }
   ]);
