@@ -16,6 +16,23 @@ import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import { what_is, wis_array } from "../../../utility/What_Is";
 import mongoose from "mongoose";
+import { list_object } from "../../../utility/batchRequest";
+
+// List all promotions
+async function order_list(req: Request, res: Response) {
+  await list_object(req, res, Order, what.private.order, false, true, [
+    {
+      path: "order_from",
+      model: "Users",
+    }, {
+      path: "override_by",
+      model: "Users",
+    }, {
+      path: "products",
+      model: "Products",
+    }
+  ]);
+}
 
 async function order_manage(req: Request, res: Response) {
   // Check our 'what_is'
@@ -98,10 +115,8 @@ async function order_manage(req: Request, res: Response) {
           order_from.email,
           `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
           null,
-          `Hi ${order_from.username}, <br/>${
-            iwe_strings.Order.IOSTATUSMODIFIED
-          }. Note that you are no longer paying $${
-            order.total_amount ?? "0.00"
+          `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED
+          }. Note that you are no longer paying $${order.total_amount ?? "0.00"
           }, but instead $${new_amount}.`,
         );
         order.total_amount = new_amount;
@@ -162,4 +177,4 @@ async function order_manage(req: Request, res: Response) {
   // Return the updated order as a JSON response
   return res.json(what_is(what.private.order, order));
 }
-export { order_manage };
+export { order_list, order_manage };

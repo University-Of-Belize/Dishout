@@ -86,6 +86,9 @@ router.put("/admin/category/manage", (req: Request, res: Response) => {
 });
 // Order
 // Accept user's order into queue
+router.get("/admin/order/manage/", (req: Request, res: Response) => {
+  Admin.Order.List(req, res);
+});
 router.post("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.Modify(req, res);
 });
