@@ -108,4 +108,38 @@ async function menu_random(req: Request, res: Response) {
   }
 }
 
-export { menu_find, menu_list, slug_exists, menu_random };
+async function menu_random_internal(limit: number) {
+  try {
+
+    if (isNaN(limit)) {
+      limit = 1;
+    }
+
+    const count = await Product.countDocuments();
+    const random = Math.floor(Math.random() * count);
+
+    const menu = await Product.find()
+      .populate([
+        {
+          path: "category",
+          model: "Categories",
+        },
+        {
+          path: "reviews",
+          populate: {
+            path: "reviewer",
+            model: "Users",
+          },
+        },
+      ])
+      .skip(random)
+      .limit(limit)
+      .exec();
+
+    return (what_is(what.public.menu, menu));
+  } catch (err) {
+    return (what_is(what.public.menu, null))
+  }
+}
+
+export { menu_find, menu_list, slug_exists, menu_random, menu_random_internal };

@@ -5,6 +5,7 @@ import {
   Admin,
   Authentication,
   Category,
+  Dynamic,
   Dash,
   Menu,
   Order,
@@ -13,6 +14,7 @@ import {
   User,
 } from "./models"; // Import our API models into memory
 import { initialize_engine as initialize_search } from "./models/Search";
+let engine_2: any; // Backup engine
 let engine: any; // It's going to be assigned soon, anyway.
 (async () => {
   try {
@@ -24,7 +26,11 @@ let engine: any; // It's going to be assigned soon, anyway.
     async () => {
       try {
         // Run the indexer every now and then
-        engine = await initialize_search();
+        engine_2 = await initialize_search();
+        // Assign after waiting for the new engine to initialize
+        engine = engine_2;
+        // Delete the old engine
+        engine_2 = null; // Garbage collection should take care of the rest
       } catch (error) {
         LogError("Failed to initialize engine.");
       }
@@ -126,6 +132,13 @@ router.put("/admin/menu/manage", (req: Request, res: Response) => {
 router.get("/dash", (req: Request, res: Response) => {
   Dash.List(req, res);
 });
+
+// Dynamic extras
+// Dynamic image
+router.get("/dynamic/banner-1200-628", (req: Request, res: Response) => {
+  Dynamic.Image(req, res);
+});
+
 // Menu
 router.get("/menu/lookup", (req: Request, res: Response) => {
   Menu.Find(req, res);
@@ -193,6 +206,7 @@ router.post("/user/cart", (req: Request, res: Response) => {
 router.delete("/user/cart", (req: Request, res: Response) => {
   User.Cart.Delete(req, res);
 });
+
 
 // Print the routes for reference
 router.stack.forEach(LogRoutes.bind(null, [])); // Pass in our routes
