@@ -51,7 +51,6 @@
     "excluded-terms": [
       "order_code",
       "code",
-      "alias",
       "original_content",
       "order_from",
       "override_by",
