@@ -12,7 +12,10 @@ class IWEU_STRINGS {
     ENOACCESS: "You do not have permission to call this portion of the API.",
     EINVALIDEMAIL: "Invalid email, please enter a valid email.",
     EINVALIDUNAME: "Invalid username, please enter a valid username.",
-    EINVALIDPASWD: "Invalid password, please enter a valid password.",
+    EINVALIDPASWD: `Invalid password, please enter a valid password. Your password should be at least ${config.auth.activation["password-length"]} characters in length and follow the enforcement rules of there being AT LEAST\n
+    1. An UPPERCASE character (Such as: ABC)\n
+    2. A LOWERCASE character (Such as: abc)\n
+    3. A NUMBER (Such as: 123)\n4. And a SPECIAL CHARACTER (Such as: !@#)`,
     EBADPSWD: "Please choose a different password.",
     ETAKEN: "Username is taken or email is already registered.",
     EDISABLED:
@@ -26,7 +29,7 @@ class IWEU_STRINGS {
     EOOPS:
       "Oops! Looks like something went wrong on our end! Please try that again.",
     UCOMPLEXITY:
-      /^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/,
+    /^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/,
   };
   Email = {
     ENEEDSACTIVATION: `${config.server.nickname} — Please Verify Your Account To Continue`,
@@ -37,7 +40,7 @@ class IWEU_STRINGS {
     IRESETPASSWORD:
       "Hi, it seems as if you requested a password reset link. Here you go! Please do not share this link with anyone. If you did not request this email, please ignore it.",
     UDETECT:
-      /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
+      /^(?=.{1,64}@)((?:[A-Za-z0-9!#\$%&'\*\+\-/=\?\^_`\{\|\}~]+|"(?:\\"|\\\\|[A-Za-z0-9\.!#\$%&'\*\+\-/=\?\^_`\{\|\}~ \(\),:;<>@\[\]\.])+")(?:\.(?:[A-Za-z0-9!#\$%&'\*\+\-/=\?\^_`\{\|\}~]+|"(?:\\"|\\\\|[A-Za-z0-9\.!#\$%&'\*\+\-/=\?\^_`\{\|\}~ \(\),:;<>@\[\]\.])+"))*)@(?=.{1,255}\.)((?:[A-Za-z0-9]+(?:(?:[A-Za-z0-9\-]*[A-Za-z0-9])?)\.)+[A-Za-z]{2,})|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,6}(0|)])$/,
   };
   Friending = {
     ECANNOTADDYOURSELF: "You cannot add yourself",
@@ -56,6 +59,10 @@ class IWEU_STRINGS {
     ENOTFOUND2: "That user was not found.",
     EFRIENDLYNOTFOUND:
       "Failed to find user, please make sure you didn't make any spelling errors!",
+    ECANTUNSTAFFROOT: "You cannot demote the root account.",
+    ECANTDELETEROOT: "You cannot delete the root account.",
+    ECANTLOCKOUTROOT: "You cannot disable the root account.",
+    ECANTBLOCKROOT: "You cannot restrict the root account."
   };
   Order = {
     EONOEXISTS: "Order not found.",
@@ -87,7 +94,7 @@ class IWEU_STRINGS {
     IMODIFY: "Review modified sucessfully.",
     ICREATE: "Review created sucessfully.",
     WPROFFOUND:
-      "Our filters detected that your review was contained profane language, so was modified in order to comply with the platform's standards.",
+      "Our filters detected that your review contained profane language, so was modified in order to comply with the platform's standards. <b>It was hidden from public view automatically.</b>",
   };
   Category = {
     ENOTFOUND: "Category not found.",

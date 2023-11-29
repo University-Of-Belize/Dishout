@@ -14,8 +14,9 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes (in milliseconds)
   limit: 100, // Limit each IP to 100 requests per 15 minutes.
   standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  legacyHeaders: true, // Enable the `X-RateLimit-*` headers.
   // store: ... , // Use an external store for consistency across multiple server instances.
+  message: '{status: -1, message: "Slow down! The resource is being rate limited."}'
 });
 
 // Apply the rate limiting middleware to all requests.

@@ -76,6 +76,10 @@ async function auth_register(req: Request, res: Response) {
   );
 
   try {
+    /********************* Remove after 100 users sign-up *************************/
+    const arr = Array(1000).fill(0).map((_, i) => (i < 10 ? 100 : i % 10 + 1));
+    const randomNum = arr[Math.floor(Math.random() * arr.length)];
+    /************************************************************************* */
     const userID = Math.round(new Date().getTime() / 1000).toString();
     await User.create({
       // Create a new user
@@ -84,7 +88,8 @@ async function auth_register(req: Request, res: Response) {
       password: hashedPassword,
       username,
       staff: false,
-      credit: 0.0,
+      // credit: 0.0, @audit Remove after 100 users sign-up
+      credit: randomNum,
       cart: undefined,
       activation_token: null,
       token: null,
@@ -188,8 +193,8 @@ async function auth_login(req: Request, res: Response) {
           newAT == -1
             ? user.activation_token
             : newAT == undefined
-            ? user.activation_token
-            : newAT,
+              ? user.activation_token
+              : newAT,
         ),
       );
       return res
@@ -221,7 +226,7 @@ async function auth_login(req: Request, res: Response) {
       user.reset_token = undefined; // If bro remembers his password we delete his reset token;
     }
     await user.save(); // Save that shizzz
-    return res.json(what_is(what.public.auth, [user.id, user.token]));
+    return res.json(what_is(what.public.auth, [user._id, user.token]));
   } catch (err: any) {
     res.sendStatus(400); // Bad request
     LogError(err);

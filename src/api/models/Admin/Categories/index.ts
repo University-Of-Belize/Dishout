@@ -102,7 +102,7 @@ async function category_modify(req: Request, res: Response) {
   // Extract the category id and new name from the request body
   const [name, newname, description, alias, hidden] = wis_array(req);
   let alias_: string | undefined = alias;
-  if (alias == null) alias_ = undefined;
+  if (alias === null) alias_ = undefined;
 
   const testFailed = check_values(
     res,
@@ -123,7 +123,8 @@ async function category_modify(req: Request, res: Response) {
   const category_dupe = await Category.findOne({
     $or: [{ name: newname }, { alias: alias_ }],
   });
-  if (category_dupe) {
+  // We can't dupe if we're editing the same category
+  if (category_dupe && category_dupe._id.toString() != category._id.toString()) {
     return res.status(400).json(ErrorFormat(iwe_strings.Category.EEXISTS));
   }
 
@@ -137,7 +138,7 @@ async function category_modify(req: Request, res: Response) {
   if (alias) {
     category.alias = alias_;
   }
-  if (hidden) {
+  if (typeof hidden === 'boolean') {
     category.hidden = hidden;
   }
   // Save the updated category

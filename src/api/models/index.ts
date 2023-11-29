@@ -4,7 +4,7 @@ import {
   category_modify,
 } from "./Admin/Categories";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
-import { order_manage } from "./Admin/Order";
+import { order_list as __order_list, order_manage } from "./Admin/Order";
 import {
   promo_create,
   promo_delete,
@@ -13,6 +13,7 @@ import {
 } from "./Admin/Promos";
 import { review_delete, review_list, review_modify } from "./Admin/Reviews";
 import {
+  user_find,
   user_create,
   user_delete,
   user_list,
@@ -27,7 +28,8 @@ import {
 } from "./Authentication";
 import { category_list } from "./Categories";
 import { dash_list } from "./Dashboard";
-import { menu_list, menu_random, slug_exists } from "./Menu";
+import { dynamic_banner } from "./Dynamic";
+import { menu_find, menu_list, menu_random, slug_exists } from "./Menu";
 import { order_create, order_delete, order_list, order_modify } from "./Order";
 import { review_create } from "./Review";
 import { global_lookup } from "./Search";
@@ -44,6 +46,7 @@ class API {
 
   Admin = {
     User: {
+      Find: user_find, // Find a user by ID
       List: user_list,
       Create: user_create,
       Delete: user_delete,
@@ -61,6 +64,7 @@ class API {
       Modify: category_modify,
     },
     Order: {
+      List: __order_list,
       Modify: order_manage,
     },
     Review: {
@@ -74,11 +78,14 @@ class API {
       Modify: menu_modify,
     },
   };
-
   Dash = {
     List: dash_list,
   };
+  Dynamic = {
+    Image: dynamic_banner
+  };
   Menu = {
+    Find: menu_find,
     List: menu_list,
     Random: menu_random,
     // Lookup: menu_lookup,
@@ -117,6 +124,7 @@ const api = new API();
 export const Authentication = api.Authentication;
 export const Admin = api.Admin;
 export const Dash = api.Dash;
+export const Dynamic = api.Dynamic;
 export const Order = api.Order;
 export const Menu = api.Menu;
 export const Search = api.Search;

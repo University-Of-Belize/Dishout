@@ -5,6 +5,7 @@ import {
   Admin,
   Authentication,
   Category,
+  Dynamic,
   Dash,
   Menu,
   Order,
@@ -13,6 +14,7 @@ import {
   User,
 } from "./models"; // Import our API models into memory
 import { initialize_engine as initialize_search } from "./models/Search";
+let engine_2: any; // Backup engine
 let engine: any; // It's going to be assigned soon, anyway.
 (async () => {
   try {
@@ -24,7 +26,11 @@ let engine: any; // It's going to be assigned soon, anyway.
     async () => {
       try {
         // Run the indexer every now and then
-        engine = await initialize_search();
+        engine_2 = await initialize_search();
+        // Assign after waiting for the new engine to initialize
+        engine = engine_2;
+        // Delete the old engine
+        engine_2 = null; // Garbage collection should take care of the rest
       } catch (error) {
         LogError("Failed to initialize engine.");
       }
@@ -45,6 +51,9 @@ router.patch("/auth/passwordreset", Authentication.Reset);
 
 // Admin-API
 // User
+router.get("/admin/user/lookup", (req: Request, res: Response) => {
+  Admin.User.Find(req, res);
+});
 router.get("/admin/user/manage", (req: Request, res: Response) => {
   Admin.User.List(req, res);
 });
@@ -82,6 +91,9 @@ router.put("/admin/category/manage", (req: Request, res: Response) => {
   Admin.Category.Modify(req, res);
 });
 // Order
+router.get("/admin/order/manage/", (req: Request, res: Response) => {
+  Admin.Order.List(req, res);
+});
 // Accept user's order into queue
 router.post("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.Modify(req, res);
@@ -119,6 +131,17 @@ router.put("/admin/menu/manage", (req: Request, res: Response) => {
 // Dashboard
 router.get("/dash", (req: Request, res: Response) => {
   Dash.List(req, res);
+});
+
+// Dynamic extras
+// Dynamic image
+router.get("/dynamic/banner-1200-628", (req: Request, res: Response) => {
+  Dynamic.Image(req, res);
+});
+
+// Menu
+router.get("/menu/lookup", (req: Request, res: Response) => {
+  Menu.Find(req, res);
 });
 // Menu
 router.get("/menu/", (req: Request, res: Response) => {
@@ -183,6 +206,7 @@ router.post("/user/cart", (req: Request, res: Response) => {
 router.delete("/user/cart", (req: Request, res: Response) => {
   User.Cart.Delete(req, res);
 });
+
 
 // Print the routes for reference
 router.stack.forEach(LogRoutes.bind(null, [])); // Pass in our routes

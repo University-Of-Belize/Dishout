@@ -6,7 +6,7 @@
   "server": {
     "port": 8080,
     "domain": "cafe.ub.edu.bz",
-    "nickname": "DishOut",
+    "nickname": "Plattr",
     "excludedBadWords": ["hell", "crap"],
     "defaultReviewer": "6545572beff9c32417937c73"
   },
@@ -26,7 +26,7 @@
     "token-length": 64
   },
   "email": {
-    "username": "2022156465",
+    "username": "cafeteria",
     "domain": "ub.edu.bz",
     "display-name": "UB Cafeteria",
     "dev-password": null,
@@ -51,7 +51,6 @@
     "excluded-terms": [
       "order_code",
       "code",
-      "alias",
       "original_content",
       "order_from",
       "override_by",
@@ -108,7 +107,8 @@
       "price",
       "reviews",
       "slug",
-      "search_terms"
+      "search_terms",
+      "profile_picture"
     ]
   },
   "dashboard": {
@@ -128,8 +128,8 @@
         "4x",
         [
           "/admin/dashboard/user/",
-          "/admin/dashboard/products/manage",
-          "/admin/dashboard/order",
+          "/admin/dashboard/product/manage",
+          "/admin/dashboard/order/",
           "/admin/dashboard/category/manage",
           "/admin/dashboard/user/manage"
         ]
@@ -145,8 +145,8 @@
         "4x",
         [
           "/admin/dashboard/user/",
-          "/admin/dashboard/review/manage",
-          "/admin/dashboard/order"
+          "/admin/dashboard/review/",
+          "/admin/dashboard/order/"
         ]
       ]
     ]
