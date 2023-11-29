@@ -8,7 +8,7 @@ import routes from "./api/routes";
 
 const app = express();
 const port = process.env.PORT ?? config.server.port;
-app.set("trust proxy", true); // I dont like this, but it's needed for rate limiting (which doesn't work, apparently)
+app.set('trust proxy', 2) // Number of Machines: Currently we're running on 2 Machines
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes (in milliseconds)
@@ -29,11 +29,12 @@ app.use(`/api/${config.api.API_SVERSION}`, routes); // Setup our routes
 createDatabase();
 
 // Setup our servername
-const ServerName = `DISHOUT.${process.env.NODE_ENV ?? "dev"}.${
-  require("os").hostname() ?? "container"
-}.${process.platform}.${process.env.PROCESSOR_ARCHITECTURE ?? "undefined"}#${
-  process.pid
-}`;
+const ServerName = `DISHOUT.${process.env.NODE_ENV ?? "dev"}.${require("os").hostname() ?? "container"
+  }.${process.platform}.${process.env.PROCESSOR_ARCHITECTURE ?? "undefined"}#${process.pid
+  }`;
+  
+  
+app.get('/proxy', (request, response) => response.json({ what: "system", is: [request.ip, request.headers['X-Forwarded-For']] }))
 
 app.listen(port, () => {
   LogServer(`Running on port ${port}\n`);
