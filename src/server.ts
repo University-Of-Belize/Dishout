@@ -1,10 +1,11 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { rateLimit } from "express-rate-limit";
 import config from "./config/settings.json";
 import { LogServer } from "./util/Logger";
 import createDatabase from "./database";
 import cors from "cors";
-import { v4 as uuid } from "uuid";
+// import { v4 as uuid } from "uuid";
+import path from "path";
 import routes from "./api/routes";
 import { get_authorization } from "./api/utility/Authentication";  // For rate-limiting
 
@@ -20,9 +21,10 @@ const limiter = rateLimit({
   // store: ... , // Use an external store for consistency across multiple server instances.
   statusCode: 429, // Rate limit HTTP Code
   // @ts-ignore
-  keyGenerator: (req, res) => get_authorization(req) ?? req.clientId ?? req.ip,  // Otherwise, we use the IP address.
-  handler: (req, res, next, options) =>
-		res.status(options.statusCode).json({status: -1, message: options.message + ` Retry again after: ${res.getHeader('Retry-After')}s`}),
+  keyGenerator: (req: Request, res: Response) => get_authorization(req) ?? req.clientId ?? req.ip,  // Otherwise, we use the IP address.
+  handler: (req: Request, res: Response, next, options) => {
+    res.status(options.statusCode).json({ status: -1, message: options.message + ` Retry again after: ${res.getHeader('Retry-After')}s` })
+  },
   message: 'Slow down! The resource is being rate limited.'
 });
 
@@ -40,6 +42,8 @@ app.use(express.urlencoded({ extended: false })); // Turn off URL encoding -- en
 // Apply the rate limiting middleware to all requests.
 app.use(limiter); // Enable rate limiting. We don't want to get beat up
 app.use(`/api/${config.api.API_SVERSION}`, routes); // Setup our routes
+app.use("/", express.static(path.join(__dirname, "static"))); // Finally, serve our static files
+app.get('/proxy', (request, response) => response.json({ what: "system", is: [request.ip, request.headers['x-forwarded-for']] })); // Utility path for checking # of proxies (running machines)
 
 // Create our database
 createDatabase();
@@ -48,9 +52,8 @@ createDatabase();
 const ServerName = `DISHOUT.${process.env.NODE_ENV ?? "dev"}.${require("os").hostname() ?? "container"
   }.${process.platform}.${process.env.PROCESSOR_ARCHITECTURE ?? "undefined"}#${process.pid
   }`;
-  
-  
-app.get('/proxy', (request, response) => response.json({ what: "system", is: [request.ip, request.headers['x-forwarded-for']] }))
+
+
 
 app.listen(port, () => {
   LogServer(`Running on port ${port}\n`);
