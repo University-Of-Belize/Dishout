@@ -1,20 +1,21 @@
 import mongoose, { Schema } from "mongoose";
-import Users from "./Users";
-import Promos from "./Promos";
 const SchemaTypes = mongoose.Schema.Types;
 
 const ordersSchema = new Schema({
-  // MongoDB sorts out IDs by default
+  // MongoDB generates IDs by default
   order_code: {
     type: String,
-    required: true  // Randomly chosen by the backend. UUIDv3
+    required: true, // Randomly chosen by the backend. UUIDv4
+    unique: true, // Two order codes must not be the same
   },
   order_from: {
-    ref: Users,
+    type: SchemaTypes.ObjectId,
+    ref: "Users",
     required: true,
   },
   override_by: {
-    ref: Users,
+    type: SchemaTypes.ObjectId,
+    ref: "Users",
     required: false,
   },
   order_date: {
@@ -27,18 +28,28 @@ const ordersSchema = new Schema({
     default: 0.0,
   },
   promo_code: {
-    ref: Promos,
+    type: SchemaTypes.ObjectId,
+    ref: "Promos",
     required: false,
   },
   is_accepted: {
     type: Boolean,
-    required: true,
-    default: 0, // Queued by default. -1 for declined, 1 for accepted
+    required: false, // We should not accept orders by default. Undefined means queued
+    // Queued by default. false for declined, true for accepted
   },
   delay_time: {
-    type: Number,  // Seconds
+    type: Number, // Seconds
     required: true,
     default: 0, // No delay
+  },
+  products: {
+    type: [
+      {
+        product: { type: Schema.Types.ObjectId, ref: "Products" },
+        quantity: Number,
+      },
+    ], // Users don't have to have a cart. The cart is always cleared after orders are complete
+    required: false,
   },
 });
 export default mongoose.model("Orders", ordersSchema);

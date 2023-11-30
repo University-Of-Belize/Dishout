@@ -1,15 +1,17 @@
 import mongoose, { Schema } from "mongoose";
-import Categories from "./Categories"
 const SchemaTypes = mongoose.Schema.Types;
 
 const menuSchema = new Schema({
+  // MongoDB generates IDs by default
   slug: {
-    type: String,  // To display the product page we need a slug
-    required: true
+    type: String, // To display the product page we need a slug
+    required: true,
+    unique: true, // Can't have two of the same URLS
   },
   productName: {
     type: String,
     required: true,
+    unique: true, // Nope, not gonna allow that
   },
   price: {
     type: SchemaTypes.Decimal128,
@@ -17,23 +19,33 @@ const menuSchema = new Schema({
     default: 0.0,
   },
   image: {
-    type: String,   // URL
+    type: String, // URL
     required: false,
     default: "",
   },
   in_stock: {
-    type: Number,  // How many items do we have in-stock at the given moment?
+    type: Number, // How many items do we have in-stock at the given moment?
     required: true,
-    default: 0,  // Nada
+    default: 0, // Nada
   },
   description: {
     type: String,
     required: false,
   },
   category: {
-    ref: Categories,
+    type: SchemaTypes.ObjectId,
+    ref: "Categories",
     required: true,
   },
+  reviews: {
+    type: [{ type: Schema.Types.ObjectId, ref: "Reviews" }], // IDs of all reviews ever created on a product
+    required: false,
+  },
+  search_terms: {
+    // Makes things easier to search for
+    type: [{ type: String }],
+    required: false,
+  },
 });
-export default mongoose.model("Menu", menuSchema);
+export default mongoose.model("Products", menuSchema);
 export { menuSchema as productsSchema };

@@ -1,15 +1,17 @@
 import mongoose, { Schema } from "mongoose";
-import { productsSchema } from "./Products";
 const SchemaTypes = mongoose.Schema.Types;
 
 const usersSchema = new Schema({
+  // MongoDB generates IDs by default
   id: {
     type: Number,
     required: true,
+    unique: true, // Can't have the same ID, otherwise that would be weird
   },
   username: {
     type: String,
     required: true,
+    unique: true, // Can't have the same username, otherwise that would be confusing
   },
   password: {
     type: String,
@@ -18,6 +20,11 @@ const usersSchema = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true, // Can't have the same email, otherwise that would be stupid
+  },
+  profile_picture: {
+    type: String,
+    required: false,
   },
   staff: {
     type: Boolean,
@@ -30,9 +37,15 @@ const usersSchema = new Schema({
     default: 0.0,
   },
   cart: {
-    type: [productsSchema],
-    required: true,
-    default: [],
+    type: [
+      {
+        product: { type: Schema.Types.ObjectId, ref: "Products" },
+        quantity: Number,
+      },
+    ],
+    // Users don't have to have a cart. The cart is always cleared after orders are complete
+    // Cart: [{product, quantity}]
+    required: false,
   },
   activation_token: {
     type: String,
@@ -42,11 +55,15 @@ const usersSchema = new Schema({
     type: String,
     required: false,
   },
+  reset_token: {
+    type: String,
+    required: false,
+  },
   restrictions: {
-   type: Number,
-   required: true,
-   default: 0  // No restrictions
-  }
+    type: Number,
+    required: true,
+    default: 0, // No restrictions
+  },
 });
 export default mongoose.model("Users", usersSchema);
 export { usersSchema };
