@@ -28,6 +28,9 @@ async function order_list(req: Request, res: Response) {
       path: "override_by",
       model: "Users",
     }, {
+      path: "promo_code",
+      model: "Promos",
+    }, {
       path: "products.product",
       model: "Products",
     }
