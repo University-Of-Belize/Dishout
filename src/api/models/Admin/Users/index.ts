@@ -33,20 +33,18 @@ async function user_find(req: Request, res: Response) {
     }
     user = await User.findById(id);
     if (!user) {
-      return res
-        .status(404)
-        .json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+      return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
     }
     // Redact the token only if querying other users
     // @ts-ignore
     if (user._id.toString() != authenticatedUser?._id.toString()) {
       // @ts-ignore
-      user.token = undefined;// @ts-ignore
-      user.reset_token = undefined;// @ts-ignore
+      user.token = undefined; // @ts-ignore
+      user.reset_token = undefined; // @ts-ignore
       user.activation_token = undefined; // Remove token on public route
     }
-  }
-  else { // Check for authenticated user
+  } else {
+    // Check for authenticated user
     user = authenticatedUser;
     if (!user) {
       return res
@@ -127,7 +125,7 @@ async function user_create(req: Request, res: Response) {
     staff,
     credit,
     restrictions,
-    bypassActivation,
+    bypassActivation
   );
   if (testFailed) return;
   // End verification
@@ -142,7 +140,7 @@ async function user_create(req: Request, res: Response) {
   // Create the user
   const hashedPassword = await bcrypt.hash(
     password,
-    settings.auth.activation["hash-rounds"],
+    settings.auth.activation["hash-rounds"]
   );
 
   const userID = Math.round(new Date().getTime() / 1000).toString();
@@ -174,7 +172,7 @@ async function user_create(req: Request, res: Response) {
         email,
         iwe_strings.Authentication.ENEEDSACTIVATION,
         null,
-        EmailTemplate("ACTIVATE", username, activationToken),
+        EmailTemplate("ACTIVATE", username, activationToken)
       );
     } catch (error) {
       return res
@@ -196,7 +194,7 @@ async function user_delete(req: Request, res: Response) {
     User,
     "_id",
     what.private.user,
-    iwe_strings.Users.ENOTFOUND,
+    iwe_strings.Users.ENOTFOUND
   );
 }
 
@@ -233,31 +231,33 @@ async function user_modify(req: Request, res: Response) {
   // Decieve check-values safeguard for staff members
   // to allow for optional arguments
   // @ts-ignore
-  const testFailed = user?.staff ? check_values(
-    res,
-    old_username,
-    "Unu$ed12345",
-    email,
-    staff,
-    credit,
-    restrictions,
-    false, // Unused
-    username,
-    action,
-    action_num,
-  ) : check_values(
-    res,
-    old_username,
-    password,
-    email,
-    staff,
-    credit,
-    restrictions,
-    false, //unused
-    username,
-    action,
-    action_num,
-  );
+  const testFailed = user?.staff
+    ? check_values(
+        res,
+        old_username,
+        "Unu$ed12345",
+        email,
+        staff,
+        credit,
+        restrictions,
+        false, // Unused
+        username,
+        action,
+        action_num
+      )
+    : check_values(
+        res,
+        old_username,
+        password,
+        email,
+        staff,
+        credit,
+        restrictions,
+        false, //unused
+        username,
+        action,
+        action_num
+      );
   if (testFailed) return;
   // End verification
   // Search for dupes
@@ -292,7 +292,7 @@ async function user_modify(req: Request, res: Response) {
         // Generate the password
         const hashedPassword = await bcrypt.hash(
           password,
-          settings.auth.activation["hash-rounds"],
+          settings.auth.activation["hash-rounds"]
         );
         user_.password = hashedPassword;
       }
@@ -303,9 +303,11 @@ async function user_modify(req: Request, res: Response) {
         if (email) {
           user_.email = email;
         }
-        if (typeof staff === 'boolean') {
+        if (typeof staff === "boolean") {
           if (user_.username == "root" && !staff) {
-            return res.status(400).json(ErrorFormat(iwe_strings.Users.ECANTUNSTAFFROOT))
+            return res
+              .status(400)
+              .json(ErrorFormat(iwe_strings.Users.ECANTUNSTAFFROOT));
           }
           user_.staff = staff; // Yeah, just in case still
         }
@@ -328,22 +330,28 @@ async function user_modify(req: Request, res: Response) {
       }
       switch (action_num) {
         case 1: // Invalidate token
-        user_.token = undefined;
+          user_.token = undefined;
           break;
         case 2: // Trigger activation
-        if(user_.username === "root") return res.status(400).json(ErrorFormat(iwe_strings.Users.ECANTBLOCKROOT));
+          if (user_.username === "root")
+            return res
+              .status(400)
+              .json(ErrorFormat(iwe_strings.Users.ECANTBLOCKROOT));
           const _aT = await generateActivationToken(user_.email);
           if (_aT == -1)
             return res
               .status(500)
               .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
-              user_.activation_token = _aT;
-              
+          user_.activation_token = _aT;
+
           user_.token = undefined;
           user_.reset_token = undefined;
           break;
         case 3: // Lockout user
-              if(user_.username === "root") return res.status(400).json(ErrorFormat(iwe_strings.Users.ECANTLOCKOUTROOT));
+          if (user_.username === "root")
+            return res
+              .status(400)
+              .json(ErrorFormat(iwe_strings.Users.ECANTLOCKOUTROOT));
           user_.token = undefined;
           user_.reset_token = undefined;
           user_.password = cryptoRandomString({
@@ -353,11 +361,17 @@ async function user_modify(req: Request, res: Response) {
           user_.activation_token = undefined;
           break;
         case 4: // Delete user
-        if(user_.username === "root") return res.status(400).json(ErrorFormat(iwe_strings.Users.ECANTDELETEROOT));
-        user_.deleteOne();
-        return res.json({ status: true });
+          if (user_.username === "root")
+            return res
+              .status(400)
+              .json(ErrorFormat(iwe_strings.Users.ECANTDELETEROOT));
+          user_.deleteOne();
+          return res.json({ status: true });
         case 5: // Ban the user
-        if(user_.username === "root") return res.status(400).json(ErrorFormat(iwe_strings.Users.ECANTBLOCKROOT));
+          if (user_.username === "root")
+            return res
+              .status(400)
+              .json(ErrorFormat(iwe_strings.Users.ECANTBLOCKROOT));
           user_.activation_token = undefined;
           user_.token = undefined;
           user_.reset_token = undefined;
@@ -365,7 +379,7 @@ async function user_modify(req: Request, res: Response) {
           break;
         default:
           return res
-          .status(400)
+            .status(400)
             .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
       }
       break;
@@ -389,7 +403,7 @@ function check_values(
   bypassActivation: boolean,
   old_username?: string,
   action?: string,
-  action_num?: number,
+  action_num?: number
 ) {
   // Check if required parameters are provided
   if (
@@ -400,6 +414,7 @@ function check_values(
     (credit && typeof credit != "number") ||
     restrictions === undefined ||
     (old_username && typeof old_username != "string") ||
+    (old_username && old_username.trim() === "") ||
     (username && username.trim() === "") ||
     (bypassActivation && typeof bypassActivation != "boolean") ||
     (action && typeof action != "string") ||
