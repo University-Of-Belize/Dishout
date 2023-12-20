@@ -156,7 +156,7 @@ async function order_manage(req: Request, res: Response) {
             })()}</b> has been updated to ${new_promo}.`
           );
         }
-        order.promo_code = new_promo_object;
+        order.promo_code = new_promo_object._id; // Cast string to ObjectId
       }
       if (new_delay) {
         const oldDelay = new Date((order.delay_time ?? 0) * 1000); // Convert Unix timestamp to JavaScript Date object
