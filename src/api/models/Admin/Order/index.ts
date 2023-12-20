@@ -7,6 +7,7 @@
 
 import { Request, Response } from "express";
 import Order from "../../../../database/models/Orders";
+import Promo from "../../../../database/models/Promos";
 import User from "../../../../database/models/Users";
 import settings from "../../../../config/settings.json";
 import { sendEmail } from "../../../../util/email";
@@ -24,16 +25,19 @@ async function order_list(req: Request, res: Response) {
     {
       path: "order_from",
       model: "Users",
-    }, {
+    },
+    {
       path: "override_by",
       model: "Users",
-    }, {
+    },
+    {
       path: "promo_code",
       model: "Promos",
-    }, {
+    },
+    {
       path: "products.product",
       model: "Products",
-    }
+    },
   ]);
 }
 
@@ -59,6 +63,7 @@ async function order_manage(req: Request, res: Response) {
       .status(403)
       .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
   }
+  let new_promo_object: any; // Allows us to pass a promo code instead of an ObjectId
 
   // Extract the action and order ID from the request body
   const [action, orderId, new_amount, new_promo, new_delay] = wis_array(req);
@@ -72,7 +77,9 @@ async function order_manage(req: Request, res: Response) {
   if (new_promo && typeof new_promo != "string") {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
-  if (new_delay && typeof new_delay != "number") {
+  // Find the promotion
+  new_promo_object = await Promo.findOne({ code: new_promo });
+  if ((new_delay && typeof new_delay != "number") || !new_promo_object) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
   // Find the order by its ID
@@ -94,7 +101,7 @@ async function order_manage(req: Request, res: Response) {
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
         null,
-        `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSACCEPTED}`,
+        `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSACCEPTED}`
       );
       break;
     case "d": // Delete the order
@@ -103,7 +110,7 @@ async function order_manage(req: Request, res: Response) {
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDENIED}`,
         null,
-        `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSDENIED}`,
+        `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSDENIED}`
       );
       return res
         .status(200)
@@ -118,9 +125,11 @@ async function order_manage(req: Request, res: Response) {
           order_from.email,
           `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
           null,
-          `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED
-          }. Note that you are no longer paying $${order.total_amount ?? "0.00"
-          }, but instead $${new_amount}.`,
+          `Hi ${order_from.username}, <br/>${
+            iwe_strings.Order.IOSTATUSMODIFIED
+          }. Note that you are no longer paying $${
+            order.total_amount ?? "0.00"
+          }, but instead $${new_amount}.`
         );
         order.total_amount = new_amount;
       }
@@ -130,17 +139,24 @@ async function order_manage(req: Request, res: Response) {
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
             null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`,
+            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
           );
         } else {
           await sendEmail(
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
             null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${order.promo_code}</b> has been updated to ${new_promo}.`,
+            `Hi ${order_from.username}, <br/>${
+              iwe_strings.Order.IOSTATUSMODIFIED
+            }. Note that your order's promo code <b>${(() => {
+              (async () => {
+                const _p = await Promo.findById(order.promo_code);
+                return _p?.code;
+              })();
+            })()}</b> has been updated to ${new_promo}.`
           );
         }
-        order.promo_code = new_promo;
+        order.promo_code = new_promo_object;
       }
       if (new_delay) {
         const oldDelay = new Date((order.delay_time ?? 0) * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -155,7 +171,7 @@ async function order_manage(req: Request, res: Response) {
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
             null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by ${delayInMinutes} minutes.`,
+            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by ${delayInMinutes} minutes.`
           );
         } else {
           // Handle the case where the order already had a delay time
@@ -163,7 +179,7 @@ async function order_manage(req: Request, res: Response) {
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
             null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by another ${delayInMinutes} minutes.`,
+            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by another ${delayInMinutes} minutes.`
           );
         }
         order.delay_time = new_delay;
