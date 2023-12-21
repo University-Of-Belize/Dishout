@@ -37,7 +37,7 @@ const ordersSchema = new Schema({
     required: false, // We should not accept orders by default. Undefined means queued
     // Queued by default. false for declined, true for accepted
   },
-  delay_time: {
+  delay_time: { // When will the product be delivered?
     type: Number, // Seconds
     required: true,
     default: 0, // No delay

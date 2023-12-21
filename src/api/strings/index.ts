@@ -74,6 +74,7 @@ class IWEU_STRINGS {
     IACCEPT: "Order accepted.",
     IOSTATUSQUEUED: "Your order has been queued.",
     IOSTATUSACCEPTED: "Your order has been accepted.",
+    IOSTATUSREADYNOW: "Your order is ready now.",
     IOSTATUSDENIED: "Your order has been rejected.",
     IOSTATUSDELAYED: "Your order has been delayed.",
     IOSTATUSMODIFIED: "A staff member has issued an update your order.",

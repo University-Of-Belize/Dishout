@@ -97,12 +97,24 @@ async function order_manage(req: Request, res: Response) {
   switch (action) {
     case "a": // Accept the order
       order.is_accepted = true;
-      await sendEmail(
-        order_from.email,
-        `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
-        null,
-        `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSACCEPTED}`
-      );
+      if (new_delay) {
+        order.delay_time = new_delay;
+        await sendEmail(
+          order_from.email,
+          `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
+          null,
+          `Hi ${order_from.username}, <br/>${
+            iwe_strings.Order.IOSTATUSACCEPTED
+          }. It will be ready at ${new Date(new_delay * 1000).toLocaleString()}`
+        );
+      } else {
+        await sendEmail(
+          order_from.email,
+          `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
+          null,
+          `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
+        );
+      }
       break;
     case "d": // Delete the order
       await Order.findByIdAndDelete(orderId);
