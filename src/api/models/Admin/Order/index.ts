@@ -98,50 +98,54 @@ async function order_manage(req: Request, res: Response) {
 
   // Handle the different actions
   switch (action) {
-    case "a": // Accept the order
-      order.is_accepted = true;
-      if (new_delay) {
-        order.delay_time = new_delay;
-        await sendEmail(
-          order_from.email,
-          `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
-          null,
-          `Hi ${order_from.username}, <br/>${
-            iwe_strings.Order.IOSTATUSACCEPTED
-          } It will be ready at ${(() => {
-            let r;
-            try {
-              if (
-                !order_from.timeZone ||
-                !isValidTimeZone(order_from.timeZone)
-              ) {
-                throw new Error("Invalid timezone");
+    case "a":
+      {
+        // Accept the order
+        order.is_accepted = true;
+        if (new_delay) {
+          order.delay_time = new_delay;
+          await sendEmail(
+            order_from.email,
+            `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
+            null,
+            `Hi ${order_from.username}, <br/>${
+              iwe_strings.Order.IOSTATUSACCEPTED
+            } It will be ready at ${(() => {
+              let r;
+              try {
+                if (
+                  !order_from.timeZone ||
+                  !isValidTimeZone(order_from.timeZone)
+                ) {
+                  throw new Error("Invalid timezone");
+                }
+                r = `${new Date(new_delay * 1000).toLocaleString(undefined, {
+                  timeZone: order_from.timeZone ?? "BAD_TZ",
+                })} (your time).`;
+              } catch {
+                r = `${new Date(new_delay * 1000).toLocaleString(undefined, {
+                  timeZone: settings.server.defaultTimeZone,
+                })}.<br/>--<br/>Time incorrect? Change it in <a href="https://${
+                  settings.server.domain
+                }/admin/dashboard/user/manage?user_id=${
+                  order_from._id
+                }" target="_blank">settings</a>.`;
               }
-              r = `${new Date(new_delay * 1000).toLocaleString(undefined, {
-                timeZone: order_from.timeZone ?? "BAD_TZ",
-              })} (your time).`;
-            } catch {
-              r = `${new Date(new_delay * 1000).toLocaleString(undefined, {
-                timeZone: settings.server.defaultTimeZone,
-              })}.<br/>--<br/>Time incorrect? Change it in <a href="https://${
-                settings.server.domain
-              }/admin/dashboard/user/manage?user_id=${
-                order_from._id
-              }" target="_blank">settings</a>.`;
-            }
-            return r;
-          })()}`
-        );
-      } else {
-        await sendEmail(
-          order_from.email,
-          `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
-          null,
-          `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
-        );
+              return r;
+            })()}`
+          );
+        } else {
+          await sendEmail(
+            order_from.email,
+            `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
+            null,
+            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
+          );
+        }
       }
       break;
-    case "d": // Delete the order
+    case "d": {
+      // Delete the order
       await Order.findByIdAndDelete(orderId);
       await sendEmail(
         order_from.email,
@@ -152,79 +156,84 @@ async function order_manage(req: Request, res: Response) {
       return res
         .status(200)
         .json(what_is(what.private.order, iwe_strings.Order.IDELETE));
+    }
     case "m": // Modify the order
-      // Here you would handle the modifications to the order
-      // This will depend on what fields of the order you want to allow modifying
-      // @ts-ignore
-      order.override_by = user._id;
-      if (new_amount) {
-        await sendEmail(
-          order_from.email,
-          `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
-          null,
-          `Hi ${order_from.username}, <br/>${
-            iwe_strings.Order.IOSTATUSMODIFIED
-          }. Note that you are no longer paying $${
-            order.total_amount ?? "0.00"
-          }, but instead $${new_amount}.`
-        );
-        order.total_amount = new_amount;
-      }
-      if (new_promo) {
-        if (!order.promo_code) {
-          await sendEmail(
-            order_from.email,
-            `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
-            null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
-          );
-        } else {
+      {
+        // Here you would handle the modifications to the order
+        // This will depend on what fields of the order you want to allow modifying
+        // @ts-ignore
+        order.override_by = user._id;
+        if (new_amount && new_amount != order.total_amount) {
           await sendEmail(
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
             null,
             `Hi ${order_from.username}, <br/>${
               iwe_strings.Order.IOSTATUSMODIFIED
-            }. Note that your order's promo code <b>${(() => {
-              (async () => {
-                const _p = await Promo.findById(order.promo_code);
-                return _p?.code;
-              })();
-            })()}</b> has been updated to ${new_promo}.`
+            }. Note that you are no longer paying $${
+              order.total_amount ?? "0.00"
+            }, but instead $${new_amount}.`
           );
+          order.total_amount = new_amount;
         }
-        order.promo_code = new_promo_object._id; // Cast string to ObjectId
-      }
-      if (new_delay) {
-        const oldDelay = new Date((order.delay_time ?? 0) * 1000); // Convert Unix timestamp to JavaScript Date object
-        const newDelay = new Date(new_delay * 1000); // Convert Unix timestamp to JavaScript Date object
-
-        // Calculate the delay in minutes
-        const delayInMinutes =
-          (newDelay.getTime() - oldDelay.getTime()) / 1000 / 60;
-
-        if (!order.delay_time) {
-          await sendEmail(
-            order_from.email,
-            `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
-            null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by ${delayInMinutes} minutes.`
-          );
-        } else {
-          // Handle the case where the order already had a delay time
-          await sendEmail(
-            order_from.email,
-            `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
-            null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by another ${delayInMinutes} minutes.`
-          );
+        const _p = await Promo.findById(order.promo_code);
+        if (new_promo && new_promo != _p?.code) {
+          if (!order.promo_code) {
+            await sendEmail(
+              order_from.email,
+              `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
+              null,
+              `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
+            );
+            order.promo_code = new_promo_object._id; // Cast string to ObjectId
+          } else {
+            const _p = await Promo.findById(order.promo_code);
+            if (_p) {
+              await sendEmail(
+                order_from.email,
+                `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
+                null,
+                `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been updated to ${new_promo}.`
+              );
+              order.promo_code = new_promo_object._id; // Cast string to ObjectId
+            }
+          }
         }
-        order.delay_time = new_delay;
-      }
+        if (new_delay && new_delay !== order.delay_time) {
+          const oldDelay = new Date((order.delay_time ?? 0) * 1000); // Convert Unix timestamp to JavaScript Date object
+          const newDelay = new Date(new_delay * 1000); // Convert Unix timestamp to JavaScript Date object
 
+          // Calculate the delay in minutes
+          const delayInMinutes =
+            (newDelay.getTime() - oldDelay.getTime()) / 1000 / 60;
+
+          if (!order.delay_time) {
+            await sendEmail(
+              order_from.email,
+              `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
+              null,
+              `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by ${delayInMinutes} minutes.`
+            );
+          } else {
+            // Handle the case where the order already had a delay time
+            await sendEmail(
+              order_from.email,
+              `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
+              null,
+              `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by another ${delayInMinutes} minutes.`
+            );
+          }
+          order.delay_time = new_delay;
+        }
+      }
       break;
     default:
-      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+      {
+        return res
+          .status(400)
+          .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+      }
+      // break;
   }
 
   // Save the updated order
