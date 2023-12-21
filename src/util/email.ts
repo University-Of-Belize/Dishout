@@ -7,6 +7,7 @@ import process from "node:process";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
+import { LogError } from "./Logger";
 
 // Email Address
 const EmailAddress = `${config.email.username}@${config.email.domain}`;
@@ -29,27 +30,36 @@ async function sendEmail(
   email: string,
   subject: string,
   body: string | null,
-  html_body: string | null,
+  html_body: string | null
 ) {
-  let transporter = nodemailer.createTransport({
-    host: config.email.smtp.server,
-    port: config.email.smtp.port,
-    secure: config.email.smtp.https, // true for 465, false for other ports
-    auth: {
-      user: EmailAddress, // full email-address (username)
-      pass:
-        process.env.MAIL_PASSWORD ?? config.email["dev-password"] ?? "unset", // password (App password)
-    },
-  });
+  try {
+    let transporter = nodemailer.createTransport({
+      host: config.email.smtp.server,
+      port: config.email.smtp.port,
+      secure: config.email.smtp.https, // true for 465, false for other ports
+      auth: {
+        user: EmailAddress, // full email-address (username)
+        pass:
+          process.env.MAIL_PASSWORD ?? config.email["dev-password"] ?? "unset", // password (App password)
+      },
+    });
 
-  const genericText = body ?? "";
-  await transporter.sendMail({
-    from: `"${config.email["display-name"]}" <${EmailAddress}>`, // sender address
-    to: email, // list of receivers
-    subject: subject, // Subject line
-    text: genericText ?? "", // plain text body
-    html: html_body ?? genericText ?? "", // html body
-  });
+    const genericText = body ?? "";
+    await transporter.sendMail({
+      from: `"${config.email["display-name"]}" <${EmailAddress}>`, // sender address
+      to: email, // list of receivers
+      subject: subject, // Subject line
+      text: genericText ?? "", // plain text body
+      html: html_body ?? genericText ?? "", // html body
+    });
+  } catch (e) {
+    console.log("\n\n");
+    LogError(
+      `Couldn't send email. This was the email:\n\nTO: <${email}>\nSUBJECT: ${subject}\nBODY: ${
+        html_body ?? body ?? ""
+      }`
+    );
+  }
 }
 
 function EmailTemplate(email_type: string, name: string | null, token: string) {
@@ -59,7 +69,7 @@ function EmailTemplate(email_type: string, name: string | null, token: string) {
   switch (email_type) {
     case "ACTIVATE":
       const VerificationTemplate = fs.readFileSync(
-        path.join(__dirname, "verify.html"),
+        path.join(__dirname, "verify.html")
       );
       // These are used in the template ------------------------------------
       const VerificationLink = `https://${config.server.domain}/auth/verify?activation_token=${token}`;
@@ -71,7 +81,7 @@ function EmailTemplate(email_type: string, name: string | null, token: string) {
 
     case "PASSWORD_RESET":
       const PasswordTemplate = fs.readFileSync(
-        path.join(__dirname, "reset.html"),
+        path.join(__dirname, "reset.html")
       );
       // These are used in the template ------------------------------------
       title = IWE.Email.IRESETPASSWORD;
