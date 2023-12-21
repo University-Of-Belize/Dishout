@@ -16,8 +16,9 @@ import what from "../../../utility/Whats";
 import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import { what_is, wis_array } from "../../../utility/What_Is";
-import mongoose from "mongoose";
 import { list_object } from "../../../utility/batchRequest";
+import mongoose from "mongoose";
+import { isValidTimeZone } from "../../../utility/time";
 
 // List all promotions
 async function order_list(req: Request, res: Response) {
@@ -105,7 +106,26 @@ async function order_manage(req: Request, res: Response) {
           null,
           `Hi ${order_from.username}, <br/>${
             iwe_strings.Order.IOSTATUSACCEPTED
-          }. It will be ready at ${new Date(new_delay * 1000).toLocaleString()}`
+          } It will be ready at ${(() => {
+            let r;
+            try {
+              if (!order_from.timeZone || !isValidTimeZone(order_from.timeZone)) {
+                throw new Error("Invalid timezone");
+              }
+              r = `${new Date(new_delay * 1000).toLocaleString(undefined, {
+                timeZone: order_from.timeZone ?? "BAD_TZ",
+              })} (your time).`;
+            } catch {
+              r = `${new Date(new_delay * 1000).toLocaleString(undefined, {
+                timeZone: settings.server.defaultTimeZone,
+              })}.<br/>--<br/>Time incorrect? Change it in <a href="https://${
+                settings.server.domain
+              }/admin/dashboard/user/manage?user_id=${
+                order_from._id
+              }" target="_blank">settings</a>.`;
+            }
+            return r;
+          })()}`
         );
       } else {
         await sendEmail(

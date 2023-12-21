@@ -28,6 +28,7 @@ class IWEU_STRINGS {
     EBLOCKED: "Sorry, you've been blocked from our services.",
     EOOPS:
       "Oops! Looks like something went wrong on our end! Please try that again.",
+    EINVALIDTIMEZONE: "Invalid timezone.",
     UCOMPLEXITY:
     /^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/,
   };

@@ -8,7 +8,8 @@
     "domain": "cafe.ub.edu.bz",
     "nickname": "Plattr",
     "excludedBadWords": ["hell", "crap"],
-    "defaultReviewer": "6545572beff9c32417937c73"
+    "defaultReviewer": "6545572beff9c32417937c73",
+    "defaultTimeZone": "America/Belize"
   },
   "auth": {
     "activation": {

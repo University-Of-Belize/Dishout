@@ -1,13 +1,29 @@
 import express, { Request, Response } from "express";
 import { rateLimit } from "express-rate-limit";
 import config from "./config/settings.json";
-import { LogServer } from "./util/Logger";
+import { LogError, LogServer } from "./util/Logger";
 import createDatabase from "./database";
 import cors from "cors";
 // import { v4 as uuid } from "uuid";
 import path from "path";
 import routes from "./api/routes";
 import { get_authorization } from "./api/utility/Authentication";  // For rate-limiting
+import { isValidTimeZone } from "./api/utility/time";
+
+// Check the config file
+// For a weird, unexplainable reason, it looks better with two 'log's
+if (!config) {
+  console.error("\n\nConfig file not found. Please configure the config file manually.");
+  LogError("Config file not found. Please configure the config file manually.");
+  process.exit(1);
+}
+// Check the config file
+if (!isValidTimeZone(config.server.defaultTimeZone)) {
+  console.error("\n\nInvalid timezone in config file. Please set a valid TZ to continue.");
+  LogError("Invalid timezone in config file. Please set a valid TZ to continue.");
+  process.exit(1);
+}
+/********************************** */
 
 const app = express();
 const port = process.env.PORT ?? config.server.port;

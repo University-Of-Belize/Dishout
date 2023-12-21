@@ -14,6 +14,7 @@ import cryptoRandomString from "crypto-random-string";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import Filter from "bad-words";
+import { isValidTimeZone } from "../../utility/time";
 
 /***** BAD WORDS FILTER *****/
 const filter = new Filter();
@@ -26,7 +27,7 @@ async function auth_register(req: Request, res: Response) {
   if (req.body["what"] != what.public.auth) {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
-  const [email, username, password] = wis_array(req);
+  const [email, username, password, timezone] = wis_array(req);
 
   if (
     !email ||
@@ -68,16 +69,22 @@ async function auth_register(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EINVALIDDOMAIN));
   }
 
+  if (!timezone || !isValidTimeZone(timezone)) {
+    return res
+      .status(500)
+      .json(ErrorFormat(iwe_strings.Authentication.EINVALIDTIMEZONE));
+  }
   // Create the user if all the checks pass
-
   const hashedPassword = await bcrypt.hash(
     password,
-    settings.auth.activation["hash-rounds"],
+    settings.auth.activation["hash-rounds"]
   );
 
   try {
     /********************* Remove after 100 users sign-up *************************/
-    const arr = Array(1000).fill(0).map((_, i) => (i < 10 ? 100 : i % 10 + 1));
+    const arr = Array(1000)
+      .fill(0)
+      .map((_, i) => (i < 10 ? 100 : (i % 10) + 1));
     const randomNum = arr[Math.floor(Math.random() * arr.length)];
     /************************************************************************* */
     const userID = Math.round(new Date().getTime() / 1000).toString();
@@ -93,6 +100,7 @@ async function auth_register(req: Request, res: Response) {
       cart: undefined,
       activation_token: null,
       token: null,
+      timeZone: timezone,
       reset_token: null,
       restrictions: 0,
     });
@@ -108,7 +116,7 @@ async function auth_register(req: Request, res: Response) {
       email,
       iwe_strings.Authentication.ENEEDSACTIVATION,
       null,
-      EmailTemplate("ACTIVATE", username, activationToken),
+      EmailTemplate("ACTIVATE", username, activationToken)
     );
 
     return res.status(201).json({
@@ -193,9 +201,9 @@ async function auth_login(req: Request, res: Response) {
           newAT == -1
             ? user.activation_token
             : newAT == undefined
-              ? user.activation_token
-              : newAT,
-        ),
+            ? user.activation_token
+            : newAT
+        )
       );
       return res
         .status(403)
@@ -268,7 +276,7 @@ async function auth_forgot(req: Request, res: Response) {
       user.email,
       iwe_strings.Email.INEEDSRESET,
       null,
-      EmailTemplate("PASSWORD_RESET", user.username, RKey),
+      EmailTemplate("PASSWORD_RESET", user.username, RKey)
     );
 
     return res.json({

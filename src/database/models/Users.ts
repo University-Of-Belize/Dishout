@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import config from "../../config/settings.json"
 const SchemaTypes = mongoose.Schema.Types;
 
 const usersSchema = new Schema({
@@ -63,6 +64,11 @@ const usersSchema = new Schema({
     type: Number,
     required: true,
     default: 0, // No restrictions
+  },
+  timeZone: {
+    type: String,
+    required: true,
+    default: config.server.defaultTimeZone, // Default for most systems
   },
 });
 export default mongoose.model("Users", usersSchema);
