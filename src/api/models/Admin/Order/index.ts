@@ -72,16 +72,18 @@ async function order_manage(req: Request, res: Response) {
   if (typeof orderId != "string" || !mongoose.Types.ObjectId.isValid(orderId)) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
-  if (new_amount && typeof new_amount != "number") {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-  }
-  if (new_promo && typeof new_promo != "string") {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-  }
-  // Find the promotion
-  new_promo_object = await Promo.findOne({ code: new_promo });
-  if ((new_delay && typeof new_delay != "number") || !new_promo_object) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  if (action === "m") {
+    if (new_amount && typeof new_amount != "number") {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
+    if (new_promo && typeof new_promo != "string") {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
+    // Find the promotion
+    new_promo_object = await Promo.findOne({ code: new_promo });
+    if ((new_delay && typeof new_delay != "number") || !new_promo_object) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
   }
   // Find the order by its ID
   const order = await Order.findById(orderId);
@@ -109,7 +111,10 @@ async function order_manage(req: Request, res: Response) {
           } It will be ready at ${(() => {
             let r;
             try {
-              if (!order_from.timeZone || !isValidTimeZone(order_from.timeZone)) {
+              if (
+                !order_from.timeZone ||
+                !isValidTimeZone(order_from.timeZone)
+              ) {
                 throw new Error("Invalid timezone");
               }
               r = `${new Date(new_delay * 1000).toLocaleString(undefined, {
