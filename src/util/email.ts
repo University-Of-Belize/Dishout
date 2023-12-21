@@ -53,7 +53,7 @@ async function sendEmail(
       html: html_body ?? genericText ?? "", // html body
     });
   } catch (e) {
-    console.log("\n\n");
+    console.log("\n");
     LogError(
       `Couldn't send email. This was the email:\n\nTO: <${email}>\nSUBJECT: ${subject}\nBODY: ${
         html_body ?? body ?? ""
