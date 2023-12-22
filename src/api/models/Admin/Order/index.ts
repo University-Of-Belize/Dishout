@@ -227,13 +227,10 @@ async function order_manage(req: Request, res: Response) {
         }
       }
       break;
-    default:
-      {
-        return res
-          .status(400)
-          .json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-      }
-      // break;
+    default: {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
+    // break;
   }
 
   // Save the updated order

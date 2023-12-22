@@ -247,12 +247,12 @@ async function auth_forgot(req: Request, res: Response) {
     return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
   }
   let userRequest;
-  const [username, id] = wis_array(req);
+  const username = wis_string(req);
 
   try {
     userRequest =
       (await User.findOne({ username })) ??
-      (await User.findOne({ id: parseInt(id) }));
+      (await User.findOne({ id: parseInt(username) }));
   } catch (error: any) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
   }
