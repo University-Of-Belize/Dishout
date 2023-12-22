@@ -32,7 +32,24 @@ async function order_list(req: Request, res: Response) {
   if (!user?.staff) {
     // Regular users are allowed to query their own orders (orders that pertain to them)
     // @ts-ignore
-    const orders = Order.find({ order_from: user._id }); // Mongoose casts strings to ObjectIds automatically
+    const orders = await Order.find({ order_from: user._id }).populate([
+      {
+        path: "order_from",
+        model: "Users",
+      },
+      {
+        path: "override_by",
+        model: "Users",
+      },
+      {
+        path: "promo_code",
+        model: "Promos",
+      },
+      {
+        path: "products.product",
+        model: "Products",
+      },
+    ]); // Mongoose casts strings to ObjectIds automatically
     return res.json(what_is(what.private.order, orders));
   }
   // Staff members are allowed to query all orders
