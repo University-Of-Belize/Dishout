@@ -30,7 +30,7 @@ async function order_list(req: Request, res: Response) {
   }
   // @ts-ignore
   if (!user?.staff) {
-    // Regular users are allowed to query their own orders
+    // Regular users are allowed to query their own orders (orders that pertain to them)
     // @ts-ignore
     const orders = Order.find({ order_from: user._id }); // Mongoose casts strings to ObjectIds automatically
     return res.json(what_is(what.private.order, orders));
