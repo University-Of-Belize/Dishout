@@ -20,8 +20,22 @@ import { list_object } from "../../../utility/batchRequest";
 import mongoose from "mongoose";
 import { isValidTimeZone } from "../../../utility/time";
 
-// List all promotions
+// List all orders
 async function order_list(req: Request, res: Response) {
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+  // @ts-ignore
+  if (!user?.staff) {
+    // Regular users are allowed to query their own orders
+    // @ts-ignore
+    const orders = Order.find({ order_from: user._id }); // Mongoose casts strings to ObjectIds automatically
+    return res.json(what_is(what.private.order, orders));
+  }
+  // Staff members are allowed to query all orders
   await list_object(req, res, Order, what.private.order, false, true, [
     {
       path: "order_from",
