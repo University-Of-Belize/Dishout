@@ -260,19 +260,23 @@ async function user_modify(req: Request, res: Response) {
       );
   if (testFailed) return;
   // End verification
-  // Search for dupes
-  const user_dupe = await User.findOne({
-    username,
-  });
-  if (user_dupe) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Authentication.ETAKEN));
-  }
+
   // Grab the user
   const user_ = await User.findOne({
     username: old_username,
   });
   if (!user_) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND2));
+  }
+
+  // Search for dupes
+  const user_dupe = await User.findOne({
+    username,
+  });
+
+  // Return an error if both users are not the same
+  if (user_dupe && user_dupe._id.toString() !== user_._id.toString()) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Authentication.ETAKEN));
   }
 
   // Is this person a staff member? We only allow users to edit themselves
