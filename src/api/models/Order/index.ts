@@ -10,7 +10,7 @@ import { what_is, wis_array, wis_string } from "../../utility/What_Is";
 import { sendEmail } from "../../../util/email";
 import settings from "../../../config/settings.json";
 import { v4 } from "uuid";
-import mongoose from "mongoose";
+import mongoose, { Decimal128 } from "mongoose";
 
 async function order_list(req: Request, res: Response) {
   await list_object(req, res, Order, what.public.order, true, false);
@@ -86,17 +86,28 @@ async function order_create(req: Request, res: Response) {
 
   // [OPTIMIZED]: Loop through all of the products and dump it into the cart
 
-  // Get an array of product ids
-  let productIds = order.products.map((item) => item.product);
+  // // Get an array of product ids
+  // let productIds = order.products.map((item) => item.product);
 
-  // Find all products in one go
-  let products = await Product.find({ _id: { $in: productIds } });
+  // // Find all products in one go
+  // let products = await Product.find({ _id: { $in: productIds } });
 
   // Calculate the total amount
-  let totalAmount = products.reduce(
+  let totalAmount: number = 0;
+  order.products?.forEach(
+    // @audit Has to be a better way
+    // TODO[@alexdev404]: Fix--Bugged
     // @ts-ignore
-    (total, product) => total + parseFloat(product.price),
-    0
+    async (product, index) => {
+      const product_ = await Product.findById(product);
+      if (product_) {
+        totalAmount =
+          totalAmount +
+          parseFloat(
+            parseFloat(product_.price) * parseInt(order.products[index].quantity)
+          );
+      }
+    }
   );
 
   // @ts-ignore
@@ -120,6 +131,7 @@ async function order_create(req: Request, res: Response) {
 
 // Delete our orders by ID
 async function order_delete(req: Request, res: Response) {
+  // @todo Restock the products on order removal
   delete_object(
     req,
     res,
@@ -185,11 +197,18 @@ async function order_modify(req: Request, res: Response) {
   if (!order) {
     return res.status(404).json(ErrorFormat(iwe_strings.Order.EONOEXISTS));
   }
-  const product = await Product.findById(productID);
-  if (!product) {
-    return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
-  }
+  if (product_action != "d") {
+    // If we're not attempting a delete
+    const product = await Product.findById(productID);
 
+    if (!product) {
+      return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
+    }
+    // Is the product in stock?
+    if (quantity > product.in_stock) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Product.ETOOMANY));
+    }
+  }
   // Do we own this order?
   // @ts-ignore
   if (!user.staff && order.order_from == user._id) {
@@ -197,10 +216,6 @@ async function order_modify(req: Request, res: Response) {
   }
   if (order.products && index > order.products.length - 1) {
     return res.status(400).json(ErrorFormat(iwe_strings.Order.EBADINDEX));
-  }
-  // Is the product in stock?
-  if (quantity > product.in_stock) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Product.ETOOMANY));
   }
   // [EXPLOIT_PROTECTION]: Is the user requesting a negative amount of the product?
   if (quantity < 0) {
@@ -210,11 +225,26 @@ async function order_modify(req: Request, res: Response) {
   // Ported from /admin/order/manage
   // Handle the different actions
   switch (product_action) {
-    case "d": // Delete the order
+    case "d": // Delete one of the products
+      // Decrease the total price as we disassociate the product with the order
+      const product_to_delete = await Product.findById(
+        order.products?.[index]?.product
+      );
+      // Don't mind this.
+      order.total_amount = parseFloat(
+        parseFloat(order.total_amount.toString()) -
+          parseFloat(product_to_delete?.price.toString())
+      ).toFixed(2) as unknown as Decimal128;
       // Splice the products
       // @ts-ignore
       order.products.splice(index, 1);
       await order.save();
+      // @todo Restock the products on product removal
+      // If we have no products left in the order
+      if (order.products?.length == 0) {
+        // Delete this order
+        await order.deleteOne();
+      }
       return res
         .status(200)
         .json(what_is(what.public.order, [iwe_strings.Order.IPDELETE, order]));
