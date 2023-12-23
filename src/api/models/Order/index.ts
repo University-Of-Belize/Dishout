@@ -96,6 +96,7 @@ async function order_create(req: Request, res: Response) {
   let totalAmount: number = 0;
   order.products?.forEach(
     // @audit Has to be a better way
+    // @remind This is currently not working as should
     // TODO[@alexdev404]: Fix--Bugged
     // @ts-ignore
     async (product, index) => {
