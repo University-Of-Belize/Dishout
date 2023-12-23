@@ -233,7 +233,15 @@ async function order_modify(req: Request, res: Response) {
       // Splice the products
       // @ts-ignore
       order.products.splice(index, 1);
-      await order.save();
+      try {
+        await order.save();
+      } catch (error) {
+        // Combat spams lul
+        return res.status(400).json({
+          status: -1,
+          message: "Failed to remove this item. Try that again once more.",
+        });
+      }
       // @todo Restock the products on product removal
       // If we have no products left in the order
       if (order.products?.length == 0) {
