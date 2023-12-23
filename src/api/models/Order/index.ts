@@ -94,22 +94,16 @@ async function order_create(req: Request, res: Response) {
 
   // Calculate the total amount
   let totalAmount: number = 0;
-  order.products?.forEach(
-    // @audit Has to be a better way
-    // @remind This is currently not working as should
-    // TODO[@alexdev404]: Fix--Bugged
-    // @ts-ignore
-    async (product, index) => {
-      const product_ = await Product.findById(product);
-      if (product_) {
-        totalAmount =
-          totalAmount +
-          parseFloat(
-            parseFloat(product_.price) * parseInt(order.products[index].quantity)
-          );
-      }
+  // Calculate the total amount based on the products in the order
+  // @remind Needs refactoring to improve performance and efficiency
+  for (let product of order.products) {
+    const product_ = await Product.findById(product.product);
+    if (product_) {
+      totalAmount +=
+        parseFloat(product_.price.toString()) *
+        parseInt(product.quantity.toString());
     }
-  );
+  }
 
   // @ts-ignore
   order.total_amount = totalAmount.toFixed(2);

@@ -6,7 +6,7 @@ import Promos from "../../../database/models/Promos";
 import Reviews from "../../../database/models/Reviews";
 import Users from "../../../database/models/Users";
 import MiniSearch from "minisearch";
-import { LogInfo } from "../../../util/Logger";
+import { LogInfo, LogWarn } from "../../../util/Logger";
 import { get_authorization_user } from "../../utility/Authentication";
 import { iwe_strings } from "../../strings";
 import settings from "../../../config/settings.json";
@@ -14,7 +14,7 @@ import settings from "../../../config/settings.json";
 async function global_lookup(
   req: Request,
   res: Response,
-  engine: MiniSearch<any>,
+  engine: MiniSearch<any>
 ) {
   let shouldDisplay = false;
   // Quietly check for staff access
@@ -26,15 +26,26 @@ async function global_lookup(
 
   // Get query parameters from the URL
   const { filter, q } = req.query;
+  if (!engine) {
+    LogWarn(
+      "Last query was discarded due to no engine being readily available."
+    );
+    return res
+      .status(500)
+      .json({
+        status: false,
+        message: "No engine available. Please try again later.",
+      });
+  }
   // Perform a search
-  const results = engine.search(q as string, {
+  const results = engine?.search(q as string, {
     filter: (result) => {
       shouldDisplay =
         result.match[(q as string).toLowerCase()]?.includes(
-          (filter as string).toLowerCase(),
+          (filter as string).toLowerCase()
         ) ||
         Object.keys(result.match).some((element) =>
-          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element),
+          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element)
         );
       //   console.log(user?.staff, shouldDisplay, result); // Debug ONLY
       if (
