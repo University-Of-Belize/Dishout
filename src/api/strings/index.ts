@@ -112,6 +112,7 @@ class IWEU_STRINGS {
       "Your request is below the minimum availability of that product.",
     EBADPROMO:
       "Your request contains an invalid promo code ID. Please remove the offending code and try again.",
+    ERESERVEDSLUG: "This slug is reserved by the system. Please choose another slug.",
   };
   Search = {
     UTOKENIZE: /[^a-zA-Z0-9]/,

@@ -8,6 +8,7 @@ import { get_authorization_user } from "../../../utility/Authentication";
 import what from "../../../utility/Whats";
 import { what_is, wis_array } from "../../../utility/What_Is";
 import { delete_object } from "../../../utility/batchRequest";
+import settings from "../../../../config/settings.json";
 import mongoose from "mongoose";
 
 // Create a new product
@@ -46,7 +47,7 @@ async function menu_create(req: Request, res: Response) {
     image,
     in_stock,
     description,
-    category,
+    category
   );
 
   if (testFailed) return;
@@ -55,6 +56,11 @@ async function menu_create(req: Request, res: Response) {
   const existingMenu = await Menu.findOne({ $or: [{ slug }, { productName }] });
   if (existingMenu) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.EEXISTS));
+  }
+
+  // There are some reserved slugs that we can't use
+  if (settings.products["disallowed-product-names"].includes(slug)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Product.ERESERVEDSLUG));
   }
 
   // create the menu
@@ -92,7 +98,7 @@ async function menu_delete(req: Request, res: Response) {
     iwe_strings.Product.ENOTFOUND,
     true,
     Reviews,
-    "product",
+    "product"
   );
 }
 
@@ -141,7 +147,7 @@ async function menu_modify(req: Request, res: Response) {
     in_stock,
     description,
     category,
-    old_slug,
+    old_slug
   );
 
   if (testFailed) return;
@@ -150,6 +156,11 @@ async function menu_modify(req: Request, res: Response) {
   const menu = await Menu.findOne({ slug: old_slug });
   if (!menu) {
     return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
+  }
+
+  // There are some reserved slugs that we can't use
+  if (settings.products["disallowed-product-names"].includes(slug)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Product.ERESERVEDSLUG));
   }
 
   // update menu fields
@@ -178,7 +189,7 @@ async function menu_modify(req: Request, res: Response) {
   await menu.save();
 
   return res.json(
-    what_is(what.private.menu, [iwe_strings.Order.IPMODIFY, menu]),
+    what_is(what.private.menu, [iwe_strings.Order.IPMODIFY, menu])
   );
 }
 
@@ -191,7 +202,7 @@ function check_values(
   in_stock: number,
   description: string,
   category: string,
-  old_slug?: string,
+  old_slug?: string
 ) {
   if (
     (old_slug && typeof old_slug != "string") ||
