@@ -7,27 +7,33 @@ import cors from "cors";
 // import { v4 as uuid } from "uuid";
 import path from "path";
 import routes from "./api/routes";
-import { get_authorization } from "./api/utility/Authentication";  // For rate-limiting
+import { get_authorization } from "./api/utility/Authentication"; // For rate-limiting
 import { isValidTimeZone } from "./api/utility/time";
 
 // Check the config file
 // For a weird, unexplainable reason, it looks better with two 'log's
 if (!config) {
-  console.error("\n\nConfig file not found. Please configure the config file manually.");
+  console.error(
+    "\n\nConfig file not found. Please configure the config file manually."
+  );
   LogError("Config file not found. Please configure the config file manually.");
   process.exit(1);
 }
 // Check the config file
 if (!isValidTimeZone(config.server.defaultTimeZone)) {
-  console.error("\n\nInvalid timezone in config file. Please set a valid TZ to continue.");
-  LogError("Invalid timezone in config file. Please set a valid TZ to continue.");
+  console.error(
+    "\n\nInvalid timezone in config file. Please set a valid TZ to continue."
+  );
+  LogError(
+    "Invalid timezone in config file. Please set a valid TZ to continue."
+  );
   process.exit(1);
 }
 /********************************** */
 
 const app = express();
 const port = process.env.PORT ?? config.server.port;
-app.set('trust proxy', 2) // Number of Machines: Currently we're running on 2 Machines
+app.set("trust proxy", 2); // Number of Machines: Currently we're running on 2 Machines
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 15 minutes (in milliseconds)
@@ -37,11 +43,19 @@ const limiter = rateLimit({
   // store: ... , // Use an external store for consistency across multiple server instances.
   statusCode: 429, // Rate limit HTTP Code
   // @ts-ignore
-  keyGenerator: (req: Request, res: Response) => get_authorization(req) ?? req.clientId ?? req.ip,  // Otherwise, we use the IP address.
+  keyGenerator: (req: Request, res: Response) =>
+    get_authorization(req) ?? req.clientId ?? req.ip, // Otherwise, we use the IP address.
   handler: (req: Request, res: Response, next, options) => {
-    res.status(options.statusCode).json({ status: -1, message: options.message + ` Retry again after: ${res.getHeader('Retry-After')}s` })
+    res
+      .status(options.statusCode)
+      .json({
+        status: false,
+        message:
+          options.message +
+          ` Retry again after: ${res.getHeader("Retry-After")}s`,
+      });
   },
-  message: 'Slow down! The resource is being rate limited.'
+  message: "Slow down! The resource is being rate limited.",
 });
 
 // Generate a unique ID for all the clients -- Apply this before anything else
@@ -51,7 +65,7 @@ const limiter = rateLimit({
 //   // res.set("clientId", uuid()); // Assign a unique ID to every client
 //   next(); // This middleware is finished
 // })
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 app.use(cors()); // Shield the server from cross-domain requests -- apply cors before the rate limiter
 app.use(express.json()); // Enable body parsing -- enable body parsing before the rate limited
 app.use(express.urlencoded({ extended: false })); // Turn off URL encoding -- enable before rate limiting
@@ -59,17 +73,22 @@ app.use(express.urlencoded({ extended: false })); // Turn off URL encoding -- en
 app.use(limiter); // Enable rate limiting. We don't want to get beat up
 app.use(`/api/${config.api.API_SVERSION}`, routes); // Setup our routes
 app.use("/", express.static(path.join(__dirname, "static"))); // Finally, serve our static files
-app.get('/proxy', (request, response) => response.json({ what: "system", is: [request.ip, request.headers['x-forwarded-for']] })); // Utility path for checking # of proxies (running machines)
+app.get("/proxy", (request, response) =>
+  response.json({
+    what: "system",
+    is: [request.ip, request.headers["x-forwarded-for"]],
+  })
+); // Utility path for checking # of proxies (running machines)
 
 // Create our database
 createDatabase();
 
 // Setup our servername
-const ServerName = `DISHOUT.${process.env.NODE_ENV ?? "dev"}.${require("os").hostname() ?? "container"
-  }.${process.platform}.${process.env.PROCESSOR_ARCHITECTURE ?? "undefined"}#${process.pid
-  }`;
-
-
+const ServerName = `DISHOUT.${process.env.NODE_ENV ?? "dev"}.${
+  require("os").hostname() ?? "container"
+}.${process.platform}.${process.env.PROCESSOR_ARCHITECTURE ?? "undefined"}#${
+  process.pid
+}`;
 
 app.listen(port, () => {
   LogServer(`Running on port ${port}\n`);

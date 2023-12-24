@@ -6,7 +6,7 @@ const menuSchema = new Schema({
   slug: {
     type: String, // To display the product page we need a slug
     required: true,
-    unique: true, // Can't have two of the same URLS
+    unique: true, // Can't have two of the same URLs
   },
   productName: {
     type: String,
@@ -41,7 +41,7 @@ const menuSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "Reviews" }], // IDs of all reviews ever created on a product
     required: false,
   },
-  search_terms: {
+  keywords: {
     // Makes things easier to search for
     type: [{ type: String }],
     required: false,

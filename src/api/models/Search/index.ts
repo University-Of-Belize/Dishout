@@ -8,7 +8,7 @@ import Users from "../../../database/models/Users";
 import MiniSearch from "minisearch";
 import { LogInfo, LogWarn } from "../../../util/Logger";
 import { get_authorization_user } from "../../utility/Authentication";
-import { iwe_strings } from "../../strings";
+import { ErrorFormat, iwe_strings } from "../../strings";
 import settings from "../../../config/settings.json";
 
 async function global_lookup(
@@ -30,12 +30,7 @@ async function global_lookup(
     LogWarn(
       "Last query was discarded due to no engine being readily available."
     );
-    return res
-      .status(500)
-      .json({
-        status: false,
-        message: "No engine available. Please try again later.",
-      });
+    return res.status(500).json(ErrorFormat(iwe_strings.Search.ENOENGINE));
   }
   // Perform a search
   const results = engine?.search(q as string, {

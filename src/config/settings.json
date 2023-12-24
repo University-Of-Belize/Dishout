@@ -83,7 +83,7 @@
       "reviewer",
       "product",
       "slug",
-      "search_terms"
+      "keywords"
     ],
     "visible-fields": [
       "username",
@@ -108,7 +108,7 @@
       "price",
       "reviews",
       "slug",
-      "search_terms",
+      "keywords",
       "profile_picture"
     ]
   },
@@ -151,5 +151,8 @@
         ]
       ]
     ]
+  },
+  "products": {
+    "disallowed-product-names": ["checkout"]
   }
 }

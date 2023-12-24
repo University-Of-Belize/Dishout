@@ -237,10 +237,9 @@ async function order_modify(req: Request, res: Response) {
         await order.save();
       } catch (error) {
         // Combat spams lul
-        return res.status(400).json({
-          status: -1,
-          message: "Failed to remove this item. Try that again once more.",
-        });
+        return res
+          .status(400)
+          .json(ErrorFormat(iwe_strings.Order.EREMOVALFAILED));
       }
       // @todo Restock the products on product removal
       // If we have no products left in the order

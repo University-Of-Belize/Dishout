@@ -30,7 +30,7 @@ class IWEU_STRINGS {
       "Oops! Looks like something went wrong on our end! Please try that again.",
     EINVALIDTIMEZONE: "Invalid timezone.",
     UCOMPLEXITY:
-    /^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/,
+      /^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/,
   };
   Email = {
     ENEEDSACTIVATION: `${config.server.nickname} — Please Verify Your Account To Continue`,
@@ -63,12 +63,13 @@ class IWEU_STRINGS {
     ECANTUNSTAFFROOT: "You cannot demote the root account.",
     ECANTDELETEROOT: "You cannot delete the root account.",
     ECANTLOCKOUTROOT: "You cannot disable the root account.",
-    ECANTBLOCKROOT: "You cannot restrict the root account."
+    ECANTBLOCKROOT: "You cannot restrict the root account.",
   };
   Order = {
     EONOEXISTS: "Order not found.",
     EBADINDEX:
       "The provided index is out of range. Please provide an index that is within the acceptable range of the products array.",
+    EREMOVALFAILED: "Failed to remove this item. Try that again once more.",
     IDELETE: "Order deleted successfully.",
     IPDELETE: "Product deleted successfully.",
     IPMODIFY: "Product modified successfully.",
@@ -114,6 +115,7 @@ class IWEU_STRINGS {
   };
   Search = {
     UTOKENIZE: /[^a-zA-Z0-9]/,
+    ENOENGINE: "No engine readily available. Please try again later.",
   };
 }
 

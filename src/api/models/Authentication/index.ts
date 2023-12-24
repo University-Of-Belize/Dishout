@@ -325,10 +325,9 @@ async function auth_reset(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EENFORCEMENT_FAILED));
   }
   if (bcrypt.compareSync(text, user.password)) {
-    return res.json({
-      message: iwe_strings.Authentication.EBADPSWD,
-      status: false,
-    });
+    return res
+      .status(406)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADPSWD));
   }
 
   const password = await bcrypt.hash(text, 10);
