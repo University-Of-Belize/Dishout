@@ -17,6 +17,8 @@ class IWEU_STRINGS {
     2. A LOWERCASE character (Such as: abc)\n
     3. A NUMBER (Such as: 123)\n4. And a SPECIAL CHARACTER (Such as: !@#)`,
     EBADPSWD: "Please choose a different password.",
+    EBADRSTTKN:
+      "The link you followed does not work anymore. You need to request a password reset again.",
     ETAKEN: "Username is taken or email is already registered.",
     EDISABLED:
       "Your account has been disabled. Please do not create a new account. Instead, contact an administrator for assistance.",
@@ -112,7 +114,8 @@ class IWEU_STRINGS {
       "Your request is below the minimum availability of that product.",
     EBADPROMO:
       "Your request contains an invalid promo code ID. Please remove the offending code and try again.",
-    ERESERVEDSLUG: "This slug is reserved by the system. Please choose another slug.",
+    ERESERVEDSLUG:
+      "This slug is reserved by the system. Please choose another slug.",
   };
   Search = {
     UTOKENIZE: /[^a-zA-Z0-9]/,

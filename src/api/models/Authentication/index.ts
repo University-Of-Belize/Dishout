@@ -310,7 +310,7 @@ async function auth_reset(req: Request, res: Response) {
   const user = userRequest;
 
   if (!user) {
-    return res.sendStatus(400);
+    return res.status(400).json(ErrorFormat(iwe_strings.Authentication.EBADRSTTKN));
   }
 
   if (!text || typeof text !== "string") {
