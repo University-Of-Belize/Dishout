@@ -1,13 +1,13 @@
-import User from "../database/models/Users";
 import cryptoRandomString from "crypto-random-string";
-import config from "../config/settings.json";
-const nickname = config.server.nickname;
-import IWE from "../api/strings";
+import fs from "fs";
 import process from "node:process";
 import nodemailer from "nodemailer";
-import fs from "fs";
 import path from "path";
+import IWE from "../api/strings";
+import config from "../config/settings.json";
+import User from "../database/models/Users";
 import { LogError } from "./Logger";
+const nickname = config.server.nickname;
 
 // Email Address
 const EmailAddress = `${config.email.username}@${config.email.domain}`;
@@ -86,11 +86,12 @@ function EmailTemplate(email_type: string, name: string | null, token: string) {
       // These are used in the template ------------------------------------
       title = IWE.Email.IRESETPASSWORD;
       body = `<br/>
-        <a href="https://${config.server.domain}/auth/reset?reset_token=${token}">https://${config.server.domain}/auth/reset?reset_token=${token}</a>`;
+        <a href="https://${config.server.domain}/auth/password_reset?reset_token=${token}">https://${config.server.domain}/auth/password_reset?reset_token=${token}</a>`;
       subtitle = "";
       // ---------------------------------------------------
       return eval("`" + PasswordTemplate.toString() + "`"); // Evaluate the template and return it
   }
 }
 
-export { generateActivationToken, sendEmail, EmailTemplate };
+export { EmailTemplate, generateActivationToken, sendEmail };
+

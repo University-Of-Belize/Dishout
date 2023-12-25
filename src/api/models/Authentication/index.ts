@@ -253,6 +253,7 @@ async function auth_forgot(req: Request, res: Response) {
   try {
     userRequest =
       (await User.findOne({ username })) ??
+      (await User.findOne({ email: username })) ??
       (await User.findOne({ id: parseInt(username) }));
   } catch (error: any) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
