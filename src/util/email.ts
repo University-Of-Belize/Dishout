@@ -62,7 +62,12 @@ async function sendEmail(
   }
 }
 
-function EmailTemplate(email_type: string, name: string | null, token: string) {
+function EmailTemplate(
+  email_type: string,
+  name: string | null,
+  token: string,
+  extra: string
+) {
   let title,
     body,
     subtitle = "";
@@ -90,8 +95,13 @@ function EmailTemplate(email_type: string, name: string | null, token: string) {
       subtitle = "";
       // ---------------------------------------------------
       return eval("`" + PasswordTemplate.toString() + "`"); // Evaluate the template and return it
+    case "BONUS_CLAIM":
+      const BonusTemplate = fs.readFileSync(path.join(__dirname, "bonus.html"));
+      // These are used in the template ------------------------------------
+      subtitle = extra;
+      // ---------------------------------------------------
+      return eval("`" + BonusTemplate.toString() + "`"); // Evaluate the template and return it
   }
 }
 
 export { EmailTemplate, generateActivationToken, sendEmail };
-
