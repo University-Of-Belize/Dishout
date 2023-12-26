@@ -334,6 +334,7 @@ async function auth_reset(req: Request, res: Response) {
   const password = await bcrypt.hash(text, 10);
 
   user.password = password;
+  user.token = undefined; // Sign out everyone
   user.reset_token = undefined;
   await user.save();
 
