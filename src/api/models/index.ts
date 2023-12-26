@@ -18,6 +18,7 @@ import {
   user_delete,
   user_list,
   user_modify,
+  user_modify_profile_picture
 } from "./Admin/Users";
 import {
   auth_forgot,
@@ -51,6 +52,7 @@ class API {
       Create: user_create,
       Delete: user_delete,
       Modify: user_modify,
+      Modify_PFP: user_modify_profile_picture,
     },
     Promo: {
       List: promo_list, // Lol regular users shouldn't see this

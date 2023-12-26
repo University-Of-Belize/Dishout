@@ -8,7 +8,7 @@ import {
 } from "../../../../util/email";
 import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
-import { what_is, wis_array } from "../../../utility/What_Is";
+import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
 import what from "../../../utility/Whats";
 import { list_object, delete_object } from "../../../utility/batchRequest";
 import Filter from "bad-words";
@@ -483,4 +483,42 @@ function check_values(
   return null;
 }
 
-export { user_find, user_create, user_delete, user_list, user_modify };
+async function user_modify_profile_picture(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] != what.private.user) {
+    // Two underscores means it's an admin function
+    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
+  }
+
+  // Check our authentication token and see if it matches up to a valid user
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Extract information from the 'what_is' object
+  const profile_picture = wis_string(req);
+
+  // Start verification
+  // Check if this is a valid link
+  const r = await fetch(profile_picture);
+  if (!r.ok) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Users.EBADRESOURCE));
+  }
+  // End verification
+  // @ts-ignore
+  user.profile_picture = profile_picture; // @ts-ignore
+  await user.save();
+  return res.json({ status: true });
+}
+
+export {
+  user_find,
+  user_create,
+  user_delete,
+  user_list,
+  user_modify,
+  user_modify_profile_picture,
+};

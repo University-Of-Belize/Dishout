@@ -66,6 +66,7 @@ class IWEU_STRINGS {
     ECANTDELETEROOT: "You cannot delete the root account.",
     ECANTLOCKOUTROOT: "You cannot disable the root account.",
     ECANTBLOCKROOT: "You cannot restrict the root account.",
+    EBADRESOURCE: "The resource you provided is invalid.",
   };
   Order = {
     EONOEXISTS: "Order not found.",

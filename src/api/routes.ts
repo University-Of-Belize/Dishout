@@ -66,6 +66,9 @@ router.delete("/admin/user/manage", (req: Request, res: Response) => {
 router.put("/admin/user/manage", (req: Request, res: Response) => {
   Admin.User.Modify(req, res);
 });
+router.put("/admin/user/manage/profile_picture", (req: Request, res: Response) => {
+  Admin.User.Modify_PFP(req, res);
+});
 
 // Promo
 router.get("/admin/promo/manage", (req: Request, res: Response) => {
