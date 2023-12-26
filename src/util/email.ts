@@ -65,8 +65,8 @@ async function sendEmail(
 function EmailTemplate(
   email_type: string,
   name: string | null,
-  token: string,
-  extra: string
+  token?: string,
+  extra?: string
 ) {
   let title,
     body,

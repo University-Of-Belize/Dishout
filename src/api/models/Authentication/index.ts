@@ -161,6 +161,19 @@ async function auth_verify(req: Request, res: Response) {
       return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
     }
 
+    // Send the congrats email
+    await sendEmail(
+      user.email,
+      iwe_strings.Email.ICLAIMBONUS,
+      null,
+      EmailTemplate(
+        "BONUS_CLAIM",
+        user.username,
+        undefined,
+        user.credit.toString()
+      )
+    );
+
     user.activation_token = undefined;
     await user.save();
     return res.json({
@@ -310,7 +323,9 @@ async function auth_reset(req: Request, res: Response) {
   const user = userRequest;
 
   if (!user) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Authentication.EBADRSTTKN));
+    return res
+      .status(400)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADRSTTKN));
   }
 
   if (!text || typeof text !== "string") {
