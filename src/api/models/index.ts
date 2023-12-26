@@ -51,7 +51,9 @@ class API {
       List: user_list,
       Create: user_create,
       Delete: user_delete,
+      // Modify details
       Modify: user_modify,
+      // Modify settings (soon-to-be)
       Modify_PFP: user_modify_profile_picture,
     },
     Promo: {
