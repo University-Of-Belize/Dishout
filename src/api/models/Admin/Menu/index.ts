@@ -35,7 +35,7 @@ async function menu_create(req: Request, res: Response) {
   }
 
   // Extract information from the 'what_is' object
-  const [category, slug, productName, description, image, price, in_stock] =
+  const [category, slug, productName, description, keywords, image, price, in_stock] =
     wis_array(req);
 
   // verify
@@ -47,7 +47,8 @@ async function menu_create(req: Request, res: Response) {
     image,
     in_stock,
     description,
-    category
+    category,
+    keywords
   );
 
   if (testFailed) return;
@@ -71,6 +72,7 @@ async function menu_create(req: Request, res: Response) {
     // image: image,
     in_stock: in_stock,
     // description: description,
+    keywords: keywords,
     category: category,
   });
 
@@ -132,6 +134,7 @@ async function menu_modify(req: Request, res: Response) {
     slug,
     productName,
     description,
+    keywords,
     image,
     price,
     in_stock,
@@ -147,6 +150,7 @@ async function menu_modify(req: Request, res: Response) {
     in_stock,
     description,
     category,
+    keywords,
     old_slug
   );
 
@@ -182,6 +186,9 @@ async function menu_modify(req: Request, res: Response) {
   if (description) {
     menu.description = description;
   }
+  if (keywords) {
+    menu.keywords = keywords;
+  }
   if (category) {
     menu.category = category;
   }
@@ -202,6 +209,7 @@ function check_values(
   in_stock: number,
   description: string,
   category: string,
+  keywords: string[],
   old_slug?: string
 ) {
   if (
@@ -218,6 +226,8 @@ function check_values(
     typeof description != "string" ||
     !category ||
     typeof category != "string" ||
+    !keywords ||
+    !Array.isArray(keywords) ||
     !mongoose.Types.ObjectId.isValid(category)
   ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
