@@ -483,7 +483,7 @@ function check_values(
   return null;
 }
 
-async function user_modify_profile_picture(req: Request, res: Response) {
+async function user_modify_picture(req: Request, res: Response, type: "profile_picture" | "banner") {
   // Check our 'what_is'
   if (req.body["what"] != what.private.user) {
     // Two underscores means it's an admin function
@@ -499,48 +499,17 @@ async function user_modify_profile_picture(req: Request, res: Response) {
   }
 
   // Extract information from the 'what_is' object
-  const profile_picture = wis_string(req);
+  const picture = wis_string(req);
 
   // Start verification
   // Check if this is a valid link
-  const r = await fetch(profile_picture);
+  const r = await fetch(picture);
   if (!r.ok) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.EBADRESOURCE));
   }
   // End verification
   // @ts-ignore
-  user.profile_picture = profile_picture; // @ts-ignore
-  await user.save();
-  return res.json({ status: true });
-}
-
-async function user_modify_banner_picture(req: Request, res: Response) {
-  // Check our 'what_is'
-  if (req.body["what"] != what.private.user) {
-    // Two underscores means it's an admin function
-    return res.status(418).send(iwe_strings.Generic.EFOLLOWRULES);
-  }
-
-  // Check our authentication token and see if it matches up to a valid user
-  const user = await get_authorization_user(req);
-  if (!user) {
-    return res
-      .status(403)
-      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
-  }
-
-  // Extract information from the 'what_is' object
-  const banner_picture = wis_string(req);
-
-  // Start verification
-  // Check if this is a valid link
-  const r = await fetch(banner_picture);
-  if (!r.ok) {
-    return res.status(400).json(ErrorFormat(iwe_strings.Users.EBADRESOURCE));
-  }
-  // End verification
-  // @ts-ignore
-  user.banner = banner_picture; // @ts-ignore
+  user[type] = picture; // @ts-ignore
   await user.save();
   return res.json({ status: true });
 }
@@ -551,6 +520,5 @@ export {
   user_delete,
   user_list,
   user_modify,
-  user_modify_profile_picture,
-  user_modify_banner_picture,
+  user_modify_picture
 };

@@ -67,10 +67,10 @@ router.put("/admin/user/manage", (req: Request, res: Response) => {
   Admin.User.Modify.default(req, res);
 });
 router.put("/admin/user/manage/profile_picture", (req: Request, res: Response) => {
-  Admin.User.Modify.ProfilePicture(req, res);
+  Admin.User.Modify.Picture(req, res, "profile_picture");
 });
 router.put("/admin/user/manage/banner_picture", (req: Request, res: Response) => {
-  Admin.User.Modify.BannerPicture(req, res);
+  Admin.User.Modify.Picture(req, res, "banner");
 });
 
 // Promo

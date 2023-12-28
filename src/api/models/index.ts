@@ -18,8 +18,7 @@ import {
   user_delete,
   user_list,
   user_modify,
-  user_modify_profile_picture,
-  user_modify_banner_picture,
+  user_modify_picture,
 } from "./Admin/Users";
 import {
   auth_forgot,
@@ -56,8 +55,7 @@ class API {
       Modify: {
         default: user_modify,
         // Modify settings (soon-to-be)
-        ProfilePicture: user_modify_profile_picture,
-        BannerPicture: user_modify_banner_picture,
+        Picture: user_modify_picture,
       },
     },
     Promo: {
