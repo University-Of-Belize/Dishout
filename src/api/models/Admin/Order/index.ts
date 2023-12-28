@@ -139,7 +139,7 @@ async function order_manage(req: Request, res: Response) {
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
             null,
-            `Hi ${order_from.username}, <br/>${
+            `Hey ${order_from.username}!<br/><br/>${
               iwe_strings.Order.IOSTATUSACCEPTED
             } It will be ready at ${(() => {
               let r;
@@ -170,7 +170,7 @@ async function order_manage(req: Request, res: Response) {
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
             null,
-            `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
+            `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
           );
         }
       }
@@ -182,7 +182,7 @@ async function order_manage(req: Request, res: Response) {
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDENIED}`,
         null,
-        `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSDENIED}`
+        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSDENIED}`
       );
       return res
         .status(200)
@@ -199,11 +199,14 @@ async function order_manage(req: Request, res: Response) {
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
             null,
-            `Hi ${order_from.username}, <br/>${
+            `Hi ${order_from.username},<br/><br/>${
               iwe_strings.Order.IOSTATUSMODIFIED
             }. Note that you are no longer paying $${
               order.total_amount ?? "0.00"
-            }, but instead $${new_amount}.`
+            }, but instead $${new_amount}.<br/>Questions regarding this price change?<br/>
+            Please direct any queries or concerns either to one of our staff members or get in touch with us at ${
+              settings.email.username
+            }@${settings.email.domain}.`
           );
           order.total_amount = new_amount;
         }
@@ -214,7 +217,7 @@ async function order_manage(req: Request, res: Response) {
               order_from.email,
               `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
               null,
-              `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
+              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
             );
             order.promo_code = new_promo_object._id; // Cast string to ObjectId
           } else {
@@ -224,7 +227,7 @@ async function order_manage(req: Request, res: Response) {
                 order_from.email,
                 `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
                 null,
-                `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been updated to ${new_promo}.`
+                `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been updated to ${new_promo}.`
               );
               order.promo_code = new_promo_object._id; // Cast string to ObjectId
             }
@@ -243,7 +246,7 @@ async function order_manage(req: Request, res: Response) {
               order_from.email,
               `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
               null,
-              `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by ${delayInMinutes} minutes.`
+              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by ${delayInMinutes} minutes.`
             );
           } else {
             // Handle the case where the order already had a delay time
@@ -251,7 +254,7 @@ async function order_manage(req: Request, res: Response) {
               order_from.email,
               `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
               null,
-              `Hi ${order_from.username}, <br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by another ${delayInMinutes} minutes.`
+              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by another ${delayInMinutes} minutes.`
             );
           }
           order.delay_time = new_delay;

@@ -118,7 +118,7 @@ async function order_create(req: Request, res: Response) {
     user.email,
     `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSQUEUED}`,
     null, //@ts-ignore
-    `Hi ${user.username}, <br/>${iwe_strings.Order.IOSTATUSQUEUED}`
+    `Hi ${user.username},<br/><br/>${iwe_strings.Order.IOSTATUSQUEUED}`
   );
 
   res.status(201).json(what_is(what.public.order, order));

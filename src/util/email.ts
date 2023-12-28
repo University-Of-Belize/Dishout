@@ -44,7 +44,7 @@ async function sendEmail(
       },
     });
 
-    const genericText = body ?? "";
+    const genericText = body ? body + +`<br/><br/>Thanks,${nickname} Team` : "";
     await transporter.sendMail({
       from: `"${config.email["display-name"]}" <${EmailAddress}>`, // sender address
       to: email, // list of receivers
