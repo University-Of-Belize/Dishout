@@ -540,7 +540,7 @@ async function user_modify_banner_picture(req: Request, res: Response) {
   }
   // End verification
   // @ts-ignore
-  user.banner_picture = banner_picture; // @ts-ignore
+  user.banner = banner_picture; // @ts-ignore
   await user.save();
   return res.json({ status: true });
 }
