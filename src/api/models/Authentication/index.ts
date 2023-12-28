@@ -96,7 +96,6 @@ async function auth_register(req: Request, res: Response) {
       username,
       staff: username === "root", // Make user 'staff' if they are root
       // credit: 0.0, @remind Remove after 100 users sign-up
-      // @todo Send email regarding this (credit bonus)
       credit: randomNum,
       cart: undefined,
       activation_token: null,

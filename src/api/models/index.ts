@@ -18,7 +18,8 @@ import {
   user_delete,
   user_list,
   user_modify,
-  user_modify_profile_picture
+  user_modify_profile_picture,
+  user_modify_banner_picture,
 } from "./Admin/Users";
 import {
   auth_forgot,
@@ -52,9 +53,12 @@ class API {
       Create: user_create,
       Delete: user_delete,
       // Modify details
-      Modify: user_modify,
-      // Modify settings (soon-to-be)
-      Modify_PFP: user_modify_profile_picture,
+      Modify: {
+        default: user_modify,
+        // Modify settings (soon-to-be)
+        ProfilePicture: user_modify_profile_picture,
+        BannerPicture: user_modify_banner_picture,
+      },
     },
     Promo: {
       List: promo_list, // Lol regular users shouldn't see this
@@ -86,7 +90,7 @@ class API {
     List: dash_list,
   };
   Dynamic = {
-    Image: dynamic_banner
+    Image: dynamic_banner,
   };
   Menu = {
     Find: menu_find,

@@ -64,10 +64,13 @@ router.delete("/admin/user/manage", (req: Request, res: Response) => {
   Admin.User.Delete(req, res);
 });
 router.put("/admin/user/manage", (req: Request, res: Response) => {
-  Admin.User.Modify(req, res);
+  Admin.User.Modify.default(req, res);
 });
 router.put("/admin/user/manage/profile_picture", (req: Request, res: Response) => {
-  Admin.User.Modify_PFP(req, res);
+  Admin.User.Modify.ProfilePicture(req, res);
+});
+router.put("/admin/user/manage/banner_picture", (req: Request, res: Response) => {
+  Admin.User.Modify.BannerPicture(req, res);
 });
 
 // Promo

@@ -27,6 +27,10 @@ const usersSchema = new Schema({
     type: String,
     required: false,
   },
+  banner: {
+    type: String,
+    required: false,
+  },
   staff: {
     type: Boolean,
     required: true,
