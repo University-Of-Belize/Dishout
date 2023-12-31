@@ -10,6 +10,7 @@ import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
 import settings from "../../../../config/settings.json";
 import Filter from "bad-words";
 import mongoose from "mongoose";
+import { sendEmail } from "../../../../util/email";
 
 /***** BAD WORDS FILTER *****/
 const filter = new Filter();
@@ -67,7 +68,8 @@ async function feedback_create(req: Request, res: Response) {
   const testFailed = check_values(res, content);
   if (testFailed) return;
 
-  if(content.trim() === '') return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  if (content.trim() === "")
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
 
   // Create new feedback
   const newFeedback = await Feedback.create({
@@ -78,6 +80,23 @@ async function feedback_create(req: Request, res: Response) {
   });
 
   await newFeedback.save();
+
+  // Send us a notification
+  sendEmail(
+    `${settings.email.username}@${settings.email.domain}`, // @ts-ignore
+    `[ADMINISTRATOR]: Plattr — Feedback from ${user.username}`,
+    `Hey there admin!<br/><br/>
+    One of your users (@${user.username}) has submitted feedback.<br/>
+    Here is what they wrote:<br/><br/>
+    Content: "${newFeedback.content}"<br/>
+    Original content: "${newFeedback.original_content}"<br/><br/>
+    You can also view it <a href='https://cafe.ub.edu.bz/admin/dashboard/feedback#${newFeedback._id}'>here</a>.<br/>
+    Also, you can reply to this email to respond to their comment.<br/><br/>
+    Good luck!<br/>
+    ${settings.server.nickname} Server`,
+    null,
+    user.email
+  );
   // Return the new feedback as a JSON response
   return res.json(
     what_is(what.private.feedback, [

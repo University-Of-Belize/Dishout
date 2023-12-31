@@ -30,7 +30,8 @@ async function sendEmail(
   email: string,
   subject: string,
   body: string | null,
-  html_body: string | null
+  html_body: string | null,
+  reply_to: string | null
 ) {
   try {
     let transporter = nodemailer.createTransport({
@@ -48,6 +49,7 @@ async function sendEmail(
     await transporter.sendMail({
       from: `"${config.email["display-name"]}" <${EmailAddress}>`, // sender address
       to: email, // list of receivers
+      replyTo: reply_to ?? email, // Who to reply to
       subject: subject, // Subject line
       text: genericText ?? "", // plain text body
       html: html_body ?? genericText ?? "", // html body
