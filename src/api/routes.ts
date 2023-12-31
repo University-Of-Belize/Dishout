@@ -122,6 +122,19 @@ router.delete("/admin/review/manage", (req: Request, res: Response) => {
 router.put("/admin/review/manage", (req: Request, res: Response) => {
   Admin.Review.Modify(req, res);
 });
+// Feedback
+router.get("/admin/feedback/manage", (req: Request, res: Response) => {
+  Admin.Feedback.List(req, res);
+});
+router.post("/admin/feedback/manage", (req: Request, res: Response) => {
+  Admin.Feedback.Create(req, res);
+});
+router.delete("/admin/feedback/manage", (req: Request, res: Response) => {
+  Admin.Feedback.Delete(req, res);
+});
+router.put("/admin/feedback/manage", (req: Request, res: Response) => {
+  Admin.Feedback.Modify(req, res);
+});
 // Menu
 router.post("/admin/menu/manage", (req: Request, res: Response) => {
   Admin.Menu.Create(req, res);

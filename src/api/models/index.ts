@@ -12,6 +12,7 @@ import {
   promo_modify,
 } from "./Admin/Promos";
 import { review_delete, review_list, review_modify } from "./Admin/Reviews";
+import { feedback_create, feedback_delete, feedback_list, feedback_modify } from "./Admin/Feedback";
 import {
   user_find,
   user_create,
@@ -37,20 +38,20 @@ import { global_lookup } from "./Search";
 import { cart_delete, cart_list, cart_modify } from "./User";
 
 class API {
-  Authentication = {
-    Register: auth_register,
-    Verify: auth_verify,
-    Login: auth_login,
-    Reset: auth_reset,
-    Request_Reset: auth_forgot,
+  Authentication = { // Fe: 100% support
+    Register: auth_register, // Yes
+    Verify: auth_verify, // Yes
+    Login: auth_login, // Yes
+    Reset: auth_reset, // Yes
+    Request_Reset: auth_forgot, // Yes
   };
 
   Admin = {
-    User: {
-      Find: user_find, // Find a user by ID
-      List: user_list,
-      Create: user_create,
-      Delete: user_delete,
+    User: { // FE: 100% support
+      Find: user_find, // Find a user by ID -- Yes
+      List: user_list, // Yes
+      Create: user_create, // Yes
+      Delete: user_delete, // Yes
       // Modify details
       Modify: {
         default: user_modify,
@@ -58,70 +59,76 @@ class API {
         Picture: user_modify_picture,
       },
     },
-    Promo: {
-      List: promo_list, // Lol regular users shouldn't see this
-      Create: promo_create,
-      Delete: promo_delete,
-      Modify: promo_modify,
+    Promo: { // FE: 100% support
+      List: promo_list, // Lol regular users shouldn't see this -- Yes
+      Create: promo_create, // Yes
+      Delete: promo_delete, // Yes
+      Modify: promo_modify, // Yes
     },
-    Category: {
-      Create: category_create,
-      Delete: category_delete,
-      Modify: category_modify,
+    Category: { // FE: 100% support
+      Create: category_create, // Yes
+      Delete: category_delete, // Yes
+      Modify: category_modify, // Yes
     },
-    Order: {
-      List: __order_list,
-      Modify: order_manage,
+    Order: { // FE: 100% support
+      List: __order_list, // Yes
+      Modify: order_manage, // Yes
     },
-    Review: {
-      List: review_list,
-      Delete: review_delete,
-      Modify: review_modify,
+    Review: { // FE: 66.667% support
+      List: review_list, // Yes
+      Delete: review_delete, // Yes
+      Modify: review_modify, // @todo Add support for "modify reviews" in frontend
     },
-    Menu: {
-      Create: menu_create,
-      Delete: menu_delete,
-      Modify: menu_modify,
+    Feedback: { // @todo Add support for "feedback" in frontend (doing now)
+      List: feedback_list, // @todo feedback_list
+      Create: feedback_create, // @todo feedback_create
+      Delete: feedback_delete, // @todo feedback_delete
+      Modify: feedback_modify, // @todo feedback_modify
+    },
+    Menu: { // FE: 100% support
+      Create: menu_create, // Yes
+      Delete: menu_delete, // Yes
+      Modify: menu_modify, // Yes
     },
   };
-  Dash = {
-    List: dash_list,
+  Dash = { // FE: 100% support
+    List: dash_list, // Yes
   };
-  Dynamic = {
-    Image: dynamic_banner,
+  Dynamic = { // FE: 100% support
+    Image: dynamic_banner, // Yes
   };
-  Menu = {
-    Find: menu_find,
-    List: menu_list,
-    Random: menu_random,
+  Menu = { // FE: 100% support
+    Find: menu_find, // Yes
+    List: menu_list, // Yes
+    Random: menu_random, // Yes
     // Lookup: menu_lookup,
-    Slug: {
-      Exist: slug_exists, // List all the slugs
+    Slug: { // FE: 100% support
+      Exist: slug_exists, // List all the slugs -- Yes
     },
   };
-  Category = {
-    List: category_list, // Lol regular users shouldn't see this
+  Category = { // FE: 100% support
+    List: category_list, // Lol regular users shouldn't see this -- Yes
   };
-  Order = {
-    List: order_list,
+  Order = { // FE: 100% support
+    List: order_list, // Yes
     // Lookup: order_lookup,
-    Create: order_create,
-    Delete: order_delete,
-    Modify: order_modify,
+    Create: order_create, // Yes
+    Delete: order_delete, // Yes
+    Modify: order_modify, // Yes
   };
 
-  Review = {
-    Create: review_create,
+  Review = { // FE: 100% support
+    Create: review_create, // Yes
   };
 
-  Search = {
-    Lookup: global_lookup, // You can surely search, but not list
+  Search = { // FE: 100% support
+    Lookup: global_lookup, // You can surely search, but not list -- Yes
   };
-  User = {
+  User = { // FE: 66.667% support
     Cart: {
-      List: cart_list, // "What's in my cart?"
-      Modify: cart_modify, // "Add to cart"
-      Delete: cart_delete, // Remove items from cart or empty it completely
+      List: cart_list, // "What's in my cart?" -- Yes
+      Modify: cart_modify, // "Add to cart" -- Yes
+      Delete: cart_delete, // Remove items from cart or empty it completely -- Partial (50%) @todo cart_delete
     },
   };
 }

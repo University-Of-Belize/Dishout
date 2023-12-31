@@ -103,6 +103,14 @@ class IWEU_STRINGS {
     WPROFFOUND:
       "Our filters detected that your review contained profane language, so was modified in order to comply with the platform's standards. <b>It was hidden from public view automatically.</b>",
   };
+  Feedback = {
+    ENOTFOUND: "Submission not found.",
+    EUNAUTHORIZED: "You do not own this submission.",
+    IMODIFY: "Submission modified sucessfully.",
+    ICREATE: "Submission created sucessfully.",
+    WPROFFOUND:
+      "Our filters detected that your submission contained profane language, so was modified in order to comply with the platform's standards.",
+  };
   Category = {
     ENOTFOUND: "Category not found.",
     EEXISTS: "Category or alias exists. Please choose another name or alias.",
