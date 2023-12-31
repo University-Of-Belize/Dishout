@@ -111,6 +111,11 @@ class IWEU_STRINGS {
     WPROFFOUND:
       "Our filters detected that your submission contained profane language, so was modified in order to comply with the platform's standards.",
   };
+  Post = {
+    ENOTFOUND: "Help article not found.",
+    IMODIFY: "Article modified sucessfully.",
+    ICREATE: "Article created sucessfully.",
+  };
   Category = {
     ENOTFOUND: "Category not found.",
     EEXISTS: "Category or alias exists. Please choose another name or alias.",

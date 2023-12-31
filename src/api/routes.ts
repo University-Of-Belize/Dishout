@@ -135,6 +135,22 @@ router.delete("/admin/feedback/manage", (req: Request, res: Response) => {
 router.put("/admin/feedback/manage", (req: Request, res: Response) => {
   Admin.Feedback.Modify(req, res);
 });
+// Posts (Help-center article posting)
+router.get("/admin/post/lookup", (req: Request, res: Response) => {
+  Admin.Post.Lookup(req, res);
+});
+router.get("/admin/post/manage", (req: Request, res: Response) => {
+  Admin.Post.List(req, res);
+});
+router.post("/admin/post/manage", (req: Request, res: Response) => {
+  Admin.Post.Create(req, res);
+});
+router.delete("/admin/post/manage", (req: Request, res: Response) => {
+  Admin.Post.Delete(req, res);
+});
+router.put("/admin/post/manage", (req: Request, res: Response) => {
+  Admin.Post.Modify(req, res);
+});
 // Menu
 router.post("/admin/menu/manage", (req: Request, res: Response) => {
   Admin.Menu.Create(req, res);

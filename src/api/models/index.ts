@@ -13,6 +13,7 @@ import {
 } from "./Admin/Promos";
 import { review_delete, review_list, review_modify } from "./Admin/Reviews";
 import { feedback_create, feedback_delete, feedback_list, feedback_modify } from "./Admin/Feedback";
+import { post_lookup, post_create, post_delete, post_list, post_modify } from "./Admin/Posts";
 import {
   user_find,
   user_create,
@@ -79,11 +80,18 @@ class API {
       Delete: review_delete, // Yes
       Modify: review_modify, // @todo Add support for "modify reviews" in frontend
     },
-    Feedback: { // @todo Add support for "feedback" in frontend (doing now)
+    Feedback: { // FE: 75% support @todo Finish support for "feedback" in frontend (doing now)
       List: feedback_list, // Yes
       Create: feedback_create, // Yes
       Delete: feedback_delete, // Yes
       Modify: feedback_modify, // @todo feedback_modify
+    },
+    Post: { // @todo Add support for "post" in frontend (doing now)
+      Lookup: post_lookup, // Yes
+      List: post_list, // Yes
+      Create: post_create, // Yes
+      Delete: post_delete, // Yes
+      Modify: post_modify, // @todo feedback_modify
     },
     Menu: { // FE: 100% support
       Create: menu_create, // Yes
