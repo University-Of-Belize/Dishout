@@ -85,6 +85,7 @@ async function feedback_create(req: Request, res: Response) {
   sendEmail(
     `${settings.email.username}@${settings.email.domain}`, // @ts-ignore
     `[ADMINISTRATOR]: Plattr — Feedback from ${user.username}`,
+    null,
     `Hey there admin!<br/><br/>
     One of your users (@${user.username}) has submitted feedback.<br/>
     Here is what they wrote:<br/><br/>
@@ -94,7 +95,6 @@ async function feedback_create(req: Request, res: Response) {
     Also, you can reply to this email to respond to their comment.<br/><br/>
     Good luck!<br/>
     ${settings.server.nickname} Server`,
-    null,
     user.email
   );
   // Return the new feedback as a JSON response

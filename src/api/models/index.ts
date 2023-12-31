@@ -80,9 +80,9 @@ class API {
       Modify: review_modify, // @todo Add support for "modify reviews" in frontend
     },
     Feedback: { // @todo Add support for "feedback" in frontend (doing now)
-      List: feedback_list, // @todo feedback_list
-      Create: feedback_create, // @todo feedback_create
-      Delete: feedback_delete, // @todo feedback_delete
+      List: feedback_list, // Yes
+      Create: feedback_create, // Yes
+      Delete: feedback_delete, // Yes
       Modify: feedback_modify, // @todo feedback_modify
     },
     Menu: { // FE: 100% support
