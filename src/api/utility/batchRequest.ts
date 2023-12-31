@@ -1,9 +1,9 @@
 // Tired of writing the same code each time. This file is a generalization
 import { Request, Response } from "express";
 import mongoose, { Model } from "mongoose";
-import { wis_string, what_is } from "./What_Is";
-import { get_authorization_user } from "./Authentication";
 import { ErrorFormat, iwe_strings } from "../strings";
+import { get_authorization_user } from "./Authentication";
+import { what_is, wis_string } from "./What_Is";
 
 // Object deletion
 /**
@@ -27,7 +27,8 @@ async function __data_table_trigger_delete(
   ENOTFOUND: string,
   is_not_objectid: boolean = false,
   RefModel?: Model<any>, // The model of the referencing documents
-  refField?: string // The field in the referencing documents that contains the reference
+  refField?: string, // The field in the referencing documents that contains the reference
+  staffRequired: boolean = true // If staff is required in order to call this function
 ) {
   // Check our 'what_is'
   if (req.body["what"] != whats) {
@@ -43,14 +44,16 @@ async function __data_table_trigger_delete(
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
-  // Is this person a staff member?
-  // @ts-ignore
-  if (!user.staff) {
-    return res
-      .status(403)
-      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  // Trigger this only if a staff member is required
+  if (staffRequired) {
+    // Is this person a staff member?
+    // @ts-ignore
+    if (!user.staff) {
+      return res
+        .status(403)
+        .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+    }
   }
-
   // Extract the object ID from the request body
   const objectId = wis_string(req);
   // Check if objectId is a valid MongoDB ObjectId if is_not_object is false

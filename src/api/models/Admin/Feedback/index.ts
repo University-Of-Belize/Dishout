@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
 // Import the feedback
 import Feedback from "../../../../database/models/Feedback";
+import { ErrorFormat, iwe_strings } from "../../../strings";
 import what from "../../../utility/Whats";
-import { iwe_strings, ErrorFormat } from "../../../strings";
 // Generic batch request
-import { delete_object, list_object } from "../../../utility/batchRequest";
-import { get_authorization_user } from "../../../utility/Authentication";
-import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
-import settings from "../../../../config/settings.json";
 import Filter from "bad-words";
 import mongoose from "mongoose";
+import settings from "../../../../config/settings.json";
 import { sendEmail } from "../../../../util/email";
+import { get_authorization_user } from "../../../utility/Authentication";
+import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
+import { delete_object, list_object } from "../../../utility/batchRequest";
 
 /***** BAD WORDS FILTER *****/
 const filter = new Filter();
@@ -131,7 +131,11 @@ async function feedback_delete(req: Request, res: Response) {
     Feedback,
     "_id",
     what.private.feedback,
-    iwe_strings.Feedback.ENOTFOUND
+    iwe_strings.Feedback.ENOTFOUND,
+    false,
+    undefined,
+    undefined,
+    false
   );
 }
 async function feedback_modify(req: Request, res: Response) {
@@ -205,4 +209,4 @@ function check_values(res: Response, comment: string, id?: string) {
   }
 }
 
-export { feedback_list, feedback_create, feedback_delete, feedback_modify };
+export { feedback_create, feedback_delete, feedback_list, feedback_modify };
