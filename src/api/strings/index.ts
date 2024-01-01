@@ -98,23 +98,23 @@ class IWEU_STRINGS {
     EUNAUTHORIZED: "You do not own this review.",
     ERANGEERROR: "Rating must be an integer between 1 and 5.",
     EASPNOEXIST: "Associated product or review does not exist.",
-    IMODIFY: "Review modified sucessfully.",
-    ICREATE: "Review created sucessfully.",
+    IMODIFY: "Review modified successfully.",
+    ICREATE: "Review created successfully.",
     WPROFFOUND:
       "Our filters detected that your review contained profane language, so was modified in order to comply with the platform's standards. <b>It was hidden from public view automatically.</b>",
   };
   Feedback = {
     ENOTFOUND: "Submission not found.",
     EUNAUTHORIZED: "You do not own this submission.",
-    IMODIFY: "Submission modified sucessfully.",
-    ICREATE: "Submission created sucessfully.",
+    IMODIFY: "Submission modified successfully.",
+    ICREATE: "Submission created successfully.",
     WPROFFOUND:
       "Our filters detected that your submission contained profane language, so was modified in order to comply with the platform's standards.",
   };
   Post = {
     ENOTFOUND: "Help article not found.",
-    IMODIFY: "Article modified sucessfully.",
-    ICREATE: "Article created sucessfully.",
+    IMODIFY: "Article modified successfully.",
+    ICREATE: "Article created successfully.",
   };
   Category = {
     ENOTFOUND: "Category not found.",
