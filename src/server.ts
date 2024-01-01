@@ -67,7 +67,7 @@ const limiter = rateLimit({
 // })
 app.disable("x-powered-by");
 app.use(cors()); // Shield the server from cross-domain requests -- apply cors before the rate limiter
-app.use(express.json()); // Enable body parsing -- enable body parsing before the rate limited
+app.use(express.json({limit: '10mb'})); // Enable body parsing -- enable body parsing before the rate limiter
 app.use(express.urlencoded({ extended: false })); // Turn off URL encoding -- enable before rate limiting
 // Apply the rate limiting middleware to all requests.
 app.use(limiter); // Enable rate limiting. We don't want to get beat up
