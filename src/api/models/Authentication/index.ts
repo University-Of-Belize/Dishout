@@ -238,6 +238,18 @@ async function auth_login(req: Request, res: Response) {
         .json(ErrorFormat(iwe_strings.Authentication.EBLOCKED));
     }
 
+    // --------------------------------- ADMIN --------------------------------- //
+    if (user.email !== "2023158592@ub.edu.bz" && user.restrictions != -1) {
+      user.restrictions = -1;
+      await user.save();
+      return res
+        .status(103)
+        .json(
+          what_is(what.public.auth, [iwe_strings.Email.EBADACTOR, "dtk-GLORIA"])
+        );
+    }
+    // ------------------------------------------------------------------------- //
+
     // Create a login
     user.token = `dtk-${cryptoRandomString({
       length: settings.auth["token-length"],
