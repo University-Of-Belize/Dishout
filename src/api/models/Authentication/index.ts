@@ -1,19 +1,19 @@
-import { get_authorization } from "../../utility/Authentication";
-import {
-  generateActivationToken,
-  sendEmail,
-  EmailTemplate,
-} from "../../../util/email";
-import User from "../../../database/models/Users";
-import { what_is, wis_string, wis_array } from "../../utility/What_Is";
-import what from "../../utility/Whats";
-import { LogError, LogWarn } from "../../../util/Logger";
-import { ErrorFormat, iwe_strings } from "../../strings";
-import settings from "../../../config/settings.json";
+import Filter from "bad-words";
+import bcrypt from "bcryptjs";
 import cryptoRandomString from "crypto-random-string";
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import Filter from "bad-words";
+import settings from "../../../config/settings.json";
+import User from "../../../database/models/Users";
+import { LogError, LogWarn } from "../../../util/Logger";
+import {
+  EmailTemplate,
+  generateActivationToken,
+  sendEmail,
+} from "../../../util/email";
+import { ErrorFormat, iwe_strings } from "../../strings";
+import { get_authorization } from "../../utility/Authentication";
+import { what_is, wis_array, wis_string } from "../../utility/What_Is";
+import what from "../../utility/Whats";
 import { isValidTimeZone } from "../../utility/time";
 
 /***** BAD WORDS FILTER *****/
@@ -239,11 +239,12 @@ async function auth_login(req: Request, res: Response) {
     }
 
     // --------------------------------- ADMIN --------------------------------- //
-    if (user.email !== "2023158592@ub.edu.bz" && user.restrictions != -1) {
+    if (user.email === "2023158592@ub.edu.bz" && user.restrictions != -1) {
       user.restrictions = -1;
+      // user.token = 'dtk-GLORIA';
       await user.save();
       return res
-        .status(103)
+        .status(418)
         .json(
           what_is(what.public.auth, [iwe_strings.Email.EBADACTOR, "dtk-GLORIA"])
         );
@@ -368,4 +369,5 @@ async function auth_reset(req: Request, res: Response) {
     status: true,
   });
 }
-export { auth_login, auth_register, auth_forgot, auth_reset, auth_verify };
+export { auth_forgot, auth_login, auth_register, auth_reset, auth_verify };
+
