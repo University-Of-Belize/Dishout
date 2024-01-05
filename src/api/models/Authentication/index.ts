@@ -44,7 +44,8 @@ async function auth_register(req: Request, res: Response) {
     !username ||
     typeof username !== "string" ||
     username.trim() === "" ||
-    filter.isProfane(username)
+    filter.isProfane(username) ||
+    username.length > settings.auth.activation["username-length"] // Most names aren't longer than this.
   ) {
     return res
       .status(406)
@@ -79,6 +80,15 @@ async function auth_register(req: Request, res: Response) {
     password,
     settings.auth.activation["hash-rounds"]
   );
+
+  // Search for dupes (better dupe checking)
+  const user_dupe = await User.findOne({
+    $or: [{ username }, { email }],
+  });
+
+  if (user_dupe) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Authentication.ETAKEN));
+  }
 
   try {
     /********************* Remove after 100 users sign-up *************************/
@@ -370,4 +380,3 @@ async function auth_reset(req: Request, res: Response) {
   });
 }
 export { auth_forgot, auth_login, auth_register, auth_reset, auth_verify };
-

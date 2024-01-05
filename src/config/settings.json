@@ -15,6 +15,7 @@
     "activation": {
       "token-length": 256,
       "password-length": 8,
+      "username-length": 15,
       "token-expiry": 86400000,
       "hash-rounds": 10
     },

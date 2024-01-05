@@ -431,7 +431,12 @@ function check_values(
   if (
     typeof username !== "string" ||
     username.trim() === "" ||
-    filter.isProfane(username)
+    (!old_username && filter.isProfane(username)) || // Really weird stuff going on. Don't change this condition. It's correct.
+    (old_username && filter.isProfane(old_username)) ||
+    (!old_username &&
+      username.length > settings.auth.activation["username-length"]) || // Here too. Don't change. It's also correct.
+    (old_username &&
+      old_username.length > settings.auth.activation["username-length"]) // Most names aren't longer than this.
   ) {
     return res
       .status(406)
@@ -483,7 +488,11 @@ function check_values(
   return null;
 }
 
-async function user_modify_picture(req: Request, res: Response, type: "profile_picture" | "banner") {
+async function user_modify_picture(
+  req: Request,
+  res: Response,
+  type: "profile_picture" | "banner"
+) {
   // Check our 'what_is'
   if (req.body["what"] != what.private.user) {
     // Two underscores means it's an admin function
@@ -520,5 +529,5 @@ export {
   user_delete,
   user_list,
   user_modify,
-  user_modify_picture
+  user_modify_picture,
 };
