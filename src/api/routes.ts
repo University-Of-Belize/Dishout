@@ -241,6 +241,10 @@ router.post("/user/cart", (req: Request, res: Response) => {
 router.delete("/user/cart", (req: Request, res: Response) => {
   User.Cart.Delete(req, res);
 });
+// Notifications
+router.post("/user/notifications", (req: Request, res: Response) => {
+  User.Notifications.Subscribe(req, res);
+});
 
 
 // Print the routes for reference
