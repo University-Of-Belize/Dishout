@@ -98,7 +98,7 @@ async function auth_register(req: Request, res: Response) {
     const randomNum = arr[Math.floor(Math.random() * arr.length)];
     /************************************************************************* */
     const userID = Math.round(new Date().getTime() / 1000).toString();
-    await User.create({
+    const user = await User.create({
       // Create a new user
       id: userID,
       email,
@@ -107,6 +107,10 @@ async function auth_register(req: Request, res: Response) {
       staff: username === "root", // Make user 'staff' if they are root
       // credit: 0.0, @remind Remove after 100 users sign-up
       credit: randomNum,
+      channel_id: cryptoRandomString({
+        length: settings.auth["token-length"],
+        type: "alphanumeric",
+      }), // Unset
       cart: undefined,
       activation_token: null,
       token: null,
@@ -114,7 +118,8 @@ async function auth_register(req: Request, res: Response) {
       reset_token: null,
       restrictions: 0,
     });
-
+    // Set the channelID
+    user.channel_id = `user_${user._id}`;
     const activationToken = await generateActivationToken(email);
     if (activationToken === -1) {
       return res

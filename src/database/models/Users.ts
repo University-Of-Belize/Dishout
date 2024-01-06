@@ -52,6 +52,10 @@ const usersSchema = new Schema({
     // Cart: [{product, quantity}]
     required: false,
   },
+  channel_id:{ // Personal order status/notification channel in format `user_${user._id}`
+    type: String,
+    required: true,
+  },
   activation_token: {
     type: String,
     required: false,
