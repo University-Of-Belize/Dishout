@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import * as admin from "firebase-admin";
 import mongoose from "mongoose";
 import Product from "../../../database/models/Products";
+import settings from "../../../config/settings.json";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
 import { what_is, wis_array, wis_string } from "../../utility/What_Is";
@@ -190,4 +192,50 @@ async function cart_list(req: Request, res: Response) {
   return res.json(what_is(what.public.user, user.cart));
 }
 
-export { cart_delete, cart_list, cart_modify };
+// Firebase push notifications
+async function notifications_subscribe(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] !== what.public.user) {
+    // Two underscores means it's an admin function
+    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+  }
+
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Get the device token
+  const token = wis_string(req);
+  // Subscribe to the topic
+  await admin
+    .messaging() // @ts-ignore
+    .subscribeToTopic(token, user.channel_id)
+    .then(async function (response) {
+      if (response.failureCount > 0) {
+        return res
+          .status(500) // Return any errors, if necessary
+          .json(ErrorFormat(JSON.stringify(response.errors)));
+      }
+
+      // Test scenario @remind Remove after some time ------------------------------------------------------------------
+      await admin
+      .messaging()
+      .send({
+        notification: {
+          title: settings.server.nickname,
+          body: "Hey, there! Alerts will look like this.",
+        }, // @ts-ignore
+        topic: user.channel_id,
+      })
+      // --------------------------------------------------------------------------------
+      // Return true if everything's 'ok'
+      return res.json({ status: true });
+    });
+}
+
+export { cart_delete, cart_list, cart_modify, notifications_subscribe };
+
