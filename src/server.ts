@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { rateLimit } from "express-rate-limit";
 import config from "./config/settings.json";
+import serviceAccount from "./config/service_account.json";
 import { LogError, LogServer } from "./util/Logger";
 import createDatabase from "./database";
 import cors from "cors";
@@ -12,11 +13,11 @@ import { isValidTimeZone } from "./api/utility/time";
 
 // Check the config file
 // For a weird, unexplainable reason, it looks better with two 'log's
-if (!config) {
+if (!config || !serviceAccount) {
   console.error(
-    "\n\nConfig file not found. Please configure the config file manually."
+    "\n\nConfig file or Firebase service account configuration not found. Please configure these files manually."
   );
-  LogError("Config file not found. Please configure the config file manually.");
+  LogError("Config file or Firebase service account configuration not found. Please configure these files manually.");
   process.exit(1);
 }
 // Check the config file
@@ -80,7 +81,7 @@ app.get("/proxy", (request, response) =>
   })
 ); // Utility path for checking # of proxies (running machines)
 
-// Create our database
+// Create our database (if needed)
 createDatabase();
 
 // Setup our servername
