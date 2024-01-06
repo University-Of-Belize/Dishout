@@ -1,12 +1,14 @@
 import { Request, Response, Router } from "express"; // Our routing machine
+import * as admin from "firebase-admin";
+import serviceAccount from '../config/service_account.json'; // Our service account
 import settings from "../config/settings.json";
 import { LogError, LogRoutes } from "../util/Logger";
 import {
   Admin,
   Authentication,
   Category,
-  Dynamic,
   Dash,
+  Dynamic,
   Menu,
   Order,
   Review,
@@ -35,10 +37,14 @@ let engine: any; // It's going to be assigned soon, anyway.
         LogError("Failed to initialize engine.");
       }
     }, // @ts-ignore
-    parseInt(settings.search["indexing-interval"]) * 1000, // In seconds
+    parseInt(settings.search["indexing-interval"]) * 1000 // In seconds
   );
 })();
 const router = Router(); // Initialize!
+admin.initializeApp({
+  // Initialize our firebase instance, as well!
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+});
 
 // Our routes
 // Class API
@@ -66,12 +72,18 @@ router.delete("/admin/user/manage", (req: Request, res: Response) => {
 router.put("/admin/user/manage", (req: Request, res: Response) => {
   Admin.User.Modify.default(req, res);
 });
-router.put("/admin/user/manage/profile_picture", (req: Request, res: Response) => {
-  Admin.User.Modify.Picture(req, res, "profile_picture");
-});
-router.put("/admin/user/manage/banner_picture", (req: Request, res: Response) => {
-  Admin.User.Modify.Picture(req, res, "banner");
-});
+router.put(
+  "/admin/user/manage/profile_picture",
+  (req: Request, res: Response) => {
+    Admin.User.Modify.Picture(req, res, "profile_picture");
+  }
+);
+router.put(
+  "/admin/user/manage/banner_picture",
+  (req: Request, res: Response) => {
+    Admin.User.Modify.Picture(req, res, "banner");
+  }
+);
 
 // Promo
 router.get("/admin/promo/manage", (req: Request, res: Response) => {
@@ -245,7 +257,6 @@ router.delete("/user/cart", (req: Request, res: Response) => {
 router.post("/user/notifications", (req: Request, res: Response) => {
   User.Notifications.Subscribe(req, res);
 });
-
 
 // Print the routes for reference
 router.stack.forEach(LogRoutes.bind(null, [])); // Pass in our routes
