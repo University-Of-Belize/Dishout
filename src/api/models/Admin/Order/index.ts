@@ -13,12 +13,13 @@ import settings from "../../../../config/settings.json";
 import { sendEmail } from "../../../../util/email";
 
 import what from "../../../utility/Whats";
-import { ErrorFormat, iwe_strings } from "../../../strings";
+import { ErrorFormat, NotifyFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import { what_is, wis_array } from "../../../utility/What_Is";
 import { list_object } from "../../../utility/batchRequest";
-import mongoose from "mongoose";
 import { isValidTimeZone } from "../../../utility/time";
+import * as admin from "firebase-admin";
+import mongoose from "mongoose";
 
 // List all orders
 async function order_list(req: Request, res: Response) {
@@ -165,6 +166,39 @@ async function order_manage(req: Request, res: Response) {
               return r;
             })()}`
           );
+          // Send push notification as well
+          await admin.messaging().send(
+            NotifyFormat(
+              settings.server.nickname + " — Order Accepted",
+              iwe_strings.Order.IOSTATUSACCEPTED +
+                ` It will be ready at ${(() => {
+                  let r;
+                  try {
+                    if (
+                      !order_from.timeZone ||
+                      !isValidTimeZone(order_from.timeZone)
+                    ) {
+                      throw new Error("Invalid timezone");
+                    }
+                    r = `${new Date(new_delay * 1000).toLocaleString(
+                      undefined,
+                      {
+                        timeZone: order_from.timeZone ?? "BAD_TZ",
+                      }
+                    )} (your time).`;
+                  } catch {
+                    r = `${new Date(new_delay * 1000).toLocaleString(
+                      undefined,
+                      {
+                        timeZone: settings.server.defaultTimeZone,
+                      }
+                    )}.`;
+                  }
+                  return r;
+                })()}`,
+              order_from.channel_id
+            )
+          );
         } else {
           await sendEmail(
             order_from.email,
@@ -172,6 +206,17 @@ async function order_manage(req: Request, res: Response) {
             null,
             `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
           );
+          // Send push notification as well
+          await admin
+            .messaging()
+            .send(
+              NotifyFormat(
+                settings.server.nickname + " — Your Order is Ready",
+                iwe_strings.Order.IOSTATUSREADYNOW +
+                  " Drop by at the cafeteria and pick it up!",
+                order_from.channel_id
+              )
+            );
         }
       }
       break;
@@ -184,6 +229,18 @@ async function order_manage(req: Request, res: Response) {
         null,
         `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSDENIED}`
       );
+      // Send push notification as well
+      await admin
+        .messaging()
+        .send(
+          NotifyFormat(
+            settings.server.nickname + " — Order Rejected",
+            "Unfortunately, " +
+              iwe_strings.Order.IOSTATUSDENIED.toLowerCase() +
+              " Sorry about that.",
+            order_from.channel_id
+          )
+        );
       return res
         .status(200)
         .json(what_is(what.private.order, iwe_strings.Order.IDELETE));
@@ -201,13 +258,31 @@ async function order_manage(req: Request, res: Response) {
             null,
             `Hi ${order_from.username},<br/><br/>${
               iwe_strings.Order.IOSTATUSMODIFIED
-            }. Note that you are no longer paying $${
-              order.total_amount ?? "0.00"
-            }, but instead $${new_amount}.<br/>Questions regarding this price change?<br/>
+            } Note that you are no longer paying $${
+              parseFloat(order.total_amount.toString()).toFixed(2) ?? "0.00"
+            }, but instead $${parseFloat(new_amount.toString()).toFixed(
+              2
+            )}.<br/>Questions regarding this price change?<br/>
             Please direct any queries or concerns either to one of our staff members or get in touch with us at ${
               settings.email.username
             }@${settings.email.domain}.`
           );
+          // Send push notification as well
+          await admin
+            .messaging()
+            .send(
+              NotifyFormat(
+                settings.server.nickname + " — Order Modified",
+                iwe_strings.Order.IOSTATUSMODIFIED +
+                  ` Your total amount to pay has been updated from $${
+                    parseFloat(order.total_amount.toString()).toFixed(2) ??
+                    "0.00"
+                  } to $${parseFloat(new_amount.toString()).toFixed(
+                    2
+                  )}. Contact our staff for any queries you may have.`,
+                order_from.channel_id
+              )
+            );
           order.total_amount = new_amount;
         }
         const _p = await Promo.findById(order.promo_code);
@@ -219,6 +294,17 @@ async function order_manage(req: Request, res: Response) {
               null,
               `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
             );
+            // Send push notification as well
+            await admin
+              .messaging()
+              .send(
+                NotifyFormat(
+                  settings.server.nickname + " — Order Modified",
+                  iwe_strings.Order.IOSTATUSMODIFIED +
+                    ` The promo code '${new_promo}' has been applied to your order, taking off a total of ${new_promo_object.discount_percentage}% off your total amount to pay.`,
+                  order_from.channel_id
+                )
+              );
             order.promo_code = new_promo_object._id; // Cast string to ObjectId
           } else {
             const _p = await Promo.findById(order.promo_code);
@@ -227,8 +313,19 @@ async function order_manage(req: Request, res: Response) {
                 order_from.email,
                 `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
                 null,
-                `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been updated to ${new_promo}.`
+                `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been swapped to ${new_promo}.`
               );
+              // Send push notification as well
+              await admin
+                .messaging()
+                .send(
+                  NotifyFormat(
+                    settings.server.nickname + " — Order Modified",
+                    iwe_strings.Order.IOSTATUSMODIFIED +
+                      ` Your order's promo code has been swapped from '${_p.code}' to ${new_promo}.`,
+                    order_from.channel_id
+                  )
+                );
               order.promo_code = new_promo_object._id; // Cast string to ObjectId
             }
           }
@@ -241,21 +338,73 @@ async function order_manage(req: Request, res: Response) {
           const delayInMinutes =
             (newDelay.getTime() - oldDelay.getTime()) / 1000 / 60;
 
+          const delayInHours = delayInMinutes >= 60 ? Math.floor(delayInMinutes / 60) : 0;
+
           if (!order.delay_time) {
             await sendEmail(
               order_from.email,
               `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
               null,
-              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by ${delayInMinutes} minutes.`
+              `Hi ${order_from.username},<br/><br/>${
+                iwe_strings.Order.IOSTATUSDELAYED
+              }. Your order has been delayed by <b>${
+                delayInHours !== 0 ? delayInHours + " hours, " : ""
+              }${
+                delayInMinutes !== 0
+                  ? delayInMinutes - delayInHours * 60 + " minutes"
+                  : ""
+              }</b>.`
             );
+            // Send push notification as well
+            await admin
+              .messaging()
+              .send(
+                NotifyFormat(
+                  settings.server.nickname + " — Order Delayed",
+                  iwe_strings.Order.IOSTATUSDELAYED +
+                    ` Your order has been delayed by ${
+                      delayInHours !== 0 ? delayInHours + " hours, " : ""
+                    }${
+                      delayInMinutes !== 0
+                        ? delayInMinutes - delayInHours * 60 + " minutes"
+                        : ""
+                    }.`,
+                  order_from.channel_id
+                )
+              );
           } else {
             // Handle the case where the order already had a delay time
             await sendEmail(
               order_from.email,
               `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDELAYED}`,
               null,
-              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Your order has been delayed by another ${delayInMinutes} minutes.`
+              `Hi ${order_from.username},<br/><br/>${
+                iwe_strings.Order.IOSTATUSMODIFIED
+              } Your order has been delayed by another <b>${
+                delayInHours !== 0 ? delayInHours + " hours, " : ""
+              }${
+                delayInMinutes !== 0
+                  ? delayInMinutes - delayInHours * 60 + " minutes"
+                  : ""
+              }</b>.`
             );
+            // Send push notification as well
+            await admin
+              .messaging()
+              .send(
+                NotifyFormat(
+                  settings.server.nickname + " — Order Delayed",
+                  iwe_strings.Order.IOSTATUSDELAYED +
+                    `. Your order has been delayed by another ${
+                      delayInHours !== 0 ? delayInHours + " hours, " : ""
+                    }${
+                      delayInMinutes !== 0
+                        ? delayInMinutes - delayInHours * 60 + " minutes"
+                        : ""
+                    }.`,
+                  order_from.channel_id
+                )
+              );
           }
           order.delay_time = new_delay;
         }

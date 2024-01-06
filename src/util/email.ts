@@ -29,9 +29,9 @@ async function generateActivationToken(user_email: string) {
 async function sendEmail(
   email: string,
   subject: string,
-  body: string | null,
-  html_body: string | null,
-  reply_to: string | null
+  body?: string | null,
+  html_body?: string | null,
+  reply_to?: string | null
 ) {
   try {
     let transporter = nodemailer.createTransport({
