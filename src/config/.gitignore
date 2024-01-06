@@ -1,2 +1,2 @@
 # Exclude any service accounts from being uploaded
-./service_account.json
+service_account.json
