@@ -35,8 +35,16 @@ async function menu_create(req: Request, res: Response) {
   }
 
   // Extract information from the 'what_is' object
-  const [category, slug, productName, description, keywords, image, price, in_stock] =
-    wis_array(req);
+  const [
+    category,
+    slug,
+    productName,
+    description,
+    keywords,
+    image,
+    price,
+    in_stock,
+  ] = wis_array(req);
 
   // verify
   const testFailed = check_values(
@@ -54,19 +62,23 @@ async function menu_create(req: Request, res: Response) {
   if (testFailed) return;
 
   // Check if a document with the same slug or product name already exists
-  const existingMenu = await Menu.findOne({ $or: [{ slug }, { productName }] });
+  const existingMenu = await Menu.findOne({ $or: [{ slug: slug.trim().toLowerCase() }, { productName }] });
   if (existingMenu) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.EEXISTS));
   }
 
   // There are some reserved slugs that we can't use
-  if (settings.products["disallowed-product-names"].includes(slug)) {
+  if (
+    settings.products["disallowed-product-names"].includes(
+      slug.trim().toLowerCase()
+    )
+  ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ERESERVEDSLUG));
   }
 
   // create the menu
   const newMenu = await Menu.create({
-    slug: slug,
+    slug: slug.trim().toLowerCase(),
     productName: productName,
     price: price,
     // image: image,
@@ -157,19 +169,19 @@ async function menu_modify(req: Request, res: Response) {
   if (testFailed) return;
 
   // find menu by the slug
-  const menu = await Menu.findOne({ slug: old_slug });
+  const menu = await Menu.findOne({ slug: old_slug.trim().toLowerCase() });
   if (!menu) {
     return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
   }
 
   // There are some reserved slugs that we can't use
-  if (settings.products["disallowed-product-names"].includes(slug)) {
+  if (settings.products["disallowed-product-names"].includes(slug.trim().toLowerCase())) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ERESERVEDSLUG));
   }
 
   // update menu fields
   if (slug) {
-    menu.slug = slug;
+    menu.slug = slug.trim().toLowerCase();
   }
   if (productName) {
     menu.productName = productName;
