@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import mongoose from "mongoose";
 import Product from "../../../database/models/Products";
+import ProductResearch from "../../../database/models/research/ProductData";
 import settings from "../../../config/settings.json";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
@@ -29,6 +30,7 @@ async function cart_modify(req: Request, res: Response) {
   const [item, quantity] = wis_array(req);
 
   let product;
+  let productresearch;
   // Check if ID is a valid string/ObjectId
   if (typeof item != "string") {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
@@ -57,17 +59,24 @@ async function cart_modify(req: Request, res: Response) {
     return res.status(406).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
 
+  // Data to track
+  productresearch = await ProductResearch.findOne({ product });
+  if (!productresearch) {
+    productresearch = await ProductResearch.create({ product });
+  }
+
   // Decrease the quantity
   product.in_stock = product.in_stock - quantity;
 
   // Populate the cart with the product
   // @ts-ignore
   user.cart.push({ product: product._id, quantity: quantity });
-
+  productresearch.carted += 1;
   // Save and return
   // @ts-ignore
-  user.save();
-  product.save();
+  await user.save();
+  await product.save();
+  await productresearch.save();
   res.json(what_is(what.public.user, product));
 }
 
@@ -83,6 +92,7 @@ what: "user",
 is: string // remove something from the cart
 
 */
+// @remind Add 'uncarted' research
 async function cart_delete(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] !== what.public.user) {
@@ -222,15 +232,13 @@ async function notifications_subscribe(req: Request, res: Response) {
       }
 
       // Test scenario @remind Remove after some time ------------------------------------------------------------------
-      await admin
-      .messaging()
-      .send({
+      await admin.messaging().send({
         notification: {
           title: settings.server.nickname,
-          body: "Hey, there! Alerts will look like this.",
+          body: "Alerts will look like this.",
         }, // @ts-ignore
         topic: user.channel_id,
-      })
+      });
       // --------------------------------------------------------------------------------
       // Return true if everything's 'ok'
       return res.json({ status: true });
@@ -238,4 +246,3 @@ async function notifications_subscribe(req: Request, res: Response) {
 }
 
 export { cart_delete, cart_list, cart_modify, notifications_subscribe };
-

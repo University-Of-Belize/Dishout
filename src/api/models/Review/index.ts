@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Review from "../../../database/models/Reviews";
 import Product from "../../../database/models/Products";
+import ProductResearch from "../../../database/models/research/ProductData";
 import mongoose from "mongoose";
 import Filter from "bad-words";
 
@@ -74,12 +75,19 @@ async function review_create(req: Request, res: Response) {
     hidden: filter.isProfane(content),
   });
 
+  // Data to track
+  let productresearch = await ProductResearch.findOne({ product });
+  if (!productresearch) {
+    productresearch = await ProductResearch.create({ product });
+  }
+  productresearch.reviews += 1;
   // Attach it to the product
   // @ts-ignore
   product.reviews.push(newReview);
 
   await product.save();
   await newReview.save();
+  await productresearch.save();
   // Return the new review as a JSON response
   return res.json(
     what_is(what.public.review, [
@@ -87,7 +95,7 @@ async function review_create(req: Request, res: Response) {
         ? iwe_strings.Review.WPROFFOUND
         : iwe_strings.Review.ICREATE,
       newReview,
-    ]),
+    ])
   );
 }
 export { review_create };

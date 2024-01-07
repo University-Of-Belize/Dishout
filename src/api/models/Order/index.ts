@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { list_object, delete_object } from "../../utility/batchRequest";
 import Order from "../../../database/models/Orders";
 import Product from "../../../database/models/Products";
+import ProductResearch from "../../../database/models/research/ProductData";
 import Promo from "../../../database/models/Promos";
 import what from "../../utility/Whats";
 import { ErrorFormat, iwe_strings } from "../../strings";
@@ -99,9 +100,16 @@ async function order_create(req: Request, res: Response) {
   for (let product of order.products) {
     const product_ = await Product.findById(product.product);
     if (product_) {
+      // Data to track
+      let productresearch = await ProductResearch.findOne({ product });
+      if (!productresearch) {
+        productresearch = await ProductResearch.create({ product });
+      }
+      productresearch.purchased += 1;
       totalAmount +=
         parseFloat(product_.price.toString()) *
-        parseInt(product.quantity.toString());
+        parseInt(product.quantity?.toString() ?? "0");
+      await productresearch.save(); // Constant write (is that good??)
     }
   }
 
