@@ -59,7 +59,7 @@ const productResearch = new Schema({
     default: 0,
   },
   // This is the number of times a product has been added to a collection
-  collection: { // Unused
+  collected: { // Unused
     type: Number,
     required: true,
     default: 0,
