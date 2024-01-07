@@ -76,6 +76,7 @@ class IWEU_STRINGS {
       "The provided index is out of range. Please provide an index that is within the acceptable range of the products array.",
     EREMOVALFAILED: "Failed to remove this item. Try that again once more.",
     IDELETE: "Order deleted successfully.",
+    IREADY: "Order marked as ready and removed successfully.",
     IPDELETE: "Product deleted successfully.",
     IPMODIFY: "Product modified successfully.",
     IACCEPT: "Order accepted.",

@@ -245,6 +245,30 @@ async function order_manage(req: Request, res: Response) {
         .status(200)
         .json(what_is(what.private.order, iwe_strings.Order.IDELETE));
     }
+    case "r": {
+      // Delete the order
+      await Order.findByIdAndDelete(orderId);
+      await sendEmail(
+        order_from.email,
+        `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSREADYNOW}`,
+        null,
+        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
+      );
+      // Send push notification as well
+      await admin
+        .messaging()
+        .send(
+          NotifyFormat(
+            settings.server.nickname + " — Your Order is Ready",
+            iwe_strings.Order.IOSTATUSREADYNOW +
+              " Drop by at the cafeteria and pick it up!",
+            order_from.channel_id
+          )
+        );
+      return res
+        .status(200)
+        .json(what_is(what.private.order, iwe_strings.Order.IREADY));
+    }
     case "m": // Modify the order
       {
         // Here you would handle the modifications to the order
@@ -338,7 +362,8 @@ async function order_manage(req: Request, res: Response) {
           const delayInMinutes =
             (newDelay.getTime() - oldDelay.getTime()) / 1000 / 60;
 
-          const delayInHours = delayInMinutes >= 60 ? Math.floor(delayInMinutes / 60) : 0;
+          const delayInHours =
+            delayInMinutes >= 60 ? Math.floor(delayInMinutes / 60) : 0;
 
           if (!order.delay_time) {
             await sendEmail(
