@@ -126,7 +126,7 @@ async function order_create(req: Request, res: Response) {
     user.email,
     `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSQUEUED}`,
     null, //@ts-ignore
-    `Hi ${user.username},<br/><br/>${iwe_strings.Order.IOSTATUSQUEUED}`
+    `Hi ${user.username},<br/><br/>${iwe_strings.Order.IOSTATUSQUEUED}. Your order has been queued and is awaiting review. If there's something wrong, we will contact you to check it out.`
   );
 
   res.status(201).json(what_is(what.public.order, order));

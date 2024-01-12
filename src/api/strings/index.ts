@@ -80,7 +80,7 @@ class IWEU_STRINGS {
     IPDELETE: "Product deleted successfully.",
     IPMODIFY: "Product modified successfully.",
     IACCEPT: "Order accepted.",
-    IOSTATUSQUEUED: "Your order has been queued.",
+    IOSTATUSQUEUED: "Order Queued",
     IOSTATUSACCEPTED: "Your order has been accepted for processing.",
     IOSTATUSREADYNOW: "Your order is ready now.",
     IOSTATUSDENIED: "Your order has been rejected.",

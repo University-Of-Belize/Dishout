@@ -142,7 +142,7 @@ async function order_manage(req: Request, res: Response) {
             null,
             `Hey ${order_from.username}!<br/><br/>${
               iwe_strings.Order.IOSTATUSACCEPTED
-            } It will be ready at ${(() => {
+            } We estimate it should be ready at ${(() => {
               let r;
               try {
                 if (
@@ -171,7 +171,7 @@ async function order_manage(req: Request, res: Response) {
             NotifyFormat(
               settings.server.nickname + " — Order Accepted",
               iwe_strings.Order.IOSTATUSACCEPTED +
-                ` It will be ready at ${(() => {
+                ` We estimate it should be ready at ${(() => {
                   let r;
                   try {
                     if (
@@ -385,7 +385,7 @@ async function order_manage(req: Request, res: Response) {
               .messaging()
               .send(
                 NotifyFormat(
-                  settings.server.nickname + " — Order Delayed",
+                  settings.server.nickname + " — Urgent Message (Your Order)",
                   iwe_strings.Order.IOSTATUSDELAYED +
                     ` Your order has been delayed by ${
                       delayInHours !== 0 ? delayInHours + " hours, " : ""
@@ -418,7 +418,7 @@ async function order_manage(req: Request, res: Response) {
               .messaging()
               .send(
                 NotifyFormat(
-                  settings.server.nickname + " — Order Delayed",
+                  settings.server.nickname + " — Urgent Message (Your Order)",
                   iwe_strings.Order.IOSTATUSDELAYED +
                     `. Your order has been delayed by another ${
                       delayInHours !== 0 ? delayInHours + " hours, " : ""
