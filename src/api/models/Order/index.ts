@@ -82,13 +82,15 @@ async function order_create(req: Request, res: Response) {
     case "card":
       {
         const [card_number, card_expiry, cvc, cardholder_name] = data;
-        // console.log(
-        //   card_number,
-        //   card_expiry,
-        //   cvc,
-        //   cardholder_name,
-        //   amount_to_pay
-        // );
+        console.log(
+          onelink_token,
+          onelink_salt,
+          card_number,
+          card_expiry,
+          cvc,
+          cardholder_name,
+          amount_to_pay
+        );
         const r = await fetch("https://api.onelink.bz/payment", {
           method: "POST",
           headers: {
@@ -447,3 +449,4 @@ function check_values(
 }
 
 export { order_create, order_delete, order_list, order_modify };
+
