@@ -53,7 +53,7 @@ async function order_create(req: Request, res: Response) {
   if (testFailed) return;
   let promo;
 
-  console.log(method, data, discount_code);
+  // console.log(method, data, discount_code);
 
   // Value Check
   if (
