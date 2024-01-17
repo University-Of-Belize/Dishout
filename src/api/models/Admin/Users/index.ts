@@ -150,14 +150,20 @@ async function user_create(req: Request, res: Response) {
     email,
     password: hashedPassword,
     username,
-    staff: staff,
+    staff,
     credit: parseFloat(credit).toFixed(2),
+    channel_id: cryptoRandomString({
+      length: settings.auth["token-length"],
+      type: "alphanumeric",
+    }), // Unset
     cart: undefined,
     activation_token: undefined,
     token: null,
     reset_token: null,
-    restrictions: restrictions,
+    restrictions,
   });
+  // Set the channelID
+  newUser.channel_id = `user_${newUser._id}`;
 
   if (!bypassActivation) {
     const activationToken = await generateActivationToken(email);
