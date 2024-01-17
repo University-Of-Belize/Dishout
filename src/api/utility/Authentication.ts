@@ -13,13 +13,16 @@ function get_authorization(req: Request): AuthorizationToken {
 
 // Get the header, return the user
 async function get_authorization_user(
-  req: Request,
+  req: Request
 ): Promise<typeof User | null> {
   const token: AuthorizationToken = get_authorization(req);
 
   if (token) {
     // @ts-ignore
-    const user: typeof User = await User.findOne({ token });
+    const user: typeof User = await User.findOne({ token }).populate({
+      path: "cart.product",
+      model: "Products",
+    });
     return user ?? null;
   }
   return null;

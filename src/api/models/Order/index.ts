@@ -1,17 +1,20 @@
 import { Request, Response } from "express";
-import { list_object, delete_object } from "../../utility/batchRequest";
+import mongoose, { Decimal128 } from "mongoose";
+import process from "node:process";
+import { v4 } from "uuid";
+import settings from "../../../config/settings.json";
 import Order from "../../../database/models/Orders";
 import Product from "../../../database/models/Products";
-import ProductResearch from "../../../database/models/research/ProductData";
 import Promo from "../../../database/models/Promos";
-import what from "../../utility/Whats";
+import ProductResearch from "../../../database/models/research/ProductData";
+import { sendEmail } from "../../../util/email";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
-import { what_is, wis_array, wis_string } from "../../utility/What_Is";
-import { sendEmail } from "../../../util/email";
-import settings from "../../../config/settings.json";
-import { v4 } from "uuid";
-import mongoose, { Decimal128 } from "mongoose";
+import { what_is, wis_array } from "../../utility/What_Is";
+import what from "../../utility/Whats";
+import { delete_object, list_object } from "../../utility/batchRequest";
+const onelink_token = process.env.ONELINK_TOKEN ?? settings.transactions.token;
+const onelink_salt = process.env.ONELINK_SALT ?? settings.transactions.salt;
 
 async function order_list(req: Request, res: Response) {
   await list_object(req, res, Order, what.public.order, true, false);
@@ -32,6 +35,7 @@ async function order_create(req: Request, res: Response) {
 
   // Check our authentication token and see if it matches up to a staff member
   const user = await get_authorization_user(req);
+
   if (!user) {
     return res
       .status(403)
@@ -43,15 +47,107 @@ async function order_create(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Order.EEMPTYCART));
   }
 
-  const promo_code = wis_string(req);
-  const testFailed = check_values(res, undefined, promo_code);
+  const { method, data = [], discount_code } = req.body.is; // We're doing it differently this time
+  // const promo_code = wis_string(req);
+  const testFailed = check_values(res, undefined, discount_code);
   if (testFailed) return;
-
   let promo;
-  if (promo_code) {
-    // promo = await Promo.findById(promo_code);
-    promo = await Promo.findOne({ code: promo_code }); // Accept codes instead of ObjectIds
+
+  console.log(method, data, discount_code);
+
+  // Value Check
+  if (
+    !method ||
+    (method && typeof method !== "string") ||
+    (method &&
+      method === "card" &&
+      (typeof data === "undefined" ?? data.length === 0))
+  ) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
+  // Value Check ENDS
+  if (discount_code) {
+    // promo = await Promo.findById(promo_code);
+    promo = await Promo.findOne({ code: discount_code }); // Accept codes instead of ObjectIds
+  }
+
+  const amount_to_pay = user.cart.reduce(
+    (accumulator, currentValue) =>
+      accumulator + currentValue.product.price * currentValue.quantity,
+    0
+  );
+
+  /** Conduct the transaction if we chose card */
+  switch (method) {
+    case "card":
+      {
+        const [card_number, card_expiry, cvc, cardholder_name] = data;
+        // console.log(
+        //   card_number,
+        //   card_expiry,
+        //   cvc,
+        //   cardholder_name,
+        //   amount_to_pay
+        // );
+        const r = await fetch("https://api.onelink.bz/payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${onelink_token}`, // I wish, lol
+          },
+          body: JSON.stringify({
+            token: onelink_token,
+            salt: onelink_salt,
+            nameOnCard: cardholder_name,
+            cardNumber: card_number,
+            expirationDate: card_expiry,
+            ccv: cvc, // Imagine, CCV lmao 'Cadbury Creme Egg' / 'Card Card Verification' instead of 'Card Verification Value'
+            amount: amount_to_pay,
+          }),
+        });
+        if (!r.ok) {
+          try {
+            const response = await r.json();
+            return res.status(500).json(ErrorFormat(response.msg));
+          } catch {
+            return res
+              .status(500)
+              .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
+          }
+        }
+        // @remind Remove this second condition after bro implements something better
+        const response = await r.json();
+        if (
+          !response.msg ||
+          (response.msg && isNaN(parseInt(response.msg.substring(-1, 1))))
+        ) {
+          // Take the first character and check to see if this is (quite, possibly) a numeric code
+          return res
+            .status(500)
+            .json(
+              ErrorFormat(response.msg ?? iwe_strings.Generic.EINTERNALERROR)
+            );
+        }
+      }
+      break;
+    case "credit": // @ts-ignore
+      {
+        user.credit = user.credit - amount_to_pay; // @ts-ignore
+        if (user.credit < 0) {
+          // There is a negative balance
+          return res
+            .status(400)
+            .json(ErrorFormat(iwe_strings.Users.EINSUFFICIENTFUNDS));
+        }
+      }
+      break;
+    case "pickup":
+    default:
+      return res
+        .status(400)
+        .json(ErrorFormat(iwe_strings.Generic.ENOTIMPLEMENTED));
+  }
+  /** END Conduct the transaction */
 
   const order = new Order({
     order_code: v4(),
@@ -94,8 +190,13 @@ async function order_create(req: Request, res: Response) {
   // let products = await Product.find({ _id: { $in: productIds } });
 
   // Calculate the total amount
-  let totalAmount: number = 0;
-  // Calculate the total amount based on the products in the order
+  // let totalAmount: number = 0;
+  // // Calculate the total amount based on the products in the order
+  // order.products.reduce(
+  //   (accumulator, currentValue) =>
+  //     accumulator + currentValue.price * currentValue.quantity,
+  //   0
+  // ),
   // @remind Needs refactoring to improve performance and efficiency
   for (let product of order.products) {
     const product_ = await Product.findById(product.product);
@@ -106,15 +207,12 @@ async function order_create(req: Request, res: Response) {
         productresearch = await ProductResearch.create({ product });
       }
       productresearch.purchased += 1;
-      totalAmount +=
-        parseFloat(product_.price.toString()) *
-        parseInt(product.quantity?.toString() ?? "0");
       await productresearch.save(); // Constant write (is that good??)
     }
   }
 
   // @ts-ignore
-  order.total_amount = totalAmount.toFixed(2);
+  order.total_amount = amount_to_pay.toFixed(2);
 
   // @ts-ignore
   await user.save();
@@ -348,4 +446,4 @@ function check_values(
   return 0;
 }
 
-export { order_list, order_create, order_delete, order_modify };
+export { order_create, order_delete, order_list, order_modify };

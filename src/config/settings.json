@@ -39,11 +39,15 @@
     }
   },
   "api": {
-    "API_VERSION": "v1.0",
+    "API_VERSION": "v1.1",
     "API_SVERSION": "v1"
   },
   "database": {
     "mongoURI": "mongodb://127.0.0.1:27017/dishout"
+  },
+  "transactions": {
+    "token": "",
+    "salt": ""
   },
   "UI": {
     "defaultAvatar": "https://st2.depositphotos.com/4111759/12123/v/950/depositphotos_121233262-stock-illustration-male-default-placeholder-avatar-profile.jpg"

@@ -57,6 +57,7 @@ class IWEU_STRINGS {
     EINTERNALERROR: "There was a system error. Please try again.",
     ENOACCESS: "You do not have permission to call this portion of the API.",
     EFOLLOWRULES: "Follow the rules.",
+    ENOTIMPLEMENTED: "This feature is not implemented yet.",
   };
   Users = {
     ENOTFOUND: "The specified user could not be found using the provided ID.",
@@ -69,6 +70,7 @@ class IWEU_STRINGS {
     ECANTLOCKOUTROOT: "You cannot disable the root account.",
     ECANTBLOCKROOT: "You cannot restrict the root account.",
     EBADRESOURCE: "The resource you provided is invalid.",
+    EINSUFFICIENTFUNDS: "You do not have enough funds to complete this action.",
   };
   Order = {
     EONOEXISTS: "Order not found.",

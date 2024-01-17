@@ -1,6 +1,6 @@
 {
   "name": "dishout",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Food delivery/order management system",
   "main": "./src/server.ts",
   "scripts": {
