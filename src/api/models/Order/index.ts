@@ -82,52 +82,71 @@ async function order_create(req: Request, res: Response) {
     case "card":
       {
         const [card_number, card_expiry, cvc, cardholder_name] = data;
-        console.log(
-          onelink_token,
-          onelink_salt,
-          card_number,
-          card_expiry,
-          cvc,
-          cardholder_name,
-          amount_to_pay
-        );
-        const r = await fetch("https://api.onelink.bz/payment", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${onelink_token}`, // I wish, lol
-          },
-          body: JSON.stringify({
-            token: onelink_token,
-            salt: onelink_salt,
-            nameOnCard: cardholder_name,
-            cardNumber: card_number,
-            expirationDate: card_expiry,
-            ccv: cvc, // Imagine, CCV lmao 'Cadbury Creme Egg' / 'Card Card Verification' instead of 'Card Verification Value'
-            amount: amount_to_pay,
-          }),
-        });
-        if (!r.ok) {
-          try {
-            const response = await r.json();
-            return res.status(500).json(ErrorFormat(response.msg));
-          } catch {
+        // console.log(
+        //   onelink_token,
+        //   onelink_salt,
+        //   card_number,
+        //   card_expiry,
+        //   cvc,
+        //   cardholder_name,
+        //   amount_to_pay
+        // );
+        try {
+          const r = await fetch("https://api.onelink.bz/payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              // Authorization: `Bearer ${onelink_token}`, // I wish, lol
+            },
+            body: JSON.stringify({
+              token: onelink_token,
+              salt: onelink_salt,
+              nameOnCard: cardholder_name,
+              cardNumber: card_number,
+              expirationDate: card_expiry,
+              ccv: cvc, // Imagine, CCV lmao 'Cadbury Creme Egg' / 'Card Card Verification' instead of 'Card Verification Value'
+              amount: amount_to_pay,
+            }),
+          });
+          if (!r.ok) {
+            try {
+              const response = await r.json();
+              return res.status(500).json(ErrorFormat(response.msg));
+            } catch {
+              return res
+                .status(500)
+                .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
+            }
+          }
+          const body = await r.text();
+          if (!body || (body && body === "")) {
             return res
               .status(500)
-              .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
+              .json(
+                ErrorFormat(
+                  "Our payment provider is currently experiencing issues. Please try again later."
+                )
+              );
           }
-        }
-        // @remind Remove this second condition after bro implements something better
-        const response = await r.json();
-        if (
-          !response.msg ||
-          (response.msg && isNaN(parseInt(response.msg.substring(-1, 1))))
-        ) {
-          // Take the first character and check to see if this is (quite, possibly) a numeric code
+          // @remind Remove this second condition after bro implements something better
+          const response = await r.json();
+          // console.log(response);
+          if (
+            !response.msg ||
+            (response.msg && response.msg !== "success") // Check for a numeric code
+          ) {
+            // Take the first character and check to see if this is (quite, possibly) a numeric code
+            return res
+              .status(500)
+              .json(
+                ErrorFormat(response.msg ?? iwe_strings.Generic.EINTERNALERROR)
+              );
+          }
+        } catch (error) {
           return res
             .status(500)
             .json(
-              ErrorFormat(response.msg ?? iwe_strings.Generic.EINTERNALERROR)
+              ErrorFormat(error.message ?? iwe_strings.Generic.EINTERNALERROR)
             );
         }
       }
@@ -449,4 +468,3 @@ function check_values(
 }
 
 export { order_create, order_delete, order_list, order_modify };
-
