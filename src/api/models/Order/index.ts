@@ -82,65 +82,36 @@ async function order_create(req: Request, res: Response) {
     case "card":
       {
         const [card_number, card_expiry, cvc, cardholder_name] = data;
-        // console.log(
-        //   onelink_token,
-        //   onelink_salt,
-        //   card_number,
-        //   card_expiry,
-        //   cvc,
-        //   cardholder_name,
-        //   amount_to_pay
-        // );
         try {
-          const r = await fetch("https://api.onelink.bz/payment", {
+          const r = await fetch("https://stripe-like.fly.dev/v1/charges", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              // Authorization: `Bearer ${onelink_token}`, // I wish, lol
+              Authorization: `Bearer ${onelink_token}:${onelink_salt}`,
             },
             body: JSON.stringify({
-              token: onelink_token,
-              salt: onelink_salt,
-              nameOnCard: cardholder_name,
-              cardNumber: card_number,
-              expirationDate: card_expiry,
-              ccv: cvc, // Imagine, CCV lmao 'Cadbury Creme Egg' / 'Card Card Verification' instead of 'Card Verification Value'
+              cardholder: cardholder_name,
+              card_number: card_number,
+              expires: card_expiry,
+              csc: cvc, // Imagine, CCV lmao 'Cadbury Creme Egg' / 'Card Card Verification' instead of 'Card Verification Value'
               amount: amount_to_pay,
             }),
           });
           if (!r.ok) {
             try {
               const response = await r.json();
-              return res.status(500).json(ErrorFormat(response.msg));
+              return res
+                .status(response.error.http_code ?? 500)
+                .json(
+                  ErrorFormat(
+                    `${response.error.error_type}: ${response.error.error_string}`
+                  )
+                );
             } catch {
               return res
                 .status(500)
                 .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
             }
-          }
-          const body = await r.text();
-          if (!body || (body && body === "")) {
-            return res
-              .status(500)
-              .json(
-                ErrorFormat(
-                  "Our payment provider is currently experiencing issues. Please try again later."
-                )
-              );
-          }
-          // @remind Remove this second condition after bro implements something better
-          const response = await r.json();
-          // console.log(response);
-          if (
-            !response.msg ||
-            (response.msg && response.msg !== "success") // Check for a numeric code
-          ) {
-            // Take the first character and check to see if this is (quite, possibly) a numeric code
-            return res
-              .status(500)
-              .json(
-                ErrorFormat(response.msg ?? iwe_strings.Generic.EINTERNALERROR)
-              );
           }
         } catch (error) {
           return res
@@ -152,14 +123,12 @@ async function order_create(req: Request, res: Response) {
       }
       break;
     case "credit": // @ts-ignore
-      {
-        user.credit = user.credit - amount_to_pay; // @ts-ignore
-        if (user.credit < 0) {
-          // There is a negative balance
-          return res
-            .status(400)
-            .json(ErrorFormat(iwe_strings.Users.EINSUFFICIENTFUNDS));
-        }
+      user.credit -= amount_to_pay; // @ts-ignore
+      if (user.credit < 0) {
+        // There is a negative balance
+        return res
+          .status(400)
+          .json(ErrorFormat(iwe_strings.Users.EINSUFFICIENTFUNDS));
       }
       break;
     case "pickup":
