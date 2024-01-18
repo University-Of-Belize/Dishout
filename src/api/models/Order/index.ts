@@ -93,7 +93,7 @@ async function order_create(req: Request, res: Response) {
               cardholder: cardholder_name,
               card_number: card_number,
               expires: card_expiry,
-              csc: cvc, // Imagine, CCV lmao 'Cadbury Creme Egg' / 'Card Card Verification' instead of 'Card Verification Value'
+              csc: cvc,
               amount: amount_to_pay,
             }),
           });
@@ -104,7 +104,7 @@ async function order_create(req: Request, res: Response) {
                 .status(response.error.http_code ?? 500)
                 .json(
                   ErrorFormat(
-                    `${response.error.error_type}: ${response.error.error_string}`
+                    response.error.error_string ?? iwe_strings.Generic.EINTERNALERROR
                   )
                 );
             } catch {
