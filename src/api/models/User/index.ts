@@ -232,14 +232,21 @@ async function notifications_subscribe(req: Request, res: Response) {
       }
 
       // Test scenario @remind Remove after some time ------------------------------------------------------------------
-      await admin.messaging().send({
-        notification: {
-          title: settings.server.nickname,
-          body: "Alerts will look like this.",
-        }, // @ts-ignore
-        topic: user.channel_id,
-      });
-      // --------------------------------------------------------------------------------
+      // @ts-ignore
+      if (!user.firstAlert) {
+        await admin.messaging().send({
+          notification: {
+            title: settings.server.nickname,
+            body: "Alerts will look like this.",
+          }, // @ts-ignore
+          topic: user.channel_id,
+        });
+        // ----- Update the user data -------
+        // @ts-ignore
+        user.firstAlert = true; // @ts-ignore
+        await user.save();
+        // -------------------------------------------------------
+      }
       // Return true if everything's 'ok'
       return res.json({ status: true });
     });

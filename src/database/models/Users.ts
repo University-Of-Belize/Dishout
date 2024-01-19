@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import config from "../../config/settings.json"
+import config from "../../config/settings.json";
 const SchemaTypes = mongoose.Schema.Types;
 
 const usersSchema = new Schema({
@@ -52,9 +52,15 @@ const usersSchema = new Schema({
     // Cart: [{product, quantity}]
     required: false,
   },
-  channel_id:{ // Personal order status/notification channel in format `user_${user._id}`
+  channel_id: {
+    // Personal order status/notification channel in format `user_${user._id}`
     type: String,
     required: true,
+  },
+  firstAlert: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
   activation_token: {
     type: String,
