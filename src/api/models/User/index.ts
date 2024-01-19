@@ -241,11 +241,11 @@ async function notifications_subscribe(req: Request, res: Response) {
           }, // @ts-ignore
           topic: user.channel_id,
         });
-        // ----- Update the user data -------
+        // ----- Update the user data ------- //
         // @ts-ignore
         user.firstAlert = true; // @ts-ignore
         await user.save();
-        // -------------------------------------------------------
+        // ------------------------------------------------------- //
       }
       // Return true if everything's 'ok'
       return res.json({ status: true });
