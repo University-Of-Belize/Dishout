@@ -84,7 +84,7 @@ async function feedback_create(req: Request, res: Response) {
   // Send us a notification
   sendEmail(
     `${settings.email.username}@${settings.email.domain}`, // @ts-ignore
-    `[ADMINISTRATOR]: RapidEats — Feedback from ${user.username}`,
+    `[ADMINISTRATOR]: UniFood — Feedback from ${user.username}`,
     null,
     `Hey there admin!<br/><br/>
     One of your users (@${user.username}) has submitted feedback.<br/>

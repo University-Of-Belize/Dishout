@@ -106,7 +106,7 @@ async function auth_register(req: Request, res: Response) {
       username,
       staff: username === "root", // Make user 'staff' if they are root
       // credit: 0.0, @remind Remove after 100 users sign-up
-      credit: randomNum,
+      credit: randomNum < 10 ? 10 : randomNum, // Set a minimum of 10 dollars ( * wink * wink * )
       channel_id: cryptoRandomString({
         length: settings.auth["token-length"],
         type: "alphanumeric",
