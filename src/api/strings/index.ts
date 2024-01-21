@@ -85,7 +85,8 @@ class IWEU_STRINGS {
     IOSTATUSQUEUED: "Order Queued",
     IOSTATUSACCEPTED: "Your order has been accepted for processing.",
     IOSTATUSREADYNOW: "Your order is ready now.",
-    IOSTATUSDENIED: "Your order has been rejected.",
+    IOSTATUSDENIED:
+      "Your order has been rejected. Your virtual wallet has been recredited with the amount you paid. Speak to a staff member if you would like to arrange for a withdrawal.",
     IOSTATUSDELAYED: "Your order has been delayed.",
     IOSTATUSMODIFIED: "A staff member has issued an update your order.",
     EEMPTYCART: "The shopping cart is empty",
@@ -169,6 +170,6 @@ function createNotification(
 export {
   createError as ErrorFormat,
   createNotification as NotifyFormat,
-  iwe_strings
+  iwe_strings,
 };
 export default iwe_strings;

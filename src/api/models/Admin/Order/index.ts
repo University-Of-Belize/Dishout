@@ -221,8 +221,15 @@ async function order_manage(req: Request, res: Response) {
       }
       break;
     case "d": {
+      const order = await Order.findById(orderId);
+      if (!order) {
+        return res.status(404).json(ErrorFormat(iwe_strings.Order.EONOEXISTS));
+      } // @ts-ignore
+      order_from.credit =
+        parseInt(order_from.credit.toString()) +
+        parseInt(order.total_amount.toString());
       // Delete the order
-      await Order.findByIdAndDelete(orderId);
+      await order.deleteOne();
       await sendEmail(
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDENIED}`,
