@@ -6,7 +6,7 @@
   "server": {
     "port": 8080,
     "domain": "cafe.ub.edu.bz",
-    "nickname": "Plattr",
+    "nickname": "RapidEats",
     "excludedBadWords": ["hell", "crap"],
     "defaultReviewer": "6545572beff9c32417937c73",
     "defaultTimeZone": "America/Belize"
