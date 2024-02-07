@@ -19,7 +19,7 @@ class IWEU_STRINGS {
     EBADPSWD: "Please choose a different password.",
     EBADRSTTKN:
       "The link you followed does not work anymore. You need to request a password reset again.",
-    ETAKEN: "Username is taken or email is already registered.",
+    ETAKEN: "Only one account per username and email address is allowed. And either one of these are already in use.",
     EDISABLED:
       "Your account has been disabled. Please do not create a new account. Instead, contact an administrator for assistance.",
     ENEEDSACTIVATION:
