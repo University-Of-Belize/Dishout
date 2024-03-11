@@ -6,6 +6,7 @@
   "server": {
     "port": 8080,
     "domain": "cafe.ub.edu.bz",
+    "bucket": "pub-25848f6979f1410bb0c611a1a9c24310.r2.dev",
     "nickname": "RapidEats",
     "excludedBadWords": ["hell", "crap"],
     "defaultReviewer": "6545572beff9c32417937c73",
