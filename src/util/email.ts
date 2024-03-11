@@ -34,7 +34,7 @@ async function sendEmail(
   reply_to?: string | null
 ) {
   try {
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
       host: config.email.smtp.server,
       port: config.email.smtp.port,
       secure: config.email.smtp.https, // true for 465, false for other ports
