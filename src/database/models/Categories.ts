@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-const SchemaTypes = mongoose.Schema.Types;
+// const SchemaTypes = mongoose.Schema.Types;
 
 const categoriesSchema = new Schema({
   // MongoDB generates IDs by default
