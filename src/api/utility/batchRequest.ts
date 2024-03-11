@@ -62,7 +62,7 @@ async function __data_table_trigger_delete(
       return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
     }
   }
-  let query = `{ "${field}": "${objectId}" }`; // Hack-ish
+  const query = `{ "${field}": "${objectId}" }`; // Hack-ish
   let object;
   // Find the object by ID and delete it
   try {
