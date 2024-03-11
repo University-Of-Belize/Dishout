@@ -42,7 +42,7 @@ class IWEU_STRINGS {
     IDISCLAIMER: `You're receiving this email because you recently created a new ${config.server.nickname} account. If this wasn't you, please ignore this email.`,
     IRESETPASSWORD:
       "Hi, it seems as if you requested a password reset link. Here you go! Please do not share this link with anyone. If you did not request this email, please ignore it.",
-    ICLAIMBONUS: "RapidEats — 🎉 Congratulations on your bonus 🎉",
+    ICLAIMBONUS: `${config.server.nickname} — 🎉 Congratulations on your bonus 🎉`,
     UDETECT:
       /^(?=.{1,64}@)((?:[A-Za-z0-9!#\$%&'\*\+\-/=\?\^_`\{\|\}~]+|"(?:\\"|\\\\|[A-Za-z0-9\.!#\$%&'\*\+\-/=\?\^_`\{\|\}~ \(\),:;<>@\[\]\.])+")(?:\.(?:[A-Za-z0-9!#\$%&'\*\+\-/=\?\^_`\{\|\}~]+|"(?:\\"|\\\\|[A-Za-z0-9\.!#\$%&'\*\+\-/=\?\^_`\{\|\}~ \(\),:;<>@\[\]\.])+"))*)@(?=.{1,255}\.)((?:[A-Za-z0-9]+(?:(?:[A-Za-z0-9\-]*[A-Za-z0-9])?)\.)+[A-Za-z]{2,})|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,6}(0|)])$/,
     EBADACTOR: "Early hints—Bad actor. Please provide a different actor.",
@@ -69,7 +69,7 @@ class IWEU_STRINGS {
     ECANTDELETEROOT: "You cannot delete the root account.",
     ECANTLOCKOUTROOT: "You cannot disable the root account.",
     ECANTBLOCKROOT: "You cannot restrict the root account.",
-    EBADRESOURCE: "The resource you provided is invalid.",
+    EBADRESOURCE: "The resource you provided is invalid or is an unauthorized storage bucket",
     EINSUFFICIENTFUNDS: "You do not have enough funds to complete this action.",
   };
   Order = {
