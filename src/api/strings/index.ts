@@ -138,7 +138,7 @@ class IWEU_STRINGS {
   };
   Search = {
     UTOKENIZE: /[^a-zA-Z0-9]/,
-    ENOENGINE: "No engine readily available. Please try again later.",
+    ENOENGINE: "No engine is readily available to service this request. Please try again later.",
   };
 }
 
