@@ -80,7 +80,7 @@ async function __data_table_trigger_delete(
   if (RefModel && refField) {
     await RefModel.deleteMany({ [refField]: object._id });
   }
-  object.deleteOne();
+  await object.deleteOne();
   return res.json({
     status: true,
   });

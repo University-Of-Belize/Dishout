@@ -1,4 +1,8 @@
+import Filter from "bad-words";
+import bcrypt from "bcryptjs";
+import cryptoRandomString from "crypto-random-string";
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import settings from "../../../../config/settings.json";
 import User from "../../../../database/models/Users";
 import {
@@ -10,11 +14,7 @@ import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
 import what from "../../../utility/Whats";
-import { list_object, delete_object } from "../../../utility/batchRequest";
-import Filter from "bad-words";
-import bcrypt from "bcryptjs";
-import cryptoRandomString from "crypto-random-string";
-import mongoose from "mongoose";
+import { delete_object, list_object } from "../../../utility/batchRequest";
 
 /***** BAD WORDS FILTER *****/
 const filter = new Filter();
@@ -381,7 +381,7 @@ async function user_modify(req: Request, res: Response) {
                   return res
                      .status(400)
                      .json(ErrorFormat(iwe_strings.Users.ECANTDELETEROOT));
-               user_.deleteOne();
+               await user_.deleteOne();
                return res.json({ status: true });
             case 5: // Ban the user
                if (user_.username === "root")
@@ -564,10 +564,9 @@ async function user_modify_picture(
 }
 
 export {
-   user_find,
    user_create,
-   user_delete,
-   user_list,
+   user_delete, user_find, user_list,
    user_modify,
-   user_modify_picture,
+   user_modify_picture
 };
+
