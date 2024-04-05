@@ -19,14 +19,14 @@ class IWEU_STRINGS {
     EBADPSWD: "Please choose a different password.",
     EBADRSTTKN:
       "The link you followed does not work anymore. You need to request a password reset again.",
-    ETAKEN: "Username is taken or email is already registered.",
+    ETAKEN: "Only one account per username and email address is allowed. And either one of these are already in use.",
     EDISABLED:
       "Your account has been disabled. Please do not create a new account. Instead, contact an administrator for assistance.",
     ENEEDSACTIVATION:
       "In order to continue, your account requires activation. Check your inbox for further instructions.",
     ENEEDSACTIVATION2:
       "Please activate your account to continue. Check your inbox for further instructions.",
-    EBADAUTH: "Incorrect username or password.",
+    EBADAUTH: "Your username, email, or password was incorrect.",
     EBLOCKED: "Sorry, you've been blocked from our services.",
     EOOPS:
       "Oops! Looks like something went wrong on our end! Please try that again.",
@@ -42,7 +42,7 @@ class IWEU_STRINGS {
     IDISCLAIMER: `You're receiving this email because you recently created a new ${config.server.nickname} account. If this wasn't you, please ignore this email.`,
     IRESETPASSWORD:
       "Hi, it seems as if you requested a password reset link. Here you go! Please do not share this link with anyone. If you did not request this email, please ignore it.",
-    ICLAIMBONUS: "UniFood — 🎉 Congratulations on your bonus 🎉",
+    ICLAIMBONUS: `${config.server.nickname} — 🎉 Congratulations on your bonus 🎉`,
     UDETECT:
       /^(?=.{1,64}@)((?:[A-Za-z0-9!#\$%&'\*\+\-/=\?\^_`\{\|\}~]+|"(?:\\"|\\\\|[A-Za-z0-9\.!#\$%&'\*\+\-/=\?\^_`\{\|\}~ \(\),:;<>@\[\]\.])+")(?:\.(?:[A-Za-z0-9!#\$%&'\*\+\-/=\?\^_`\{\|\}~]+|"(?:\\"|\\\\|[A-Za-z0-9\.!#\$%&'\*\+\-/=\?\^_`\{\|\}~ \(\),:;<>@\[\]\.])+"))*)@(?=.{1,255}\.)((?:[A-Za-z0-9]+(?:(?:[A-Za-z0-9\-]*[A-Za-z0-9])?)\.)+[A-Za-z]{2,})|(((0|[1-9A-Fa-f][0-9A-Fa-f]{0,3}):){0,6}(0|)])$/,
     EBADACTOR: "Early hints—Bad actor. Please provide a different actor.",
@@ -69,7 +69,7 @@ class IWEU_STRINGS {
     ECANTDELETEROOT: "You cannot delete the root account.",
     ECANTLOCKOUTROOT: "You cannot disable the root account.",
     ECANTBLOCKROOT: "You cannot restrict the root account.",
-    EBADRESOURCE: "The resource you provided is invalid.",
+    EBADRESOURCE: "The resource you provided is invalid or is an unauthorized storage bucket",
     EINSUFFICIENTFUNDS: "You do not have enough funds to complete this action.",
   };
   Order = {
@@ -139,7 +139,7 @@ class IWEU_STRINGS {
   };
   Search = {
     UTOKENIZE: /[^a-zA-Z0-9]/,
-    ENOENGINE: "No engine readily available. Please try again later.",
+    ENOENGINE: "No engine is readily available to service this request. Please try again later.",
   };
 }
 

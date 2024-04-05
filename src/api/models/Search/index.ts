@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
+import MiniSearch from "minisearch";
+import settings from "../../../config/settings.json";
 import Categories from "../../../database/models/Categories";
 import Orders from "../../../database/models/Orders";
 import Products from "../../../database/models/Products";
 import Promos from "../../../database/models/Promos";
 import Reviews from "../../../database/models/Reviews";
 import Users from "../../../database/models/Users";
-import MiniSearch from "minisearch";
 import { LogInfo, LogWarn } from "../../../util/Logger";
-import { get_authorization_user } from "../../utility/Authentication";
 import { ErrorFormat, iwe_strings } from "../../strings";
-import settings from "../../../config/settings.json";
+import { get_authorization_user } from "../../utility/Authentication";
 
 async function global_lookup(
   req: Request,
@@ -94,8 +94,16 @@ async function initialize_engine() {
   const miniSearch = new MiniSearch({
     fields: settings.search["searchable-filters"], // fields to index for full-text search
     storeFields: settings.search["visible-fields"], // fields to return with search results
-    searchOptions: { prefix: true, fuzzy: 0.2 },
-    boost: { productName: 10 },
+    searchOptions: {
+      prefix: true,
+      fuzzy: 0.25,
+      maxFuzzy: 6,
+      combineWith: "OR",
+      weights: { fuzzy: 2, prefix: 3 },
+      boost: {
+        productName: 2,
+      },
+    },
     extractField: (document, fieldName) => {
       // If field name is 'pubYear', extract just the year from 'pubDate'
       if (fieldName === "reviews") {

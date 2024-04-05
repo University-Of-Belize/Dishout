@@ -13,11 +13,12 @@ const TYPE =
 mongoose.set("strictQuery", true); // We want some strict queries
 
 export default async function connectDB() {
-  try {
-    await mongoose.connect(DatabaseURL).then(() => {
+  await mongoose
+    .connect(DatabaseURL)
+    .then(() => {
       LogDatabase(`Connected to MongoDB (TYPE: ${TYPE}, PID: ${process.pid})`);
+    })
+    .catch((e) => {
+      throw LogError(`Error connecting to MongoDB: ${e}`);
     });
-  } catch (err) {
-    throw LogError(`${err}`);
-  }
 }

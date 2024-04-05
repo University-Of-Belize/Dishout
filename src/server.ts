@@ -44,7 +44,7 @@ const limiter = rateLimit({
   // store: ... , // Use an external store for consistency across multiple server instances.
   statusCode: 429, // Rate limit HTTP Code
   // @ts-ignore
-  keyGenerator: (req: Request, res: Response) =>
+  keyGenerator: (req: Request) =>
     get_authorization(req) ?? req.clientId ?? req.ip, // Otherwise, we use the IP address.
   handler: (req: Request, res: Response, next, options) => {
     res

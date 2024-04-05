@@ -62,7 +62,7 @@ async function __data_table_trigger_delete(
       return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
     }
   }
-  let query = `{ "${field}": "${objectId}" }`; // Hack-ish
+  const query = `{ "${field}": "${objectId}" }`; // Hack-ish
   let object;
   // Find the object by ID and delete it
   try {
@@ -80,7 +80,7 @@ async function __data_table_trigger_delete(
   if (RefModel && refField) {
     await RefModel.deleteMany({ [refField]: object._id });
   }
-  object.deleteOne();
+  await object.deleteOne();
   return res.json({
     status: true,
   });
