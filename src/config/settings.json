@@ -159,6 +159,6 @@
     ]
   },
   "products": {
-    "disallowed-product-names": ["checkout"]
+    "disallowed-product-names": ["checkout", "view-all"]
   }
 }
