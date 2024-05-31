@@ -258,8 +258,17 @@ router.post("/user/notifications", (req: Request, res: Response) => {
   User.Notifications.Subscribe(req, res);
 });
 // <Messaging>
+// Read messages from a specific channel
+router.get("/user/messaging", (req: Request, res: Response) => {
+  User.Messaging.Read(req, res);
+});
+// Send a message
 router.post("/user/messaging", (req: Request, res: Response) => {
-  User.Notifications.Messaging(req, res);
+  User.Messaging.Send(req, res);
+});
+// View all interactions
+router.get("/user/messaging/interactions", (req: Request, res: Response) => {
+  User.Messaging.View_Interactions(req, res);
 });
 
 // Print the routes for reference

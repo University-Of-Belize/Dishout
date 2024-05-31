@@ -52,7 +52,9 @@ import {
   cart_list,
   cart_modify,
   notifications_subscribe,
+  user_messages_read,
   user_messages_send,
+  user_messages_view_interactions,
 } from "./User";
 
 class API {
@@ -177,8 +179,10 @@ class API {
       Subscribe: notifications_subscribe,
     },
     Messaging: {
+      Read: user_messages_read,
       Send: user_messages_send,
-    }
+      View_Interactions: user_messages_view_interactions,
+    },
   };
 }
 

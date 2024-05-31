@@ -210,7 +210,7 @@ async function notifications_subscribe(req: Request, res: Response) {
     return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
 
-  // Check our authentication token and see if it matches up to a staff member
+  // Check our authentication token and see if it matches up to a user
   const user = await get_authorization_user(req);
   if (!user) {
     return res
@@ -252,4 +252,38 @@ async function notifications_subscribe(req: Request, res: Response) {
     });
 }
 
-export { cart_delete, cart_list, cart_modify, notifications_subscribe };
+// Send messages to another user's FCM channel
+/*
+{
+  what: 'user',
+  is: {
+    user: 'alexdev404',
+    message: {
+      subject: 'Hi',
+      content: 'This is the message content.'
+    }
+  }
+
+}
+
+
+*/
+async function user_messages_send(req: Request, res: Response) {
+    // Check our 'what_is'
+    if (req.body["what"] !== what.public.user) {
+      // Two underscores means it's an admin function
+      return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+    }
+  
+    // Check our authentication token and see if it matches up to a user
+    const user = await get_authorization_user(req);
+    if (!user) {
+      return res
+        .status(403)
+        .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+    }
+
+
+}
+
+export { cart_delete, cart_list, cart_modify, notifications_subscribe, user_messages_read, user_messages_send, user_messages_view_interactions };
