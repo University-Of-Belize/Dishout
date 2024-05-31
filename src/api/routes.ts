@@ -46,17 +46,17 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
 });
 
-// Our routes
-// Class API
-// Authentication
+// Our <<routes>>
+// <<Class API>>
+// <Authentication>
 router.post("/auth/signup", Authentication.Register);
 router.post("/auth/verify", Authentication.Verify);
 router.post("/auth/login", Authentication.Login);
 router.post("/auth/passwordreset", Authentication.Request_Reset);
 router.patch("/auth/passwordreset", Authentication.Reset);
 
-// Admin-API
-// User
+// <<Admin-API>>
+// <User>
 router.get("/admin/user/lookup", (req: Request, res: Response) => {
   Admin.User.Find(req, res);
 });
@@ -85,7 +85,7 @@ router.put(
   }
 );
 
-// Promo
+// <Promo>
 router.get("/admin/promo/manage", (req: Request, res: Response) => {
   Admin.Promo.List(req, res);
 });
@@ -98,7 +98,7 @@ router.delete("/admin/promo/manage", (req: Request, res: Response) => {
 router.put("/admin/promo/manage", (req: Request, res: Response) => {
   Admin.Promo.Modify(req, res);
 });
-// Category
+// <Category>
 router.post("/admin/category/manage", (req: Request, res: Response) => {
   Admin.Category.Create(req, res);
 });
@@ -108,11 +108,11 @@ router.delete("/admin/category/manage", (req: Request, res: Response) => {
 router.put("/admin/category/manage", (req: Request, res: Response) => {
   Admin.Category.Modify(req, res);
 });
-// Order
+// <Order>
 router.get("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.List(req, res);
 });
-// Accept user's order into queue
+// <Accept> user's <order> into queue
 router.post("/admin/order/manage/", (req: Request, res: Response) => {
   Admin.Order.Modify(req, res);
 });
@@ -124,7 +124,7 @@ router.post("/admin/order/manage/", (req: Request, res: Response) => {
 // router.put("/admin/order/manage/", (req: Request, res: Response) => {
 //   Admin.Order.Modify(req, res);
 // });
-// Review
+// <Review>
 router.get("/admin/review/manage", (req: Request, res: Response) => {
   Admin.Review.List(req, res);
 });
@@ -134,7 +134,7 @@ router.delete("/admin/review/manage", (req: Request, res: Response) => {
 router.put("/admin/review/manage", (req: Request, res: Response) => {
   Admin.Review.Modify(req, res);
 });
-// Feedback
+// <Feedback>
 router.get("/admin/feedback/manage", (req: Request, res: Response) => {
   Admin.Feedback.List(req, res);
 });
@@ -147,7 +147,7 @@ router.delete("/admin/feedback/manage", (req: Request, res: Response) => {
 router.put("/admin/feedback/manage", (req: Request, res: Response) => {
   Admin.Feedback.Modify(req, res);
 });
-// Posts (Help-center article posting)
+// <Posts> (Help-center article posting)
 router.get("/admin/post/lookup", (req: Request, res: Response) => {
   Admin.Post.Lookup(req, res);
 });
@@ -163,7 +163,7 @@ router.delete("/admin/post/manage", (req: Request, res: Response) => {
 router.put("/admin/post/manage", (req: Request, res: Response) => {
   Admin.Post.Modify(req, res);
 });
-// Menu
+// <Menu>
 router.post("/admin/menu/manage", (req: Request, res: Response) => {
   Admin.Menu.Create(req, res);
 });
@@ -174,27 +174,27 @@ router.put("/admin/menu/manage", (req: Request, res: Response) => {
   Admin.Menu.Modify(req, res);
 });
 
-// User-API
-// Dashboard
+// <<User-API>>
+// <Dashboard>
 router.get("/dash", (req: Request, res: Response) => {
   Dash.List(req, res);
 });
 
 // Dynamic extras
-// Dynamic image
+// <Dynamic image>
 router.get("/dynamic/banner-1200-628", (req: Request, res: Response) => {
   Dynamic.Image(req, res);
 });
 
-// Menu
+// <Menu>
 router.get("/menu/lookup", (req: Request, res: Response) => {
   Menu.Find(req, res);
 });
-// Menu
+// <Menu>
 router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);
 });
-// Check if a specific item exists
+// <Check> if a specific <item> exists
 router.get("/menu/slug", (req: Request, res: Response) => {
   Menu.Slug.Exist(req, res);
 });
@@ -205,7 +205,7 @@ router.get("/menu/random", (req: Request, res: Response) => {
 // router.get("/menu/search", (req: Request, res: Response) => {
 //   Menu.Lookup(req, res); // Users can lookup other menu items
 // });
-// Category
+// <Category>
 router.get("/category/", (req: Request, res: Response) => {
   Category.List(req, res);
 });
@@ -219,7 +219,7 @@ router.get("/category/", (req: Request, res: Response) => {
 //   Order.Lookup(req, res);
 // });
 
-// Order placement. Arbitrary tokens are accepted
+// Order <placement>. Arbitrary tokens are accepted
 router.post("/order/place", (req: Request, res: Response) => {
   Order.Create(req, res);
 });
@@ -230,32 +230,36 @@ router.put("/order/place", (req: Request, res: Response) => {
   Order.Modify(req, res);
 });
 
-// Review
+// <Review>
 router.post("/review/create", (req: Request, res: Response) => {
   Review.Create(req, res);
 });
-// Search
+// <Search>
 router.get("/search", (req: Request, res: Response) => {
   Search.Lookup(req, res, engine); // Users can lookup other users
 });
 
 // User
-// What's in my cart?
+// <What's in my cart?>
 router.get("/user/cart", (req: Request, res: Response) => {
   User.Cart.List(req, res);
 });
-// Cart modify
+// Cart <modify>
 router.post("/user/cart", (req: Request, res: Response) => {
   User.Cart.Modify(req, res);
 });
 
-// Cart delete
+// Cart <delete>
 router.delete("/user/cart", (req: Request, res: Response) => {
   User.Cart.Delete(req, res);
 });
-// Notifications
+// <Notifications>
 router.post("/user/notifications", (req: Request, res: Response) => {
   User.Notifications.Subscribe(req, res);
+});
+// <Messaging>
+router.post("/user/messaging", (req: Request, res: Response) => {
+  User.Notifications.Messaging(req, res);
 });
 
 // Print the routes for reference

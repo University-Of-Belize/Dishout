@@ -52,6 +52,7 @@ import {
   cart_list,
   cart_modify,
   notifications_subscribe,
+  user_messages_send,
 } from "./User";
 
 class API {
@@ -175,6 +176,9 @@ class API {
     Notifications: {
       Subscribe: notifications_subscribe,
     },
+    Messaging: {
+      Send: user_messages_send,
+    }
   };
 }
 
