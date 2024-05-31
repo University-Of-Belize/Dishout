@@ -291,9 +291,17 @@ async function user_messages_send(req: Request, res: Response) {
   if (to_user == null) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
   }
+  console.log(message_obj, !message_obj.message, !message_obj.message.subject, !message_obj.message.content);
+  if (message_obj.message === null || message_obj.message.subject === null
+      || message_obj.message.content === null
+     ) {
+    return res
+      .status(400)
+      .json(ErrorFormat(iwe_strings.Users.EINTERACTIONISEMPTY));
+  }
 
   if (
-    message_obj.message.subject.trim() === "" ||
+    // message_obj.message.subject.trim() === "" ||
     message_obj.message.content.trim() === ""
   ) {
     return res
