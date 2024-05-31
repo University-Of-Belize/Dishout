@@ -64,6 +64,7 @@ class IWEU_STRINGS {
     ENOTFOUND: "The specified user could not be found using the provided ID.",
     ENOTFOUND2: "That user was not found.",
     EINTERACTIONNOTFOUND: "An interaction with that user was not found.",
+    EINTERACTIONISEMPTY: "Cannot send an empty message.",
     EFRIENDLYNOTFOUND:
       "Failed to find user, please make sure you didn't make any spelling errors!",
     ECANTUNSTAFFROOT: "You cannot demote the root account.",

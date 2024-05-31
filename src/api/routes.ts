@@ -259,11 +259,11 @@ router.post("/user/notifications", (req: Request, res: Response) => {
 });
 // <Messaging>
 // Read messages from a specific channel
-router.get("/user/messaging", (req: Request, res: Response) => {
+router.post("/user/messaging/get", (req: Request, res: Response) => {
   User.Messaging.Read(req, res);
 });
 // Send a message
-router.post("/user/messaging", (req: Request, res: Response) => {
+router.post("/user/messaging/send", (req: Request, res: Response) => {
   User.Messaging.Send(req, res);
 });
 // View all interactions

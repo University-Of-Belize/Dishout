@@ -18,7 +18,7 @@ async function cart_modify(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] !== what.public.user) {
     // Two underscores means it's an admin function
-    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+    return res.status(400).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
 
   // Check our authentication token and see if it matches up to a staff member
@@ -100,7 +100,7 @@ async function cart_delete(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] !== what.public.user) {
     // Two underscores means it's an admin function
-    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+    return res.status(400).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
 
   // Check our authentication token and see if it matches up to a staff member
@@ -210,7 +210,7 @@ async function notifications_subscribe(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] !== what.public.user) {
     // Two underscores means it's an admin function
-    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+    return res.status(400).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
 
   // Check our authentication token and see if it matches up to a user
@@ -272,7 +272,7 @@ async function user_messages_send(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] !== what.public.user) {
     // This is a public function
-    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+    return res.status(400).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
 
   // Check our authentication token and see if it matches up to a user
@@ -291,6 +291,16 @@ async function user_messages_send(req: Request, res: Response) {
   if (to_user == null) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
   }
+
+  if (
+    message_obj.message.subject.trim() === "" ||
+    message_obj.message.content.trim() === ""
+  ) {
+    return res
+      .status(400)
+      .json(ErrorFormat(iwe_strings.Users.EINTERACTIONISEMPTY));
+  }
+
   // We have the two users now. Write to the database.
   // await user.populate({
   //   path: "cart.product",
@@ -310,13 +320,18 @@ async function user_messages_send(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
   }
 
-  await admin.messaging().send({
-    notification: {
-      title: new_message.subject as string,
-      body: new_message.content as string,
-    },
-    topic: to_user.channel_id,
-  });
+  // Try to send the message to the user
+  try {
+    await admin.messaging().send({
+      notification: {
+        title: new_message.subject as string,
+        body: new_message.content as string,
+      },
+      topic: to_user.channel_id,
+    });
+  } catch (error) {
+    console.warn("Could not push message to user. Error: ", error);
+  }
 
   await new_message.save();
 
@@ -368,7 +383,7 @@ async function user_messages_read(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] !== what.public.user) {
     // This is a public function
-    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+    return res.status(400).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
 
   // Check our authentication token and see if it matches up to a user
@@ -396,7 +411,7 @@ async function user_messages_read(req: Request, res: Response) {
   // We should have the users now
   // Return all messages from the database
   const message_response = await Messages.find(
-    { to_user_id: to_user, from_user_id: user },
+    { to_user_id: to_user || user, from_user_id: user || to_user },
     { to_user_id: 0, from_user_id: 0, __v: 0 },
   );
   return res.json(what_is(what.public.user, message_response));
