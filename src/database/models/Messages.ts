@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 const SchemaTypes = mongoose.Schema.Types;
 // const SchemaTypes = mongoose.Schema.Types;
 
-const categoriesSchema = new Schema({
+const messagesSchema = new Schema({
   // MongoDB generates IDs by default
   subject: {
     type: String,
@@ -24,5 +24,18 @@ const categoriesSchema = new Schema({
     required: true
   }
 });
-export default mongoose.model("Categories", categoriesSchema);
-export { categoriesSchema };
+
+interface Message_Obj {
+    // MongoDB generates IDs by default
+    subject: string;
+    content: string;
+};
+
+interface Message {
+    user: string;
+    message: Message_Obj;
+};
+
+export default mongoose.model("Messages", messagesSchema);
+export { messagesSchema };
+export type { Message };

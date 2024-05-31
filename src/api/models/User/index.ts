@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import mongoose from "mongoose";
+import Users from "../../../database/models/Users";
+import Messages from "../../../database/models/Messages";
+import type { Message } from "../../../database/models/Messages";
 import Product from "../../../database/models/Products";
 import ProductResearch from "../../../database/models/research/ProductData";
 import settings from "../../../config/settings.json";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
-import { what_is, wis_array, wis_string } from "../../utility/What_Is";
+import { what_is, wis_array, wis_string, wis_obj } from "../../utility/What_Is";
 import what from "../../utility/Whats";
 // Add to the cart
 // Note (unrelated to API): Frontend groups array of productIds
@@ -253,37 +256,196 @@ async function notifications_subscribe(req: Request, res: Response) {
 }
 
 // Send messages to another user's FCM channel
-/*
-{
-  what: 'user',
-  is: {
-    user: 'alexdev404',
-    message: {
-      subject: 'Hi',
-      content: 'This is the message content.'
-    }
+/**
+ * {
+ * what: 'user',
+ * is: {
+ *   user: 'alexdev404',
+ *   message: {
+ *     subject: 'Hi',
+ *     content: 'This is the message content.'
+ *    }
+ *  }
+ * }
+ */
+async function user_messages_send(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] !== what.public.user) {
+    // This is a public function
+    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
   }
 
+  // Check our authentication token and see if it matches up to a user
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  const message_obj: Message = wis_obj(req);
+  if (message_obj == null) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+  const to_user = await Users.findOne({ username: message_obj.user });
+  if (to_user == null) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+  }
+  // We have the two users now. Write to the database.
+  // await user.populate({
+  //   path: "cart.product",
+  //   model: "Products",
+  // });
+
+  const new_message = await Messages.create({
+    from_user_id: user,
+    to_user_id: to_user,
+    subject: message_obj.message.subject,
+    content: message_obj.message.content,
+  });
+
+  if (new_message == null) {
+    return res
+      .status(500)
+      .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
+  }
+
+  await admin.messaging().send({
+    notification: {
+      title: new_message.subject as string,
+      body: new_message.content as string,
+    },
+    topic: to_user.channel_id,
+  });
+
+  await new_message.save();
+
+  // Create the message response
+  const message_response: Message = {
+    user: to_user.username,
+    message: {
+      subject: new_message.subject as string,
+      content: new_message.content as string,
+    },
+  };
+
+  return res.json(what_is(what.public.user, message_response));
 }
 
+/**
+ * REQUEST
+ * ===
+ * {
+ * what: 'user',
+ * is: "CHANNEL_ID"
+ *
+ * }
+ *
+ * RESPONSE
+ * =====
+ * {
+ * what: 'user',
+ * is: [
+ * {
+ *   user: 'alexdev404',
+ *   message: {
+ *     subject: 'Hi',
+ *     content: 'This is the message content.'
+ *    }
+ *  }
+ * },
+ * {
+ *   user: 'alexdev404',
+ *   message: {
+ *     subject: 'Hi',
+ *     content: 'This is the message content.'
+ *    }
+ *  }
+ * }
+ * ]
+ */
+async function user_messages_read(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] !== what.public.user) {
+    // This is a public function
+    return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+  }
 
-*/
-async function user_messages_send(req: Request, res: Response) {
-    // Check our 'what_is'
-    if (req.body["what"] !== what.public.user) {
-      // Two underscores means it's an admin function
-      return res.status(418).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
-    }
-  
-    // Check our authentication token and see if it matches up to a user
-    const user = await get_authorization_user(req);
-    if (!user) {
-      return res
-        .status(403)
-        .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
-    }
+  // Check our authentication token and see if it matches up to a user
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
 
+  // Get the channel ID we will be reading from
+  const channel_id = wis_string(req);
+  if (channel_id == "") {
+    return res.status(404).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
 
+  // Attempt to retrieve a user with this channel ID
+  const to_user = await Users.findOne({ channel_id });
+  if (to_user == null) {
+    return res
+      .status(400)
+      .json(ErrorFormat(iwe_strings.Users.EINTERACTIONNOTFOUND));
+  }
+
+  // We should have the users now
+  // Return all messages from the database
+  const message_response = await Messages.find(
+    { to_user_id: to_user, from_user_id: user },
+    { to_user_id: 0, from_user_id: 0, __v: 0 }
+  );
+  return res.json(what_is(what.public.user, message_response));
 }
 
-export { cart_delete, cart_list, cart_modify, notifications_subscribe, user_messages_read, user_messages_send, user_messages_view_interactions };
+// Retrieve all interactions
+// [GET]: Does NOT require the _what_is_ format
+async function user_messages_view_interactions(req: Request, res: Response) {
+  // Check our authentication token and see if it matches up to a user
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // We should have the users now
+  // Return all messages from the database
+  const message_response = await Messages.aggregate([
+    { $match: { from_user_id: user._id } }, // Filter messages from a specific user
+    {
+      $lookup: {
+        from: "users", // Join with the 'users' collection
+        localField: "to_user_id", // Match 'to_user_id' in 'Messages' with '_id' in 'Users'
+        foreignField: "_id",
+        as: "to_user", // Store matched user documents in 'to_user'
+      },
+    },
+    { $unwind: "$to_user" }, // Deconstruct 'to_user' array to a single object
+    {
+      $project: {
+        from_user_id: 0, // Exclude 'from_user_id' field
+        __v: 0, // Exclude '__v' field
+        to_user_id: 0, // Exclude original 'to_user_id' field
+      },
+    },
+    { $addFields: { to_user_id: "$to_user.username" } }, // Add new 'to_user_id' field with value from 'to_user.username'
+    { $project: { to_user: 0 } }, // Remove 'to_user' field
+  ]); // Umm, thanks ChatGPT?
+
+  return res.json(what_is(what.public.user, message_response));
+}
+
+export {
+  cart_delete,
+  cart_list,
+  cart_modify,
+  notifications_subscribe,
+  user_messages_read,
+  user_messages_send,
+  user_messages_view_interactions,
+};

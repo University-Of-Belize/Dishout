@@ -60,9 +60,10 @@ class IWEU_STRINGS {
     ENOTIMPLEMENTED: "This feature is not implemented yet.",
   };
   Users = {
-    ENOTFOUND: "The specified user could not be found using the provided ID.",
     IDELETE: "User deleted successfully.",
+    ENOTFOUND: "The specified user could not be found using the provided ID.",
     ENOTFOUND2: "That user was not found.",
+    EINTERACTIONNOTFOUND: "An interaction with that user was not found.",
     EFRIENDLYNOTFOUND:
       "Failed to find user, please make sure you didn't make any spelling errors!",
     ECANTUNSTAFFROOT: "You cannot demote the root account.",

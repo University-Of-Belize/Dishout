@@ -32,4 +32,8 @@ function wis_string(req: Request) {
   return typeof req.body["is"] === "string" ? req.body["is"] : "";
 }
 
-export { what_is, wis_array, wis_string };
+function wis_obj(req: Request) {
+  return typeof req.body["is"] === "object" ? req.body["is"] : null;
+}
+
+export { what_is, wis_array, wis_string, wis_obj };
