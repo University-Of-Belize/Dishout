@@ -397,7 +397,7 @@ async function user_messages_read(req: Request, res: Response) {
   // Return all messages from the database
   const message_response = await Messages.find(
     { to_user_id: to_user, from_user_id: user },
-    { to_user_id: 0, from_user_id: 0, __v: 0 }
+    { to_user_id: 0, from_user_id: 0, __v: 0 },
   );
   return res.json(what_is(what.public.user, message_response));
 }
@@ -422,10 +422,10 @@ async function user_messages_view_interactions(req: Request, res: Response) {
         from: "users", // Join with the 'users' collection
         localField: "to_user_id", // Match 'to_user_id' in 'Messages' with '_id' in 'Users'
         foreignField: "_id",
-        as: "to_user", // Store matched user documents in 'to_user'
+        as: "to_user_", // Store matched user documents in 'to_user'
       },
     },
-    { $unwind: "$to_user" }, // Deconstruct 'to_user' array to a single object
+    { $unwind: "$to_user_" }, // Deconstruct 'to_user' array to a single object
     {
       $project: {
         from_user_id: 0, // Exclude 'from_user_id' field
@@ -433,8 +433,15 @@ async function user_messages_view_interactions(req: Request, res: Response) {
         to_user_id: 0, // Exclude original 'to_user_id' field
       },
     },
-    { $addFields: { to_user_id: "$to_user.username" } }, // Add new 'to_user_id' field with value from 'to_user.username'
-    { $project: { to_user: 0 } }, // Remove 'to_user' field
+    {
+      $addFields: {
+        "to_user.username": "$to_user_.username",
+        "to_user.channel_id": "$to_user_.channel_id",
+        "to_user.profile_picture": "$to_user_.profile_picture",
+        "to_user.banner": "$to_user_.banner",
+      },
+    }, // Add new 'to_user_id' field with value from 'to_user.username'
+    { $project: { to_user_: 0 } }, // Remove 'to_user_' field
   ]); // Umm, thanks ChatGPT?
 
   return res.json(what_is(what.public.user, message_response));
