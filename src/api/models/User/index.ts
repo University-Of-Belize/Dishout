@@ -427,8 +427,8 @@ async function user_messages_read(req: Request, res: Response) {
     {
       $match: {
         $or: [
-          // I want messages FROM MYSELF TO AN ENDPOINT
-          // or FROM AN ENDPOINT TO MYSELF
+          // I want messages sent FROM MYSELF TO AN ENDPOINT
+          // or sent FROM AN ENDPOINT TO MYSELF
           { from_user_id: user._id, to_user_id: to_user._id },
           { from_user_id: to_user._id, to_user_id: user._id },
         ],
@@ -493,8 +493,8 @@ async function user_messages_view_interactions(req: Request, res: Response) {
   // We should have the users now
   // Return all messages from the database
   const message_response = await Messages.aggregate([
-    // I want messages FROM MYSELF or TO MYSELF
-    { $match: { $or: [{ from_user_id: user._id }, { to_user_id: user._id }] } },
+    // I want ALL messages sent TO MYSELF
+    { $match: { to_user_id: user._id } },
     {
       $lookup: {
         from: "users", // Join with the 'users' collection
