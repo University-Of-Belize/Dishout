@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 import mongoose from "mongoose";
 import Users from "../../../database/models/Users";
 import Messages from "../../../database/models/Messages";
-import type { Message } from "../../../database/models/Messages";
+import type { ServerMessage } from "../../../database/models/Messages";
 import Product from "../../../database/models/Products";
 import ProductResearch from "../../../database/models/research/ProductData";
 import settings from "../../../config/settings.json";
@@ -349,12 +349,21 @@ async function user_messages_send(req: Request, res: Response) {
   await new_message.save();
 
   // Create the message response
-  const message_response: Message = {
-    user: to_user.username,
-    message: {
+  const message_response: ServerMessage = {
       subject: new_message.subject as string,
       content: new_message.content as string,
-    },
+      "from_user": {
+        username: user.username,
+        channel_id: user.channel_id,
+        profile_picture: user.profile_picture,
+        banner: user.banner
+      },
+      "to_user": {
+        username: to_user.username,
+        channel_id: to_user.channel_id,
+        profile_picture: to_user.profile_picture,
+        banner: to_user.banner
+      }
   };
 
   return res.json(what_is(what.public.user, message_response));
