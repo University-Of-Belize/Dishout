@@ -428,7 +428,7 @@ async function user_messages_read(req: Request, res: Response) {
       $match: {
         $or: [
           { from_user_id: user._id, to_user_id: to_user._id },
-          { from_user_id: user._id, to_user_id: to_user._id },
+          { from_user_id: to_user._id, to_user_id: user._id },
         ],
       },
     }, // Filter messages from a specific user
