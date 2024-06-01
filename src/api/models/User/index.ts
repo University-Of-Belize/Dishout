@@ -332,7 +332,7 @@ async function user_messages_send(req: Request, res: Response) {
   try {
     await admin.messaging().send({
       notification: {
-        title: new_message.subject as string,
+        title: new_message.subject ?? `Message from @${user.username.toLowerCase()}` as string,
         body: new_message.content as string,
       },
       topic: to_user.channel_id,
@@ -439,7 +439,11 @@ async function user_messages_view_interactions(req: Request, res: Response) {
   // We should have the users now
   // Return all messages from the database
   const message_response = await Messages.aggregate([
-    { $match: { from_user_id: user._id } }, // Filter messages from a specific user
+    { $match: { $or: [
+      { from_user_id: user._id }, 
+      { to_user_id: user._id } 
+    ]}
+  }, // Filter messages from a specific user
     {
       $lookup: {
         from: "users", // Join with the 'users' collection
