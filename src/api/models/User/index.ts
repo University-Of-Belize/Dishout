@@ -292,9 +292,11 @@ async function user_messages_send(req: Request, res: Response) {
     return res.status(400).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
   }
   // console.log(message_obj, !message_obj.message, !message_obj.message.subject, !message_obj.message.content);
-  if (message_obj.message === null || message_obj.message.subject === null
-      || message_obj.message.content === null
-     ) {
+  if (
+    message_obj.message === null ||
+    message_obj.message.subject === null ||
+    message_obj.message.content === null
+  ) {
     return res
       .status(400)
       .json(ErrorFormat(iwe_strings.Users.EINTERACTIONISEMPTY));
@@ -332,7 +334,10 @@ async function user_messages_send(req: Request, res: Response) {
   try {
     await admin.messaging().send({
       notification: {
-        title: new_message.subject ?? `Message from @${user.username.toLowerCase()}` as string,
+        title:
+          message_obj.message.subject.trim() === ""
+            ? `Message from @${user.username.toLowerCase()}`
+            : new_message.subject,
         body: new_message.content as string,
       },
       topic: to_user.channel_id,
@@ -418,10 +423,57 @@ async function user_messages_read(req: Request, res: Response) {
 
   // We should have the users now
   // Return all messages from the database
-  const message_response = await Messages.find(
-    { to_user_id: to_user || user, from_user_id: user || to_user },
-    { to_user_id: 0, from_user_id: 0, __v: 0 },
-  );
+  const message_response = await Messages.aggregate([
+    {
+      $match: {
+        $or: [
+          { from_user_id: user._id, to_user_id: to_user._id },
+          { from_user_id: user._id, to_user_id: to_user._id },
+        ],
+      },
+    }, // Filter messages from a specific user
+    {
+      $lookup: {
+        from: "users", // Join with the 'users' collection
+        localField: "to_user_id", // Match 'to_user_id' in 'Messages' with '_id' in 'Users'
+        foreignField: "_id",
+        as: "to_user_", // Store matched user documents in 'to_user'
+      },
+    },
+    { $unwind: "$to_user_" }, // Deconstruct 'to_user' array to a single object
+    {
+      $lookup: {
+        from: "users", // Join with the 'users' collection
+        localField: "from_user_id", // Match 'from_user_id' in 'Messages' with '_id' in 'Users'
+        foreignField: "_id",
+        as: "from_user_", // Store matched user documents in 'from_user'
+      },
+    },
+    { $unwind: "$from_user_" }, // Deconstruct 'from_user' array to a single object
+    {
+      $project: {
+        from_user_id: 0, // Exclude 'from_user_id' field
+        __v: 0, // Exclude '__v' field
+        to_user_id: 0, // Exclude original 'to_user_id' field
+      },
+    },
+    {
+      $addFields: {
+        // From user
+        "from_user.username": "$from_user_.username",
+        "from_user.channel_id": "$from_user_.channel_id",
+        "from_user.profile_picture": "$from_user_.profile_picture",
+        "from_user.banner": "$from_user_.banner",
+
+        // To user
+        "to_user.username": "$to_user_.username",
+        "to_user.channel_id": "$to_user_.channel_id",
+        "to_user.profile_picture": "$to_user_.profile_picture",
+        "to_user.banner": "$to_user_.banner",
+      },
+    }, // Add new 'to_user_id' field with value from 'to_user.username'
+    { $project: { from_user_: 0, to_user_: 0 } }, // Remove the generated 'from_user_' and 'to_user_' field
+  ]); // Umm, thanks ChatGPT?
   return res.json(what_is(what.public.user, message_response));
 }
 
@@ -439,11 +491,7 @@ async function user_messages_view_interactions(req: Request, res: Response) {
   // We should have the users now
   // Return all messages from the database
   const message_response = await Messages.aggregate([
-    { $match: { $or: [
-      { from_user_id: user._id }, 
-      { to_user_id: user._id } 
-    ]}
-  }, // Filter messages from a specific user
+    { $match: { $or: [{ from_user_id: user._id }, { to_user_id: user._id }] } }, // Filter messages from a specific user
     {
       $lookup: {
         from: "users", // Join with the 'users' collection
@@ -454,6 +502,15 @@ async function user_messages_view_interactions(req: Request, res: Response) {
     },
     { $unwind: "$to_user_" }, // Deconstruct 'to_user' array to a single object
     {
+      $lookup: {
+        from: "users", // Join with the 'users' collection
+        localField: "from_user_id", // Match 'from_user_id' in 'Messages' with '_id' in 'Users'
+        foreignField: "_id",
+        as: "from_user_", // Store matched user documents in 'from_user'
+      },
+    },
+    { $unwind: "$from_user_" }, // Deconstruct 'from_user' array to a single object
+    {
       $project: {
         from_user_id: 0, // Exclude 'from_user_id' field
         __v: 0, // Exclude '__v' field
@@ -462,13 +519,20 @@ async function user_messages_view_interactions(req: Request, res: Response) {
     },
     {
       $addFields: {
+        // From user
+        "from_user.username": "$from_user_.username",
+        "from_user.channel_id": "$from_user_.channel_id",
+        "from_user.profile_picture": "$from_user_.profile_picture",
+        "from_user.banner": "$from_user_.banner",
+
+        // To user
         "to_user.username": "$to_user_.username",
         "to_user.channel_id": "$to_user_.channel_id",
         "to_user.profile_picture": "$to_user_.profile_picture",
         "to_user.banner": "$to_user_.banner",
       },
     }, // Add new 'to_user_id' field with value from 'to_user.username'
-    { $project: { to_user_: 0 } }, // Remove 'to_user_' field
+    { $project: { from_user_: 0, to_user_: 0 } }, // Remove the generated 'from_user_' and 'to_user_' field
   ]); // Umm, thanks ChatGPT?
 
   return res.json(what_is(what.public.user, message_response));
