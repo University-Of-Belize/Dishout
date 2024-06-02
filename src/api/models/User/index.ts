@@ -350,6 +350,7 @@ async function user_messages_send(req: Request, res: Response) {
 
   // Create the message response
   const message_response: ServerMessage = {
+      _id: new_message._id.toString(),
       subject: new_message.subject as string,
       content: new_message.content as string,
       "from_user": {
