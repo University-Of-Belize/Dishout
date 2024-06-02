@@ -434,16 +434,10 @@ async function user_messages_read(req: Request, res: Response) {
   // We should have the users now
   // Return all messages from the database
   const message_response = await Messages.aggregate([
-    {
-      $match: {
-        $or: [
-          // I want messages sent FROM MYSELF TO AN ENDPOINT
-          // or sent FROM AN ENDPOINT TO MYSELF
-          { from_user_id: user._id, to_user_id: to_user._id },
-          { from_user_id: to_user._id, to_user_id: user._id },
-        ],
-      },
-    }, // Filter messages from a specific user
+    { $match: {
+      // FROM THIS channel
+      channel_id: channel_id } },
+     // Filter messages from a specific user
     {
       $lookup: {
         from: "users", // Join with the 'users' collection
