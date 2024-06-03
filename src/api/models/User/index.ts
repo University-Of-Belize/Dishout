@@ -430,14 +430,21 @@ async function user_messages_read(req: Request, res: Response) {
       .status(400)
       .json(ErrorFormat(iwe_strings.Users.EINTERACTIONNOTFOUND));
   }
-
   // We should have the users now
   // Return all messages from the database
+  const user_id = new mongoose.Types.ObjectId.createFromHexString(user._id);
+  const to_user_id = new mongoose.Types.ObjectId.createFromHexString(to_user._id);
   const message_response = await Messages.aggregate([
-    { $match: {
-      // FROM THIS channel
-      channel_id: channel_id } },
-     // Filter messages from a specific user
+    {
+      $match: {
+        $or: [
+          // I want messages sent FROM MYSELF TO AN ENDPOINT
+          // or sent FROM AN ENDPOINT TO MYSELF
+          { from_user_id: user_id, to_user_id: to_user_id },
+          { from_user_id: to_user_id, to_user_id: user_id },
+        ],
+      },
+    }, // Filter messages from a specific user
     {
       $lookup: {
         from: "users", // Join with the 'users' collection
@@ -498,7 +505,7 @@ async function user_messages_view_interactions(req: Request, res: Response) {
   // Return all messages from the database
   const message_response = await Messages.aggregate([
     // I want ALL messages sent TO MYSELF
-    { $match: { to_user_id: user._id } },
+    { $match: { to_user_id: mongoose.Types.ObjectId(user._id) } },
     {
       $lookup: {
         from: "users", // Join with the 'users' collection
