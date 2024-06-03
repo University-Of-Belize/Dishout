@@ -336,9 +336,11 @@ async function user_messages_send(req: Request, res: Response) {
       notification: {
         title:
           message_obj.message.subject.trim() === ""
-            ? `Message from @${user.username.toLowerCase()}`
-            : new_message.subject,
-        body: new_message.content as string,
+            ? settings.server.nickname
+            //`Message from @${user.username.toLowerCase()}`
+            : `${settings.server.nickname} - ${new_message.subject}`,
+        body: `${user.username}: ${new_message.content as string}`,
+        image: user.profile_picture
       },
       topic: to_user.channel_id,
     });
