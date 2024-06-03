@@ -56,6 +56,7 @@ const usersSchema = new Schema({
     // Personal order status/notification channel in format `user_${user._id}`
     type: String,
     required: true,
+    unique: true
   },
   firstAlert: {
     type: Boolean,

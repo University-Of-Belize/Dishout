@@ -432,8 +432,8 @@ async function user_messages_read(req: Request, res: Response) {
   }
   // We should have the users now
   // Return all messages from the database
-  const user_id = new mongoose.Types.ObjectId.createFromHexString(user._id);
-  const to_user_id = new mongoose.Types.ObjectId.createFromHexString(to_user._id);
+  const user_id = mongoose.Types.ObjectId.createFromHexString(user._id.toString());
+  const to_user_id = mongoose.Types.ObjectId.createFromHexString(to_user._id.toString());
   const message_response = await Messages.aggregate([
     {
       $match: {
@@ -505,7 +505,7 @@ async function user_messages_view_interactions(req: Request, res: Response) {
   // Return all messages from the database
   const message_response = await Messages.aggregate([
     // I want ALL messages sent TO MYSELF
-    { $match: { to_user_id: mongoose.Types.ObjectId(user._id) } },
+    { $match: { to_user_id: mongoose.Types.ObjectId.createFromHexString(user._id.toString()) } },
     {
       $lookup: {
         from: "users", // Join with the 'users' collection
