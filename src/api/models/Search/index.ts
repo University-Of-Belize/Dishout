@@ -85,7 +85,7 @@ async function initialize_engine() {
     model: "Users",
   });
   const allReviews = await Reviews.find().populate([
-    { path: "reviewer", model: "Users" },
+    // { path: "reviewer", model: "Users" },
     { path: "product", model: "Products" },
   ]);
   const allUsers = await Users.find();
