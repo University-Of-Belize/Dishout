@@ -72,13 +72,13 @@ async function initialize_engine() {
       path: "category",
       model: "Categories",
     },
-    {
-      path: "reviews",
-      populate: {
-        path: "reviewer",
-        model: "Users",
-      },
-    },
+    // {
+    //   path: "reviews",
+    //   populate: {
+    //     path: "reviewer",
+    //     model: "Users",
+    //   },
+    // },
   ]);
   const allPromos = await Promos.find().populate({
     path: "created_by",
