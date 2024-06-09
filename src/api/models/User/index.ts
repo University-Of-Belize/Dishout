@@ -283,7 +283,7 @@ async function user_messages_send(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
-  const message_obj: Message = wis_obj(req);
+  const message_obj: ServerMessage = wis_obj(req);
   if (message_obj == null) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
