@@ -11,7 +11,10 @@ async function public_data_user_reviews(req: Request, res: Response) {
   if (!mongoose.Types.ObjectId.isValid(user_id)) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
-  const review_obj: object[] = await Reviews.find({ reviewer: user_id });
+  const review_obj: object[] = await Reviews.find({ reviewer: user_id }).populate([
+    // { path: "reviewer", model: "Users" },
+    { path: "product", model: "Products" },
+  ]);
 
   if (!review_obj) {
     return res.status(404).json(ErrorFormat(iwe_strings.Data.ENOTFOUND));
