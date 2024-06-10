@@ -125,7 +125,7 @@ async function user_create(req: Request, res: Response) {
     staff,
     credit,
     restrictions,
-    bypassActivation
+    bypassActivation,
   );
   if (testFailed) return;
   // End verification
@@ -140,7 +140,7 @@ async function user_create(req: Request, res: Response) {
   // Create the user
   const hashedPassword = await bcrypt.hash(
     password,
-    settings.auth.activation["hash-rounds"]
+    settings.auth.activation["hash-rounds"],
   );
 
   const userID = Math.round(new Date().getTime() / 1000).toString();
@@ -178,7 +178,7 @@ async function user_create(req: Request, res: Response) {
         email,
         iwe_strings.Authentication.ENEEDSACTIVATION,
         null,
-        EmailTemplate("ACTIVATE", username, activationToken)
+        EmailTemplate("ACTIVATE", username, activationToken),
       );
     } catch (error) {
       return res
@@ -200,7 +200,7 @@ async function user_delete(req: Request, res: Response) {
     User,
     "_id",
     what.private.user,
-    iwe_strings.Users.ENOTFOUND
+    iwe_strings.Users.ENOTFOUND,
   );
 }
 
@@ -249,7 +249,7 @@ async function user_modify(req: Request, res: Response) {
         false, // Unused
         username,
         action,
-        action_num
+        action_num,
       )
     : check_values(
         res,
@@ -262,7 +262,7 @@ async function user_modify(req: Request, res: Response) {
         false, //unused
         username,
         action,
-        action_num
+        action_num,
       );
   if (testFailed) return;
   // End verification
@@ -302,7 +302,7 @@ async function user_modify(req: Request, res: Response) {
         // Generate the password
         const hashedPassword = await bcrypt.hash(
           password,
-          settings.auth.activation["hash-rounds"]
+          settings.auth.activation["hash-rounds"],
         );
         user_.password = hashedPassword;
       }
@@ -413,7 +413,7 @@ function check_values(
   bypassActivation: boolean,
   old_username?: string,
   action?: string,
-  action_num?: number
+  action_num?: number,
 ) {
   // Check if required parameters are provided
   if (
@@ -497,7 +497,7 @@ function check_values(
 async function user_modify_picture(
   req: Request,
   res: Response,
-  type: "profile_picture" | "banner"
+  type: "profile_picture" | "banner",
 ) {
   // Check our 'what_is'
   if (req.body["what"] != what.private.user) {
@@ -555,9 +555,11 @@ async function user_modify_picture(
       return res.json({ status: true });
     } catch {
       try {
-         return res.status(400).json(ErrorFormat(iwe_strings.Users.EBADRESOURCE));
+        return res
+          .status(400)
+          .json(ErrorFormat(iwe_strings.Users.EBADRESOURCE));
       } catch {
-         // Nothing to do here 
+        // Nothing to do here
       }
     }
   }

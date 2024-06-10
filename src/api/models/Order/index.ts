@@ -74,7 +74,7 @@ async function order_create(req: Request, res: Response) {
   const amount_to_pay = user.cart.reduce(
     (accumulator, currentValue) =>
       accumulator + currentValue.product.price * currentValue.quantity,
-    0
+    0,
   );
 
   /** Conduct the transaction if we chose card */
@@ -104,8 +104,9 @@ async function order_create(req: Request, res: Response) {
                 .status(response.error.http_code ?? 500)
                 .json(
                   ErrorFormat(
-                    response.error.error_string ?? iwe_strings.Generic.EINTERNALERROR
-                  )
+                    response.error.error_string ??
+                      iwe_strings.Generic.EINTERNALERROR,
+                  ),
                 );
             } catch {
               return res
@@ -117,7 +118,7 @@ async function order_create(req: Request, res: Response) {
           return res
             .status(500)
             .json(
-              ErrorFormat(error.message ?? iwe_strings.Generic.EINTERNALERROR)
+              ErrorFormat(error.message ?? iwe_strings.Generic.EINTERNALERROR),
             );
         }
       }
@@ -214,7 +215,7 @@ async function order_create(req: Request, res: Response) {
     user.email,
     `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSQUEUED}`,
     null, //@ts-ignore
-    `Hi ${user.username},<br/><br/>${iwe_strings.Order.IOSTATUSQUEUED}. Your order has been queued and is awaiting review. If there's something wrong, we will contact you to check it out.`
+    `Hi ${user.username},<br/><br/>${iwe_strings.Order.IOSTATUSQUEUED}. Your order has been queued and is awaiting review. If there's something wrong, we will contact you to check it out.`,
   );
 
   res.status(201).json(what_is(what.public.order, order));
@@ -230,7 +231,7 @@ async function order_delete(req: Request, res: Response) {
     "order_code",
     what.public.order,
     iwe_strings.Order.EONOEXISTS,
-    true
+    true,
   );
 }
 
@@ -267,7 +268,7 @@ async function order_modify(req: Request, res: Response) {
     product_action,
     index,
     productID,
-    quantity
+    quantity,
   );
   if (testFailed) return;
 
@@ -319,12 +320,12 @@ async function order_modify(req: Request, res: Response) {
     case "d": // Delete one of the products
       // Decrease the total price as we disassociate the product with the order
       const product_to_delete = await Product.findById(
-        order.products?.[index]?.product
+        order.products?.[index]?.product,
       );
       // Don't mind this.
       order.total_amount = parseFloat(
         parseFloat(order.total_amount.toString()) -
-          parseFloat(product_to_delete?.price.toString())
+          parseFloat(product_to_delete?.price.toString()),
       ).toFixed(2) as unknown as Decimal128;
       // Splice the products
       // @ts-ignore
@@ -370,7 +371,7 @@ async function order_modify(req: Request, res: Response) {
           // @ts-ignore
           if (productID != order.products[index].product.toString()) {
             const product = await Product.findById(
-              order.products[index].product
+              order.products[index].product,
             ); // @ts-ignore
             product.in_stock = product.in_stock + oldQ; // Do a restore on the old one
             // @ts-ignore
@@ -397,7 +398,7 @@ async function order_modify(req: Request, res: Response) {
   await product.save();
   await order.save();
   return res.json(
-    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, order])
+    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, order]),
   );
 }
 
@@ -408,7 +409,7 @@ function check_values(
   product_action?: string,
   index?: number,
   productID?: mongoose.Schema.Types.ObjectId,
-  quantity?: number
+  quantity?: number,
 ) {
   if (
     (orderID && Number.isNaN(orderID)) ||

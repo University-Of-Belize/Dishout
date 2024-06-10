@@ -14,7 +14,7 @@ import { get_authorization_user } from "../../utility/Authentication";
 async function global_lookup(
   req: Request,
   res: Response,
-  engine: MiniSearch<any>
+  engine: MiniSearch<any>,
 ) {
   let shouldDisplay = false;
   // Quietly check for staff access
@@ -28,7 +28,7 @@ async function global_lookup(
   const { filter, q } = req.query;
   if (!engine) {
     LogWarn(
-      "Last query was discarded due to no engine being readily available."
+      "Last query was discarded due to no engine being readily available.",
     );
     return res.status(500).json(ErrorFormat(iwe_strings.Search.ENOENGINE));
   }
@@ -37,10 +37,10 @@ async function global_lookup(
     filter: (result) => {
       shouldDisplay =
         result.match[(q as string).toLowerCase()]?.includes(
-          (filter as string).toLowerCase()
+          (filter as string).toLowerCase(),
         ) ||
         Object.keys(result.match).some((element) =>
-          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element)
+          (q as string).split(iwe_strings.Search.UTOKENIZE).includes(element),
         );
       //   console.log(user?.staff, shouldDisplay, result); // Debug ONLY
       if (
@@ -85,7 +85,7 @@ async function initialize_engine() {
     model: "Users",
   });
   const allReviews = await Reviews.find().populate([
-    // { path: "reviewer", model: "Users" },
+    { path: "reviewer", model: "Users" },
     { path: "product", model: "Products" },
   ]);
   const allUsers = await Users.find();

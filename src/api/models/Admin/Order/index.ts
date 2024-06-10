@@ -164,7 +164,7 @@ async function order_manage(req: Request, res: Response) {
                 }" target="_blank">settings</a>.`;
               }
               return r;
-            })()}`
+            })()}`,
           );
           // Send push notification as well
           await admin.messaging().send(
@@ -184,27 +184,27 @@ async function order_manage(req: Request, res: Response) {
                       undefined,
                       {
                         timeZone: order_from.timeZone ?? "BAD_TZ",
-                      }
+                      },
                     )} (your time).`;
                   } catch {
                     r = `${new Date(new_delay * 1000).toLocaleString(
                       undefined,
                       {
                         timeZone: settings.server.defaultTimeZone,
-                      }
+                      },
                     )}.`;
                   }
                   return r;
                 })()}`,
-              order_from.channel_id
-            )
+              order_from.channel_id,
+            ),
           );
         } else {
           await sendEmail(
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
             null,
-            `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
+            `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`,
           );
           // Send push notification as well
           await admin
@@ -214,8 +214,8 @@ async function order_manage(req: Request, res: Response) {
                 settings.server.nickname + " — Your Order is Ready",
                 iwe_strings.Order.IOSTATUSREADYNOW +
                   " Drop by at the cafeteria and pick it up!",
-                order_from.channel_id
-              )
+                order_from.channel_id,
+              ),
             );
         }
       }
@@ -234,7 +234,7 @@ async function order_manage(req: Request, res: Response) {
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDENIED}`,
         null,
-        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSDENIED}`
+        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSDENIED}`,
       );
       // Send push notification as well
       await admin
@@ -245,8 +245,8 @@ async function order_manage(req: Request, res: Response) {
             "Unfortunately, " +
               iwe_strings.Order.IOSTATUSDENIED.toLowerCase() +
               " Sorry about that.",
-            order_from.channel_id
-          )
+            order_from.channel_id,
+          ),
         );
       return res
         .status(200)
@@ -259,7 +259,7 @@ async function order_manage(req: Request, res: Response) {
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSREADYNOW}`,
         null,
-        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
+        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`,
       );
       // Send push notification as well
       await admin
@@ -269,8 +269,8 @@ async function order_manage(req: Request, res: Response) {
             settings.server.nickname + " — Your Order is Ready",
             iwe_strings.Order.IOSTATUSREADYNOW +
               " Drop by at the cafeteria and pick it up!",
-            order_from.channel_id
-          )
+            order_from.channel_id,
+          ),
         );
       return res
         .status(200)
@@ -292,11 +292,11 @@ async function order_manage(req: Request, res: Response) {
             } Note that you are no longer paying $${
               parseFloat(order.total_amount.toString()).toFixed(2) ?? "0.00"
             }, but instead $${parseFloat(new_amount.toString()).toFixed(
-              2
+              2,
             )}.<br/>Questions regarding this price change?<br/>
             Please direct any queries or concerns either to one of our staff members or get in touch with us at ${
               settings.email.username
-            }@${settings.email.domain}.`
+            }@${settings.email.domain}.`,
           );
           // Send push notification as well
           await admin
@@ -309,10 +309,10 @@ async function order_manage(req: Request, res: Response) {
                     parseFloat(order.total_amount.toString()).toFixed(2) ??
                     "0.00"
                   } to $${parseFloat(new_amount.toString()).toFixed(
-                    2
+                    2,
                   )}. Contact our staff for any queries you may have.`,
-                order_from.channel_id
-              )
+                order_from.channel_id,
+              ),
             );
           order.total_amount = new_amount;
         }
@@ -323,7 +323,7 @@ async function order_manage(req: Request, res: Response) {
               order_from.email,
               `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
               null,
-              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
+              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`,
             );
             // Send push notification as well
             await admin
@@ -333,8 +333,8 @@ async function order_manage(req: Request, res: Response) {
                   settings.server.nickname + " — Order Modified",
                   iwe_strings.Order.IOSTATUSMODIFIED +
                     ` The promo code '${new_promo}' has been applied to your order, taking off a total of ${new_promo_object.discount_percentage}% off your total amount to pay.`,
-                  order_from.channel_id
-                )
+                  order_from.channel_id,
+                ),
               );
             order.promo_code = new_promo_object._id; // Cast string to ObjectId
           } else {
@@ -344,7 +344,7 @@ async function order_manage(req: Request, res: Response) {
                 order_from.email,
                 `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
                 null,
-                `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been swapped to ${new_promo}.`
+                `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been swapped to ${new_promo}.`,
               );
               // Send push notification as well
               await admin
@@ -354,8 +354,8 @@ async function order_manage(req: Request, res: Response) {
                     settings.server.nickname + " — Order Modified",
                     iwe_strings.Order.IOSTATUSMODIFIED +
                       ` Your order's promo code has been swapped from '${_p.code}' to ${new_promo}.`,
-                    order_from.channel_id
-                  )
+                    order_from.channel_id,
+                  ),
                 );
               order.promo_code = new_promo_object._id; // Cast string to ObjectId
             }
@@ -385,7 +385,7 @@ async function order_manage(req: Request, res: Response) {
                 delayInMinutes !== 0
                   ? delayInMinutes - delayInHours * 60 + " minutes"
                   : ""
-              }</b>.`
+              }</b>.`,
             );
             // Send push notification as well
             await admin
@@ -401,8 +401,8 @@ async function order_manage(req: Request, res: Response) {
                         ? delayInMinutes - delayInHours * 60 + " minutes"
                         : ""
                     }.`,
-                  order_from.channel_id
-                )
+                  order_from.channel_id,
+                ),
               );
           } else {
             // Handle the case where the order already had a delay time
@@ -418,7 +418,7 @@ async function order_manage(req: Request, res: Response) {
                 delayInMinutes !== 0
                   ? delayInMinutes - delayInHours * 60 + " minutes"
                   : ""
-              }</b>.`
+              }</b>.`,
             );
             // Send push notification as well
             await admin
@@ -434,8 +434,8 @@ async function order_manage(req: Request, res: Response) {
                         ? delayInMinutes - delayInHours * 60 + " minutes"
                         : ""
                     }.`,
-                  order_from.channel_id
-                )
+                  order_from.channel_id,
+                ),
               );
           }
           order.delay_time = new_delay;

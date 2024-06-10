@@ -28,7 +28,7 @@ async function __data_table_trigger_delete(
   is_not_objectid: boolean = false,
   RefModel?: Model<any>, // The model of the referencing documents
   refField?: string, // The field in the referencing documents that contains the reference
-  staffRequired: boolean = true // If staff is required in order to call this function
+  staffRequired: boolean = true, // If staff is required in order to call this function
 ) {
   // Check our 'what_is'
   if (req.body["what"] != whats) {
@@ -94,7 +94,7 @@ async function __data_table_trigger_list(
   whats: string,
   public_access: boolean | undefined,
   staff_required: boolean | undefined,
-  populationArray: { path: string; model: string }[] | undefined
+  populationArray: { path: string; model: string }[] | undefined,
 ) {
   // We don't need a body since we're doing the 'what_is' this time
 

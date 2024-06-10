@@ -95,7 +95,7 @@ async function feedback_create(req: Request, res: Response) {
     Also, you can reply to this email to respond to their comment.<br/><br/>
     Good luck!<br/>
     ${settings.server.nickname} Server`,
-    user.email
+    user.email,
   );
   // Return the new feedback as a JSON response
   return res.json(
@@ -104,7 +104,7 @@ async function feedback_create(req: Request, res: Response) {
         ? iwe_strings.Feedback.WPROFFOUND
         : iwe_strings.Feedback.ICREATE,
       newFeedback,
-    ])
+    ]),
   );
 }
 
@@ -135,7 +135,7 @@ async function feedback_delete(req: Request, res: Response) {
     false,
     undefined,
     undefined,
-    false
+    false,
   );
 }
 async function feedback_modify(req: Request, res: Response) {
@@ -191,7 +191,7 @@ async function feedback_modify(req: Request, res: Response) {
         ? iwe_strings.Feedback.WPROFFOUND
         : iwe_strings.Feedback.IMODIFY,
       feedback,
-    ])
+    ]),
   );
 }
 

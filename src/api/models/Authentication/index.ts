@@ -78,7 +78,7 @@ async function auth_register(req: Request, res: Response) {
   // Create the user if all the checks pass
   const hashedPassword = await bcrypt.hash(
     password,
-    settings.auth.activation["hash-rounds"]
+    settings.auth.activation["hash-rounds"],
   );
 
   // Search for dupes (better dupe checking)
@@ -131,7 +131,7 @@ async function auth_register(req: Request, res: Response) {
       email,
       iwe_strings.Authentication.ENEEDSACTIVATION,
       null,
-      EmailTemplate("ACTIVATE", username, activationToken)
+      EmailTemplate("ACTIVATE", username, activationToken),
     );
 
     return res.status(201).json({
@@ -184,8 +184,8 @@ async function auth_verify(req: Request, res: Response) {
         "BONUS_CLAIM",
         user.username,
         undefined,
-        user.credit.toString()
-      )
+        user.credit.toString(),
+      ),
     );
 
     user.activation_token = undefined;
@@ -230,8 +230,8 @@ async function auth_login(req: Request, res: Response) {
             ? user.activation_token
             : newAT == undefined
             ? user.activation_token
-            : newAT
-        )
+            : newAT,
+        ),
       );
       return res
         .status(403)
@@ -261,7 +261,10 @@ async function auth_login(req: Request, res: Response) {
       return res
         .status(418)
         .json(
-          what_is(what.public.auth, [iwe_strings.Email.EBADACTOR, "dtk-GLORIA"])
+          what_is(what.public.auth, [
+            iwe_strings.Email.EBADACTOR,
+            "dtk-GLORIA",
+          ]),
         );
     }
     // ------------------------------------------------------------------------- //
@@ -318,7 +321,7 @@ async function auth_forgot(req: Request, res: Response) {
       user.email,
       iwe_strings.Email.INEEDSRESET,
       null,
-      EmailTemplate("PASSWORD_RESET", user.username, RKey)
+      EmailTemplate("PASSWORD_RESET", user.username, RKey),
     );
 
     return res.json({

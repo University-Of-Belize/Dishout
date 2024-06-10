@@ -56,13 +56,15 @@ async function menu_create(req: Request, res: Response) {
     in_stock,
     description,
     category,
-    keywords
+    keywords,
   );
 
   if (testFailed) return;
 
   // Check if a document with the same slug or product name already exists
-  const existingMenu = await Menu.findOne({ $or: [{ slug: slug.trim().toLowerCase() }, { productName }] });
+  const existingMenu = await Menu.findOne({
+    $or: [{ slug: slug.trim().toLowerCase() }, { productName }],
+  });
   if (existingMenu) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.EEXISTS));
   }
@@ -70,7 +72,7 @@ async function menu_create(req: Request, res: Response) {
   // There are some reserved slugs that we can't use
   if (
     settings.products["disallowed-product-names"].includes(
-      slug.trim().toLowerCase()
+      slug.trim().toLowerCase(),
     )
   ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ERESERVEDSLUG));
@@ -112,7 +114,7 @@ async function menu_delete(req: Request, res: Response) {
     iwe_strings.Product.ENOTFOUND,
     true,
     Reviews,
-    "product"
+    "product",
   );
 }
 
@@ -163,7 +165,7 @@ async function menu_modify(req: Request, res: Response) {
     description,
     category,
     keywords,
-    old_slug
+    old_slug,
   );
 
   if (testFailed) return;
@@ -175,7 +177,11 @@ async function menu_modify(req: Request, res: Response) {
   }
 
   // There are some reserved slugs that we can't use
-  if (settings.products["disallowed-product-names"].includes(slug.trim().toLowerCase())) {
+  if (
+    settings.products["disallowed-product-names"].includes(
+      slug.trim().toLowerCase(),
+    )
+  ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ERESERVEDSLUG));
   }
 
@@ -208,7 +214,7 @@ async function menu_modify(req: Request, res: Response) {
   await menu.save();
 
   return res.json(
-    what_is(what.private.menu, [iwe_strings.Order.IPMODIFY, menu])
+    what_is(what.private.menu, [iwe_strings.Order.IPMODIFY, menu]),
   );
 }
 
@@ -222,7 +228,7 @@ function check_values(
   description: string,
   category: string,
   keywords: string[],
-  old_slug?: string
+  old_slug?: string,
 ) {
   if (
     (old_slug && typeof old_slug != "string") ||

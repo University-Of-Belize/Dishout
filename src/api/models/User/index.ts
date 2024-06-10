@@ -337,10 +337,10 @@ async function user_messages_send(req: Request, res: Response) {
         title:
           message_obj.message.subject.trim() === ""
             ? settings.server.nickname
-            //`Message from @${user.username.toLowerCase()}`
-            : `${settings.server.nickname} - ${new_message.subject}`,
+            : //`Message from @${user.username.toLowerCase()}`
+              `${settings.server.nickname} - ${new_message.subject}`,
         body: `${user.username}: ${new_message.content as string}`,
-        image: user.profile_picture
+        image: user.profile_picture,
       },
       topic: to_user.channel_id,
     });
@@ -352,21 +352,21 @@ async function user_messages_send(req: Request, res: Response) {
 
   // Create the message response
   const message_response: ServerMessage = {
-      _id: new_message._id.toString(),
-      subject: new_message.subject as string,
-      content: new_message.content as string,
-      "from_user": {
-        username: user.username,
-        channel_id: user.channel_id,
-        profile_picture: user.profile_picture,
-        banner: user.banner
-      },
-      "to_user": {
-        username: to_user.username,
-        channel_id: to_user.channel_id,
-        profile_picture: to_user.profile_picture,
-        banner: to_user.banner
-      }
+    _id: new_message._id.toString(),
+    subject: new_message.subject as string,
+    content: new_message.content as string,
+    from_user: {
+      username: user.username,
+      channel_id: user.channel_id,
+      profile_picture: user.profile_picture,
+      banner: user.banner,
+    },
+    to_user: {
+      username: to_user.username,
+      channel_id: to_user.channel_id,
+      profile_picture: to_user.profile_picture,
+      banner: to_user.banner,
+    },
   };
 
   return res.json(what_is(what.public.user, message_response));
@@ -434,8 +434,12 @@ async function user_messages_read(req: Request, res: Response) {
   }
   // We should have the users now
   // Return all messages from the database
-  const user_id = mongoose.Types.ObjectId.createFromHexString(user._id.toString());
-  const to_user_id = mongoose.Types.ObjectId.createFromHexString(to_user._id.toString());
+  const user_id = mongoose.Types.ObjectId.createFromHexString(
+    user._id.toString(),
+  );
+  const to_user_id = mongoose.Types.ObjectId.createFromHexString(
+    to_user._id.toString(),
+  );
   const message_response = await Messages.aggregate([
     {
       $match: {
@@ -507,7 +511,13 @@ async function user_messages_view_interactions(req: Request, res: Response) {
   // Return all messages from the database
   const message_response = await Messages.aggregate([
     // I want ALL messages sent TO MYSELF
-    { $match: { to_user_id: mongoose.Types.ObjectId.createFromHexString(user._id.toString()) } },
+    {
+      $match: {
+        to_user_id: mongoose.Types.ObjectId.createFromHexString(
+          user._id.toString(),
+        ),
+      },
+    },
     {
       $lookup: {
         from: "users", // Join with the 'users' collection

@@ -95,7 +95,7 @@ async function review_create(req: Request, res: Response) {
         ? iwe_strings.Review.WPROFFOUND
         : iwe_strings.Review.ICREATE,
       newReview,
-    ])
+    ]),
   );
 }
 export { review_create };

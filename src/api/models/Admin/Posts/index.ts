@@ -122,7 +122,7 @@ async function post_delete(req: Request, res: Response) {
     false,
     undefined,
     undefined,
-    false
+    false,
   );
 }
 async function post_modify(req: Request, res: Response) {
