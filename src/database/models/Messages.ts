@@ -53,4 +53,4 @@ interface ServerMessage {
 
 export default mongoose.model("Messages", messagesSchema);
 export { messagesSchema };
-export type { Message };
+export type { Message, ServerMessage };

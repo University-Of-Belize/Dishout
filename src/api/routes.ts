@@ -249,6 +249,11 @@ router.post("/user/cart", (req: Request, res: Response) => {
   User.Cart.Modify(req, res);
 });
 
+// Cart <sync>
+router.put("/user/cart", (req: Request, res: Response) => {
+  User.Cart.Sync(req, res);
+});
+
 // Cart <delete>
 router.delete("/user/cart", (req: Request, res: Response) => {
   User.Cart.Delete(req, res);

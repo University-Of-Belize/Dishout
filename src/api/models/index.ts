@@ -51,6 +51,7 @@ import {
   cart_delete,
   cart_list,
   cart_modify,
+  cart_sync,
   notifications_subscribe,
   user_messages_read,
   user_messages_send,
@@ -173,6 +174,7 @@ class API {
     Cart: {
       List: cart_list, // "What's in my cart?" -- Yes
       Modify: cart_modify, // "Add to cart" -- Yes
+      Sync: cart_sync, // "Sync cart" -- Yes
       Delete: cart_delete, // Remove items from cart or empty it completely -- Partial (50%) @todo cart_delete
     },
     Notifications: {

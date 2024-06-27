@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS
 	categories (
 		category_id SERIAL PRIMARY KEY,
 		category_name VARCHAR(25) NOT NULL UNIQUE,
+		category_serial VARCHAR(255) UNIQUE, -- Change Name Later the uid
+		category_description VARCHAR(500) NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 
@@ -16,6 +18,7 @@ CREATE TABLE IF NOT EXISTS
 	products (
 		product_id SERIAL PRIMARY KEY,
 		category_id INTEGER NOT NULL,
+		vendor_id INTEGER NOT NULL,
 		product_name VARCHAR(25) NOT NULL UNIQUE,
 		product_description VARCHAR(500) NOT NULL DEFAULT '', -- i think it should have a description
 		product_price DECIMAL(10, 2) NOT NULL,
@@ -23,7 +26,8 @@ CREATE TABLE IF NOT EXISTS
 		image_path VARCHAR(255) UNIQUE DEFAULT '', -- cant have the same image
 		banner_path VARCHAR(255) NOT NULL DEFAULT '',
 		inventory INTEGER NOT NULL DEFAULT 0, -- renamed from stock
-		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,,
+		FOREIGN KEY (vendor_id) REFERENCES users (user_id) ON DELETE CASCADE
 		FOREIGN KEY (category_id) REFERENCES categories (category_id) ON DELETE CASCADE
 	);
 
@@ -102,13 +106,15 @@ CREATE TABLE IF NOT EXISTS
 -- instead of deleting the cart, have a table for logging purposes plus if a user signs out and signs in back their carted items will be saved
 ------------------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS
-	user_sessions (
+	user_cart_sessions (
 		session_id SERIAL PRIMARY KEY,
 		user_id INTEGER NOT NULL,
 		active BOOLEAN NOT NULL DEFAULT TRUE,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 	);
+
+--- devices sessions
 
 ------------------------------------------------------------------------------------------------
 -- Cart for the user session
@@ -122,7 +128,7 @@ CREATE TABLE IF NOT EXISTS
 		product_id INTEGER NOT NULL,
 		quantity INTEGER NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (session_id) REFERENCES user_sessions (session_id) ON DELETE CASCADE,
+		FOREIGN KEY (session_id) REFERENCES user_cart_sessions (session_id) ON DELETE CASCADE,
 		FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE
 	);
 
@@ -199,6 +205,7 @@ CREATE TABLE IF NOT EXISTS
 		rating_id INTEGER NOT NULL,
 		review_title VARCHAR(100) NOT NULL,
 		review_text VARCHAR(500) NOT NULL,
+		censored_text VARCHAR(500) NOT NULL -- the review text that has been filtered out,,
 		is_hidden BOOLEAN NOT NULL DEFAULT FALSE,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
@@ -235,26 +242,6 @@ CREATE TABLE IF NOT EXISTS
 	);
 
 ------------------------------------------------------------------------------------------------
--- Product Research Table
--- update at intervals with the interaction log, might not be needed since querying can also be done
-------------------------------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS
-	product_research (
-		product_research_id SERIAL PRIMARY KEY,
-		product_id INTEGER NOT NULL,
-		VIEWS INTEGER NOT NULL DEFAULT 0,
-		carted INTEGER NOT NULL DEFAULT 0,
-		unCarted INTEGER NOT NULL DEFAULT 0,
-		purchased INTEGER NOT NULL DEFAULT 0,
-		reviews INTEGER NOT NULL DEFAULT 0,
-		shared INTEGER NOT NULL DEFAULT 0,
-		wishlist INTEGER NOT NULL DEFAULT 0,
-		collected INTEGER NOT NULL DEFAULT 0,
-		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE
-	);
-
-------------------------------------------------------------------------------------------------
 -- Interaction Types 
 ------------------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS
@@ -281,3 +268,18 @@ CREATE TABLE IF NOT EXISTS
 
 -- Link to diagramDb
 -- https://dbdiagram.io/d/665f9687b65d933879838cc2
+
+
+CREATE TABLE IF NOT EXISTS vendor_payments (
+	vendor_payment_id SERIAL PRIMARY KEY,
+	vendor_id 						-- from user_id
+	vendor_gross_revenue  			-- What the vendor made
+	vendor_tax						-- What they owe dishout
+	vendor_net_revenue
+	date_created DATE NOT NULL
+	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT 
+);
+
+
+-- add vendors to products

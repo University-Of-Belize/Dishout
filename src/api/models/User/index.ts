@@ -83,6 +83,37 @@ async function cart_modify(req: Request, res: Response) {
   res.json(what_is(what.public.user, product));
 }
 
+// Sync the cart with the client
+async function cart_sync(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] !== what.public.user) {
+    // Two underscores means it's an admin function
+    return res.status(400).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+  }
+
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Value check. Does this belong here?
+  const productArray = wis_array(req);
+  // Repopulate the user's cart
+  user.cart = productArray.map((item) => ({
+    product: item.product._id,
+    quantity: item.quantity,
+  }));
+  // Save and return
+  await user.save();
+  res.json({ status: true });
+
+
+}
+
+
 // Remove from the cart or empty it completely
 /*
 @Note Couldn't get it to accept both real integers and string integers. Built diff I guess
@@ -558,6 +589,7 @@ export {
   cart_delete,
   cart_list,
   cart_modify,
+  cart_sync,
   notifications_subscribe,
   user_messages_read,
   user_messages_send,
