@@ -101,33 +101,38 @@ async function cart_sync(req: Request, res: Response) {
 
   // Value check. Does this belong here?
   const productArray = wis_array(req);
-  let cart_error = false;
   // Repopulate the user's cart
   try {
-    // @ts-expect-error The cart is an array of objects
-    user.cart = productArray.map(async (item) => {
+    // @ts-expect-error Empty the user's cart
+    user.cart = [];
+    const checks = productArray.map(async (item) => {
       // Check if this is a valid MongoDB ID
       if (!mongoose.Types.ObjectId.isValid(item.product._id)) {
-        cart_error = true;
-        return;
+        return -1;
       }
 
       // Check if the product exists
       const product = await Product.findById(item.product._id);
       if (!product) {
-        cart_error = true;
-        return;
+        return -1;
       }
 
-      return {
+      // @ts-expect-error The cart is an array of objects
+      user.cart.push({
         product,
         quantity: item.quantity,
-      };
+      });
     });
 
-    if (cart_error) {
-      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
-    }
+    const error_message = (await Promise.all(checks)).some(
+      (result) => result === -1
+    )
+      ? res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS))
+      : null;
+    if (error_message) return error_message;
+    // if (cart_error == true) {
+    //   return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    // }
     // Save and return
     // @ts-expect-error The user object is being modified
     await user.save();
