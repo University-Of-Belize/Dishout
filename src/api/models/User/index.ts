@@ -101,20 +101,40 @@ async function cart_sync(req: Request, res: Response) {
 
   // Value check. Does this belong here?
   const productArray = wis_array(req);
+  let cart_error = false;
   // Repopulate the user's cart
   try {
     // @ts-expect-error The cart is an array of objects
-    user.cart = productArray.map((item) => ({
-      product: item.product._id,
-      quantity: item.quantity,
-    }));
-  } catch {
+    user.cart = productArray.map(async (item) => {
+      // Check if this is a valid MongoDB ID
+      if (!mongoose.Types.ObjectId.isValid(item.product._id)) {
+        cart_error = true;
+        return;
+      }
+
+      // Check if the product exists
+      const product = await Product.findById(item.product._id);
+      if (!product) {
+        cart_error = true;
+        return;
+      }
+
+      return {
+        product,
+        quantity: item.quantity,
+      };
+    });
+
+    if (cart_error) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+    }
+    // Save and return
+    // @ts-expect-error The user object is being modified
+    await user.save();
+    return res.json({ status: true });
+  } catch (error) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
-  // Save and return
-  // @ts-expect-error The user object is being modified
-  await user.save();
-  return res.json({ status: true });
 }
 
 // Remove from the cart or empty it completely
