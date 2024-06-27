@@ -68,15 +68,32 @@ async function cart_modify(req: Request, res: Response) {
     productresearch = await ProductResearch.create({ product });
   }
 
-  // Decrease the quantity
-  product.in_stock = product.in_stock - quantity;
+  // Check to see if the product is already in the cart
+  // @ts-expect-error We want to find the product in the cart
+  const cart_item = user.cart.find((item) => item.product._id.toString() == product._id.toString());
 
-  // Populate the cart with the product
-  // @ts-ignore
-  user.cart.push({ product: product._id, quantity: quantity });
-  productresearch.carted += 1;
+  // If it is, increase the quantity
+  // @follow-up This math is buggy
+  if (cart_item) {
+    // Decrease the quantity of the product
+    product.in_stock += cart_item.quantity;
+    product.in_stock -= quantity;
+    // In the above statement, we're adding the previous quantity and subtracting the new quantity
+    // To make sense of this, we're adding the previous quantity back to the stock and then subtracting the new quantity
+
+    // Finally, set the new quantity
+    cart_item.quantity = quantity;
+  } else {
+    // If this is a new item, decrease the quantity
+    product.in_stock -= quantity;
+
+    // Populate the cart with the product
+    // @ts-expect-error The cart is an array of objects
+    user.cart.push({ product: product._id, quantity: quantity });
+    productresearch.carted += 1;
+  }
   // Save and return
-  // @ts-ignore
+  // @ts-expect-error Save the product and user
   await user.save();
   await product.save();
   await productresearch.save();
