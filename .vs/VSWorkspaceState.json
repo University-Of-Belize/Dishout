@@ -1,10 +1,7 @@
 {
   "ExpandedNodes": [
     "",
-    "\\src",
-    "\\src\\database",
-    "\\src\\database\\models"
+    "\\src"
   ],
-  "SelectedNode": "\\src\\database\\models\\Categories.ts",
   "PreviewInSolutionExplorer": false
 }

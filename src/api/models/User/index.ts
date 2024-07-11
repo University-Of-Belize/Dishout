@@ -516,12 +516,6 @@ async function user_messages_read(req: Request, res: Response) {
   const to_user_id = mongoose.Types.ObjectId.createFromHexString(
     to_user._id.toString(),
   );
-  const user_id = mongoose.Types.ObjectId.createFromHexString(
-    user._id.toString()
-  );
-  const to_user_id = mongoose.Types.ObjectId.createFromHexString(
-    to_user._id.toString()
-  );
   const message_response = await Messages.aggregate([
     {
       $match: {
