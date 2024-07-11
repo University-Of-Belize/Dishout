@@ -233,7 +233,7 @@ router.put("/order/place", (req: Request, res: Response) => {
 });
 
 // <Promo> lookup. Only accessible to signed in users
-router.get("/promo/validate", (req: Request, res: Response) => {
+router.post("/promo/validate", (req: Request, res: Response) => {
   Promo.Validate(req, res);
 });
 
