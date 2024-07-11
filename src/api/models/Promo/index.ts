@@ -29,8 +29,8 @@ async function promo_validate(req: Request, res: Response) {
         .json({ status: false, message: iwe_strings.Promo.IEXPIRED });
     }
     return res
-      .status(200)
-      .json({ status: true, message: iwe_strings.Promo.IEXISTS });
+        .status(200)
+        .json({ status: true, message: `Nice work on earning ${promo.discount_percentage}% off!` });
   } else {
     return res
       .status(404)
