@@ -65,6 +65,11 @@ async function promo_create(req: Request, res: Response) {
   if (existingPromo) {
     return res.status(400).json(ErrorFormat(iwe_strings.Promo.ECODEEXISTS));
   }
+
+  if (discount > 100) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Promo.EOVERLIMIT));
+  }
+  
   // Using this, we now create the promotion
   const newPromo = await Promo.create({
     code: code.toUpperCase(),
