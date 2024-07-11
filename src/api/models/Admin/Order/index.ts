@@ -224,7 +224,7 @@ async function order_manage(req: Request, res: Response) {
       const order = await Order.findById(orderId);
       if (!order) {
         return res.status(404).json(ErrorFormat(iwe_strings.Order.EONOEXISTS));
-      } // @ts-ignore
+      } // @ts-expect-error There is a bug in the TypeScript definitions for the server
       order_from.credit =
         parseInt(order_from.credit.toString()) +
         parseInt(order.final_amount.toString());
@@ -353,6 +353,9 @@ async function order_manage(req: Request, res: Response) {
                 )
               );
             order.promo_code = new_promo_object._id; // Cast string to ObjectId
+            // Update the order data accordingly
+            order.discount_amount = parseFloat((order.total_amount * (new_promo_object.discount_percentage / 100)).toString()).toFixed(2); 
+            order.final_amount = parseFloat((order.total_amount - order.discount_amount).toString()).toFixed(2);
           } else {
             const _p = await Promo.findById(order.promo_code);
             if (_p) {
@@ -374,6 +377,9 @@ async function order_manage(req: Request, res: Response) {
                   )
                 );
               order.promo_code = new_promo_object._id; // Cast string to ObjectId
+              // Update the order data accordingly
+              order.discount_amount = parseFloat((order.total_amount * (new_promo_object.discount_percentage / 100)).toString()).toFixed(2); 
+              order.final_amount = parseFloat((order.total_amount - order.discount_amount).toString()).toFixed(2);
             }
           }
         }

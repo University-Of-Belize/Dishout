@@ -69,7 +69,7 @@ async function order_create(req: Request, res: Response) {
   if (discount_code) {
     // promo = await Promo.findById(promo_code);
     promo = await Promo.findOne({ code: discount_code }); // Accept codes instead of ObjectIds
-    if (!promo || (promo && promo?.expiry_date < Date.now())) {
+    if (!promo || (promo && (promo?.expiry_date * 1000) < Date.now())) {
       return res.status(400).json(ErrorFormat(iwe_strings.Product.EBADPROMO));
     }
   }
@@ -83,7 +83,7 @@ async function order_create(req: Request, res: Response) {
   let discount = 0;
   if (promo) {
     // Calculate the discount from the percentage
-    discount = amount_to_pay * (promo.discount_percentage / 100); // Calculate the discount
+    discount = parseFloat((amount_to_pay * (promo.discount_percentage / 100)).toString()).toFixed(2); // Calculate the discount
   }
 
   /** Conduct the transaction if we chose card */
