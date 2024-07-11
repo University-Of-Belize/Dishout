@@ -99,6 +99,7 @@ class IWEU_STRINGS {
   Promo = {
     ECODEEXISTS: "Promo code already exists.",
     ENICKEXISTS: "Promo nickname already exists.",
+    EOVERLIMIT: "Promotions are limited to 100% discount.",
     ENOTFOUND: "Promotion not found.",
     IEXISTS: "Promotion exists.",
     IEXPIRED: "Promotion expired.",
