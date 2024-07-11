@@ -27,6 +27,16 @@ const ordersSchema = new Schema({
     required: true,
     default: 0.0,
   },
+  final_amount: {
+    type: SchemaTypes.Decimal128,
+    required: true,
+    default: 0.0,
+  },
+  discount_amount: {
+    type: SchemaTypes.Decimal128,
+    required: true,
+    default: 0.0,
+  },
   promo_code: {
     type: SchemaTypes.ObjectId,
     ref: "Promos",

@@ -6,20 +6,20 @@
 // For modification: is[0] = "m"  -- Send email to user "Overriden"
 
 import { Request, Response } from "express";
+import settings from "../../../../config/settings.json";
 import Order from "../../../../database/models/Orders";
 import Promo from "../../../../database/models/Promos";
 import User from "../../../../database/models/Users";
-import settings from "../../../../config/settings.json";
 import { sendEmail } from "../../../../util/email";
 
-import what from "../../../utility/Whats";
+import * as admin from "firebase-admin";
+import mongoose from "mongoose";
 import { ErrorFormat, NotifyFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import { what_is, wis_array } from "../../../utility/What_Is";
+import what from "../../../utility/Whats";
 import { list_object } from "../../../utility/batchRequest";
 import { isValidTimeZone } from "../../../utility/time";
-import * as admin from "firebase-admin";
-import mongoose from "mongoose";
 
 // List all orders
 async function order_list(req: Request, res: Response) {
@@ -164,7 +164,7 @@ async function order_manage(req: Request, res: Response) {
                 }" target="_blank">settings</a>.`;
               }
               return r;
-            })()}`,
+            })()}`
           );
           // Send push notification as well
           await admin.messaging().send(
@@ -184,27 +184,27 @@ async function order_manage(req: Request, res: Response) {
                       undefined,
                       {
                         timeZone: order_from.timeZone ?? "BAD_TZ",
-                      },
+                      }
                     )} (your time).`;
                   } catch {
                     r = `${new Date(new_delay * 1000).toLocaleString(
                       undefined,
                       {
                         timeZone: settings.server.defaultTimeZone,
-                      },
+                      }
                     )}.`;
                   }
                   return r;
                 })()}`,
-              order_from.channel_id,
-            ),
+              order_from.channel_id
+            )
           );
         } else {
           await sendEmail(
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSACCEPTED}`,
             null,
-            `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`,
+            `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
           );
           // Send push notification as well
           await admin
@@ -214,8 +214,8 @@ async function order_manage(req: Request, res: Response) {
                 settings.server.nickname + " — Your Order is Ready",
                 iwe_strings.Order.IOSTATUSREADYNOW +
                   " Drop by at the cafeteria and pick it up!",
-                order_from.channel_id,
-              ),
+                order_from.channel_id
+              )
             );
         }
       }
@@ -227,14 +227,14 @@ async function order_manage(req: Request, res: Response) {
       } // @ts-ignore
       order_from.credit =
         parseInt(order_from.credit.toString()) +
-        parseInt(order.total_amount.toString());
+        parseInt(order.final_amount.toString());
       // Delete the order
       await order.deleteOne();
       await sendEmail(
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSDENIED}`,
         null,
-        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSDENIED}`,
+        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSDENIED}`
       );
       // Send push notification as well
       await admin
@@ -245,8 +245,8 @@ async function order_manage(req: Request, res: Response) {
             "Unfortunately, " +
               iwe_strings.Order.IOSTATUSDENIED.toLowerCase() +
               " Sorry about that.",
-            order_from.channel_id,
-          ),
+            order_from.channel_id
+          )
         );
       return res
         .status(200)
@@ -259,7 +259,7 @@ async function order_manage(req: Request, res: Response) {
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSREADYNOW}`,
         null,
-        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`,
+        `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSREADYNOW}`
       );
       // Send push notification as well
       await admin
@@ -269,8 +269,8 @@ async function order_manage(req: Request, res: Response) {
             settings.server.nickname + " — Your Order is Ready",
             iwe_strings.Order.IOSTATUSREADYNOW +
               " Drop by at the cafeteria and pick it up!",
-            order_from.channel_id,
-          ),
+            order_from.channel_id
+          )
         );
       return res
         .status(200)
@@ -282,7 +282,7 @@ async function order_manage(req: Request, res: Response) {
         // This will depend on what fields of the order you want to allow modifying
         // @ts-ignore
         order.override_by = user._id;
-        if (new_amount && new_amount != order.total_amount) {
+        if (new_amount && new_amount != order.final_amount) {
           await sendEmail(
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
@@ -290,13 +290,13 @@ async function order_manage(req: Request, res: Response) {
             `Hi ${order_from.username},<br/><br/>${
               iwe_strings.Order.IOSTATUSMODIFIED
             } Note that you are no longer paying $${
-              parseFloat(order.total_amount.toString()).toFixed(2) ?? "0.00"
+              parseFloat(order.final_amount.toString()).toFixed(2) ?? "0.00"
             }, but instead $${parseFloat(new_amount.toString()).toFixed(
-              2,
+              2
             )}.<br/>Questions regarding this price change?<br/>
             Please direct any queries or concerns either to one of our staff members or get in touch with us at ${
               settings.email.username
-            }@${settings.email.domain}.`,
+            }@${settings.email.domain}.`
           );
           // Send push notification as well
           await admin
@@ -306,15 +306,31 @@ async function order_manage(req: Request, res: Response) {
                 settings.server.nickname + " — Order Modified",
                 iwe_strings.Order.IOSTATUSMODIFIED +
                   ` Your total amount to pay has been updated from $${
-                    parseFloat(order.total_amount.toString()).toFixed(2) ??
+                    parseFloat(order.final_amount.toString()).toFixed(2) ??
                     "0.00"
                   } to $${parseFloat(new_amount.toString()).toFixed(
-                    2,
+                    2
                   )}. Contact our staff for any queries you may have.`,
-                order_from.channel_id,
-              ),
+                order_from.channel_id
+              )
             );
-          order.total_amount = new_amount;
+          // Get the user and update their credit
+          const order_from = await User.findById(order.order_from);
+          if (!order_from) {
+            return res
+              .status(404)
+              .json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+          }
+          if (new_amount < order.final_amount) {
+            order_from.credit = // @ts-expect-error MongoDB should cast this automatically back to a Decimal128
+              order_from.credit + (order.final_amount - new_amount);
+          } else if (new_amount > order.final_amount) {
+            order_from.credit = // @ts-expect-error MongoDB should cast this automatically back to a Decimal128
+              order_from.credit - (new_amount - order.final_amount);
+          }
+          // Update the order's total amount
+          order.final_amount = new_amount;
+          await order_from.save();
         }
         const _p = await Promo.findById(order.promo_code);
         if (new_promo && new_promo != _p?.code) {
@@ -323,7 +339,7 @@ async function order_manage(req: Request, res: Response) {
               order_from.email,
               `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
               null,
-              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`,
+              `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. The promo code <b>${new_promo}</b> has been automatically applied to your order.`
             );
             // Send push notification as well
             await admin
@@ -333,8 +349,8 @@ async function order_manage(req: Request, res: Response) {
                   settings.server.nickname + " — Order Modified",
                   iwe_strings.Order.IOSTATUSMODIFIED +
                     ` The promo code '${new_promo}' has been applied to your order, taking off a total of ${new_promo_object.discount_percentage}% off your total amount to pay.`,
-                  order_from.channel_id,
-                ),
+                  order_from.channel_id
+                )
               );
             order.promo_code = new_promo_object._id; // Cast string to ObjectId
           } else {
@@ -344,7 +360,7 @@ async function order_manage(req: Request, res: Response) {
                 order_from.email,
                 `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
                 null,
-                `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been swapped to ${new_promo}.`,
+                `Hi ${order_from.username},<br/><br/>${iwe_strings.Order.IOSTATUSMODIFIED}. Note that your order's promo code <b>${_p.code}</b> has been swapped to ${new_promo}.`
               );
               // Send push notification as well
               await admin
@@ -354,8 +370,8 @@ async function order_manage(req: Request, res: Response) {
                     settings.server.nickname + " — Order Modified",
                     iwe_strings.Order.IOSTATUSMODIFIED +
                       ` Your order's promo code has been swapped from '${_p.code}' to ${new_promo}.`,
-                    order_from.channel_id,
-                  ),
+                    order_from.channel_id
+                  )
                 );
               order.promo_code = new_promo_object._id; // Cast string to ObjectId
             }
@@ -385,7 +401,7 @@ async function order_manage(req: Request, res: Response) {
                 delayInMinutes !== 0
                   ? delayInMinutes - delayInHours * 60 + " minutes"
                   : ""
-              }</b>.`,
+              }</b>.`
             );
             // Send push notification as well
             await admin
@@ -401,8 +417,8 @@ async function order_manage(req: Request, res: Response) {
                         ? delayInMinutes - delayInHours * 60 + " minutes"
                         : ""
                     }.`,
-                  order_from.channel_id,
-                ),
+                  order_from.channel_id
+                )
               );
           } else {
             // Handle the case where the order already had a delay time
@@ -418,7 +434,7 @@ async function order_manage(req: Request, res: Response) {
                 delayInMinutes !== 0
                   ? delayInMinutes - delayInHours * 60 + " minutes"
                   : ""
-              }</b>.`,
+              }</b>.`
             );
             // Send push notification as well
             await admin
@@ -434,8 +450,8 @@ async function order_manage(req: Request, res: Response) {
                         ? delayInMinutes - delayInHours * 60 + " minutes"
                         : ""
                     }.`,
-                  order_from.channel_id,
-                ),
+                  order_from.channel_id
+                )
               );
           }
           order.delay_time = new_delay;
@@ -455,3 +471,4 @@ async function order_manage(req: Request, res: Response) {
   return res.json(what_is(what.private.order, order));
 }
 export { order_list, order_manage };
+

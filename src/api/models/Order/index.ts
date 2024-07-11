@@ -42,7 +42,7 @@ async function order_create(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
-  // @ts-ignore
+  // @ts-expect-error The mongoDB schema has a bug somewhere
   if (!user.cart || user.cart.length === 0) {
     return res.status(400).json(ErrorFormat(iwe_strings.Order.EEMPTYCART));
   }
@@ -69,13 +69,22 @@ async function order_create(req: Request, res: Response) {
   if (discount_code) {
     // promo = await Promo.findById(promo_code);
     promo = await Promo.findOne({ code: discount_code }); // Accept codes instead of ObjectIds
+    if (!promo || (promo && promo?.expiry_date < Date.now())) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Product.EBADPROMO));
+    }
   }
 
   const amount_to_pay = user.cart.reduce(
     (accumulator, currentValue) =>
       accumulator + currentValue.product.price * currentValue.quantity,
-    0,
+    0
   );
+
+  let discount = 0;
+  if (promo) {
+    // Calculate the discount from the percentage
+    discount = amount_to_pay * (promo.discount_percentage / 100); // Calculate the discount
+  }
 
   /** Conduct the transaction if we chose card */
   switch (method) {
@@ -105,8 +114,8 @@ async function order_create(req: Request, res: Response) {
                 .json(
                   ErrorFormat(
                     response.error.error_string ??
-                      iwe_strings.Generic.EINTERNALERROR,
-                  ),
+                      iwe_strings.Generic.EINTERNALERROR
+                  )
                 );
             } catch {
               return res
@@ -118,13 +127,13 @@ async function order_create(req: Request, res: Response) {
           return res
             .status(500)
             .json(
-              ErrorFormat(error.message ?? iwe_strings.Generic.EINTERNALERROR),
+              ErrorFormat(error.message ?? iwe_strings.Generic.EINTERNALERROR)
             );
         }
       }
       break;
-    case "credit": // @ts-ignore
-      user.credit -= amount_to_pay; // @ts-ignore
+    case "credit": // @ts-expect-error The mongoDB schema has a bug somewhere
+      user.credit -= amount_to_pay; // @ts-expect-error The mongoDB schema has a bug somewhere
       if (user.credit < 0) {
         // There is a negative balance
         return res
@@ -143,23 +152,25 @@ async function order_create(req: Request, res: Response) {
   const order = new Order({
     order_code: v4(),
     order_date: Math.floor(Date.now() / 1000),
-    total_amount: 0,
+    total_amount: amount_to_pay.toFixed(2),
+    discount_amount: discount,
+    final_amount: (amount_to_pay - discount).toFixed(2),
     promo_code: promo,
-    // @ts-ignore
-    order_from: user._id, // @ts-ignore
+    // @ts-expect-error The mongoDB schema has a bug somewhere
+    order_from: user._id, // @ts-expect-error The mongoDB schema has a bug somewhere
     products: user.cart,
   });
 
-  // @ts-ignore
+  // @ts-expect-error The mongoDB schema has a bug somewhere
   if (!order && !order.products) {
     return res
       .status(500)
       .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
   }
 
-  // @ts-ignore
+  // @ts-expect-error The mongoDB schema has a bug somewhere
   user.cart = undefined;
-  // @ts-ignore
+  // @ts-expect-error The mongoDB schema has a bug somewhere
   // let totalAmount = 0;
   // let cart_product;
 
@@ -189,7 +200,7 @@ async function order_create(req: Request, res: Response) {
   //   0
   // ),
   // @remind Needs refactoring to improve performance and efficiency
-  for (let product of order.products) {
+  for (const product of order.products) {
     const product_ = await Product.findById(product.product);
     if (product_) {
       // Data to track
@@ -202,20 +213,17 @@ async function order_create(req: Request, res: Response) {
     }
   }
 
-  // @ts-ignore
-  order.total_amount = amount_to_pay.toFixed(2);
-
-  // @ts-ignore
+  // @ts-expect-error The mongoDB schema has a bug somewhere
   await user.save();
   await order.save();
 
   // Send email notification to user
   sendEmail(
-    // @ts-ignore
+    // @ts-expect-error The mongoDB schema has a bug somewhere
     user.email,
     `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSQUEUED}`,
-    null, //@ts-ignore
-    `Hi ${user.username},<br/><br/>${iwe_strings.Order.IOSTATUSQUEUED}. Your order has been queued and is awaiting review. If there's something wrong, we will contact you to check it out.`,
+    null, // @ts-expect-error The mongoDB schema has a bug somewhere
+    `Hi ${user.username},<br/><br/>${iwe_strings.Order.IOSTATUSQUEUED}. Your order has been queued and is awaiting review. If there's something wrong, we will contact you to check it out.`
   );
 
   res.status(201).json(what_is(what.public.order, order));
@@ -231,7 +239,7 @@ async function order_delete(req: Request, res: Response) {
     "order_code",
     what.public.order,
     iwe_strings.Order.EONOEXISTS,
-    true,
+    true
   );
 }
 
@@ -268,7 +276,7 @@ async function order_modify(req: Request, res: Response) {
     product_action,
     index,
     productID,
-    quantity,
+    quantity
   );
   if (testFailed) return;
 
@@ -289,9 +297,10 @@ async function order_modify(req: Request, res: Response) {
   if (!order) {
     return res.status(404).json(ErrorFormat(iwe_strings.Order.EONOEXISTS));
   }
+  let product;
   if (product_action != "d") {
     // If we're not attempting a delete
-    const product = await Product.findById(productID);
+    product = await Product.findById(productID);
 
     if (!product) {
       return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
@@ -302,7 +311,7 @@ async function order_modify(req: Request, res: Response) {
     }
   }
   // Do we own this order?
-  // @ts-ignore
+  // @ts-expect-error The mongoDB schema has a bug somewhere
   if (!user.staff && order.order_from == user._id) {
     return res.status(403).json(ErrorFormat(iwe_strings.Order.ENOPERMS));
   }
@@ -320,18 +329,25 @@ async function order_modify(req: Request, res: Response) {
     case "d": // Delete one of the products
       // Decrease the total price as we disassociate the product with the order
       const product_to_delete = await Product.findById(
-        order.products?.[index]?.product,
+        order.products?.[index]?.product
       );
       // Don't mind this.
       order.total_amount = parseFloat(
         parseFloat(order.total_amount.toString()) -
-          parseFloat(product_to_delete?.price.toString()),
+          parseFloat(product_to_delete?.price.toString())
       ).toFixed(2) as unknown as Decimal128;
       // Splice the products
-      // @ts-ignore
+      // @ts-expect-error The mongoDB schema has a bug somewhere
       order.products.splice(index, 1);
+      // Increase the user's credit
+      // @ts-expect-error The mongoDB schema has a bug somewhere
+      user.credit += product_to_delete?.price;
       try {
+        // Save the order
         await order.save();
+        // Save the user
+        // @ts-expect-error The mongoDB schema has a bug somewhere
+        await user.save();
       } catch (error) {
         // Combat spams lul
         return res
@@ -348,18 +364,20 @@ async function order_modify(req: Request, res: Response) {
         .status(200)
         .json(what_is(what.public.order, [iwe_strings.Order.IPDELETE, order]));
     case "m": // Modify the order
-      // Here you would handle the modifications to the order
+      if (!product) {
+        return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
+      }
       // This will depend on what fields of the order you want to allow modifying
-      // @ts-ignore
-      order.override_by = user._id; // @ts-ignore
+
+      order.override_by = user._id; // @ts-expect-error The quantity
       const oldQ = order.products[index].quantity;
 
       if (quantity) {
         if (order.products) {
           // Do some magic
-          // @ts-ignore
+          // @ts-expect-error The mongoDB schema has a bug somewhere
           if (productID == order.products[index].product.toString()) {
-            product.in_stock = // @ts-ignore
+            product.in_stock = // @ts-expect-error The mongoDB schema has a bug somewhere
               product.in_stock + order.products[index].quantity; // Do a restore
           }
           order.products[index].quantity = quantity;
@@ -368,25 +386,25 @@ async function order_modify(req: Request, res: Response) {
       }
       if (productID) {
         if (order.products) {
-          // @ts-ignore
+          // @ts-expect-error The mongoDB schema has a bug somewhere
           if (productID != order.products[index].product.toString()) {
             const product = await Product.findById(
-              order.products[index].product,
-            ); // @ts-ignore
+              order.products[index].product
+            ); // @ts-expect-error The mongoDB schema has a bug somewhere
             product.in_stock = product.in_stock + oldQ; // Do a restore on the old one
-            // @ts-ignore
+            // @ts-expect-error The mongoDB schema has a bug somewhere
             await product.save();
           }
 
           if (quantity != order.products[index].quantity) {
             product.in_stock = product.in_stock - quantity;
           }
-          // @ts-ignore
+          // @ts-expect-error The mongoDB schema has a bug somewhere
           order.products[index].product = productID; // Mongoose will automatically try to cast strings to ObjectIds
         }
       }
       if (promo_code) {
-        // @ts-ignore
+        // @ts-expect-error The mongoDB schema has a bug somewhere
         order.promo_code = promo._id; // Mongoose will automatically try to cast strings to ObjectIds
       }
       break;
@@ -398,7 +416,7 @@ async function order_modify(req: Request, res: Response) {
   await product.save();
   await order.save();
   return res.json(
-    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, order]),
+    what_is(what.public.order, [iwe_strings.Order.IPMODIFY, order])
   );
 }
 
@@ -409,7 +427,7 @@ function check_values(
   product_action?: string,
   index?: number,
   productID?: mongoose.Schema.Types.ObjectId,
-  quantity?: number,
+  quantity?: number
 ) {
   if (
     (orderID && Number.isNaN(orderID)) ||
@@ -420,9 +438,9 @@ function check_values(
   }
   if (
     (promo_code &&
-      (typeof promo_code != "string" ||
-        !mongoose.Types.ObjectId.isValid(promo_code))) ||
-    (promo_code && promo_code == null)
+      typeof promo_code != "string") ||
+      //|| !mongoose.Types.ObjectId.isValid(promo_code)
+    (promo_code && typeof promo_code !== "string")
   ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.EBADPROMO));
   }
