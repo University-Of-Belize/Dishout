@@ -100,6 +100,8 @@ class IWEU_STRINGS {
     ECODEEXISTS: "Promo code already exists.",
     ENICKEXISTS: "Promo nickname already exists.",
     ENOTFOUND: "Promotion not found.",
+    IEXISTS: "Promotion exists.",
+    IEXPIRED: "Promotion expired.",
   };
   Review = {
     ENOTFOUND: "Review not found.",

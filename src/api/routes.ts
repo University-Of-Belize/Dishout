@@ -11,6 +11,7 @@ import {
   Dynamic,
   Menu,
   Order,
+  Promo,
   Review,
   Search,
   User,
@@ -229,6 +230,11 @@ router.delete("/order/place", (req: Request, res: Response) => {
 });
 router.put("/order/place", (req: Request, res: Response) => {
   Order.Modify(req, res);
+});
+
+// <Promo> lookup. Only accessible to signed in users
+router.get("/promo/validate", (req: Request, res: Response) => {
+  Promo.Validate(req, res);
 });
 
 // <Review>

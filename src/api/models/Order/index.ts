@@ -69,7 +69,7 @@ async function order_create(req: Request, res: Response) {
   if (discount_code) {
     // promo = await Promo.findById(promo_code);
     promo = await Promo.findOne({ code: discount_code }); // Accept codes instead of ObjectIds
-    if (!promo || (promo && (promo?.expiry_date * 1000) < Date.now())) {
+    if (!promo || (promo && ((promo?.expiry_date ?? 1) * 1000) < Date.now())) {
       return res.status(400).json(ErrorFormat(iwe_strings.Product.EBADPROMO));
     }
   }

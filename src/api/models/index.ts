@@ -45,6 +45,7 @@ import { dash_list } from "./Dashboard";
 import { dynamic_banner } from "./Dynamic";
 import { menu_find, menu_list, menu_random, slug_exists } from "./Menu";
 import { order_create, order_delete, order_list, order_modify } from "./Order";
+import { promo_validate } from "./Promo";
 import { review_create } from "./Review";
 import { global_lookup } from "./Search";
 import {
@@ -161,6 +162,11 @@ class API {
     Modify: order_modify, // Yes
   };
 
+  Promo = {
+    // FE: 100% support
+    Validate: promo_validate, // Yes
+  };
+
   Review = {
     // FE: 100% support
     Create: review_create, // Yes
@@ -201,6 +207,7 @@ export const Admin = api.Admin;
 export const Dash = api.Dash;
 export const Dynamic = api.Dynamic;
 export const Order = api.Order;
+export const Promo = api.Promo;
 export const Menu = api.Menu;
 export const Search = api.Search;
 export const Category = api.Category;
