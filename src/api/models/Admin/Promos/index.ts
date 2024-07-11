@@ -173,6 +173,15 @@ async function promo_modify(req: Request, res: Response) {
   if (description) {
     promo.description = description;
   }
+
+  if (discount) {
+    if (discount > 100) {
+      return res.status(400).json(ErrorFormat(iwe_strings.Promo.EOVERLIMIT));
+    } else {
+      promo.discount_percentage = discount;
+    }
+  }
+  
   if (start_date) {
     promo.start_date = start_date;
   }
