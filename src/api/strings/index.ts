@@ -19,7 +19,8 @@ class IWEU_STRINGS {
     EBADPSWD: "Please choose a different password.",
     EBADRSTTKN:
       "The link you followed does not work anymore. You need to request a password reset again.",
-    ETAKEN: "Only one account per username and email address is allowed. And either one of these are already in use.",
+    ETAKEN:
+      "Only one account per username and email address is allowed. And either one of these are already in use.",
     EDISABLED:
       "Your account has been disabled. Please do not create a new account. Instead, contact an administrator for assistance.",
     ENEEDSACTIVATION:
@@ -71,7 +72,8 @@ class IWEU_STRINGS {
     ECANTDELETEROOT: "You cannot delete the root account.",
     ECANTLOCKOUTROOT: "You cannot disable the root account.",
     ECANTBLOCKROOT: "You cannot restrict the root account.",
-    EBADRESOURCE: "The resource you provided is invalid or is an unauthorized storage bucket",
+    EBADRESOURCE:
+      "The resource you provided is invalid or is an unauthorized storage bucket",
     EINSUFFICIENTFUNDS: "You do not have enough funds to complete this action.",
   };
   Order = {
@@ -98,6 +100,8 @@ class IWEU_STRINGS {
     ECODEEXISTS: "Promo code already exists.",
     ENICKEXISTS: "Promo nickname already exists.",
     ENOTFOUND: "Promotion not found.",
+    IEXISTS: "Promotion exists.",
+    IEXPIRED: "Promotion expired.",
   };
   Review = {
     ENOTFOUND: "Review not found.",
@@ -141,7 +145,11 @@ class IWEU_STRINGS {
   };
   Search = {
     UTOKENIZE: /[^a-zA-Z0-9]/,
-    ENOENGINE: "No engine is readily available to service this request. Please try again later.",
+    ENOENGINE:
+      "No engine is readily available to service this request. Please try again later.",
+  };
+  Data = {
+    ENOTFOUND: "Data not found.",
   };
 }
 
@@ -157,7 +165,7 @@ function createNotification(
   title: string,
   body: string,
   channel: string,
-  icon?: string
+  icon?: string,
 ) {
   return {
     notification: {

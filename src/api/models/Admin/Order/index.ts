@@ -6,20 +6,20 @@
 // For modification: is[0] = "m"  -- Send email to user "Overriden"
 
 import { Request, Response } from "express";
+import settings from "../../../../config/settings.json";
 import Order from "../../../../database/models/Orders";
 import Promo from "../../../../database/models/Promos";
 import User from "../../../../database/models/Users";
-import settings from "../../../../config/settings.json";
 import { sendEmail } from "../../../../util/email";
 
-import what from "../../../utility/Whats";
+import * as admin from "firebase-admin";
+import mongoose from "mongoose";
 import { ErrorFormat, NotifyFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import { what_is, wis_array } from "../../../utility/What_Is";
+import what from "../../../utility/Whats";
 import { list_object } from "../../../utility/batchRequest";
 import { isValidTimeZone } from "../../../utility/time";
-import * as admin from "firebase-admin";
-import mongoose from "mongoose";
 
 // List all orders
 async function order_list(req: Request, res: Response) {
@@ -224,10 +224,10 @@ async function order_manage(req: Request, res: Response) {
       const order = await Order.findById(orderId);
       if (!order) {
         return res.status(404).json(ErrorFormat(iwe_strings.Order.EONOEXISTS));
-      } // @ts-ignore
+      } // @ts-expect-error There is a bug in the TypeScript definitions for the server
       order_from.credit =
         parseInt(order_from.credit.toString()) +
-        parseInt(order.total_amount.toString());
+        parseInt(order.final_amount.toString());
       // Delete the order
       await order.deleteOne();
       await sendEmail(
@@ -282,7 +282,7 @@ async function order_manage(req: Request, res: Response) {
         // This will depend on what fields of the order you want to allow modifying
         // @ts-ignore
         order.override_by = user._id;
-        if (new_amount && new_amount != order.total_amount) {
+        if (new_amount && new_amount != order.final_amount) {
           await sendEmail(
             order_from.email,
             `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSMODIFIED}`,
@@ -290,7 +290,7 @@ async function order_manage(req: Request, res: Response) {
             `Hi ${order_from.username},<br/><br/>${
               iwe_strings.Order.IOSTATUSMODIFIED
             } Note that you are no longer paying $${
-              parseFloat(order.total_amount.toString()).toFixed(2) ?? "0.00"
+              parseFloat(order.final_amount.toString()).toFixed(2) ?? "0.00"
             }, but instead $${parseFloat(new_amount.toString()).toFixed(
               2
             )}.<br/>Questions regarding this price change?<br/>
@@ -306,7 +306,7 @@ async function order_manage(req: Request, res: Response) {
                 settings.server.nickname + " — Order Modified",
                 iwe_strings.Order.IOSTATUSMODIFIED +
                   ` Your total amount to pay has been updated from $${
-                    parseFloat(order.total_amount.toString()).toFixed(2) ??
+                    parseFloat(order.final_amount.toString()).toFixed(2) ??
                     "0.00"
                   } to $${parseFloat(new_amount.toString()).toFixed(
                     2
@@ -314,7 +314,23 @@ async function order_manage(req: Request, res: Response) {
                 order_from.channel_id
               )
             );
-          order.total_amount = new_amount;
+          // Get the user and update their credit
+          const order_from = await User.findById(order.order_from);
+          if (!order_from) {
+            return res
+              .status(404)
+              .json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+          }
+          if (new_amount < order.final_amount) {
+            order_from.credit = // @ts-expect-error MongoDB should cast this automatically back to a Decimal128
+              order_from.credit + (order.final_amount - new_amount);
+          } else if (new_amount > order.final_amount) {
+            order_from.credit = // @ts-expect-error MongoDB should cast this automatically back to a Decimal128
+              order_from.credit - (new_amount - order.final_amount);
+          }
+          // Update the order's total amount
+          order.final_amount = new_amount;
+          await order_from.save();
         }
         const _p = await Promo.findById(order.promo_code);
         if (new_promo && new_promo != _p?.code) {
@@ -337,6 +353,9 @@ async function order_manage(req: Request, res: Response) {
                 )
               );
             order.promo_code = new_promo_object._id; // Cast string to ObjectId
+            // Update the order data accordingly
+            order.discount_amount = parseFloat((order.total_amount * (new_promo_object.discount_percentage / 100)).toString()).toFixed(2); 
+            order.final_amount = parseFloat((order.total_amount - order.discount_amount).toString()).toFixed(2);
           } else {
             const _p = await Promo.findById(order.promo_code);
             if (_p) {
@@ -358,6 +377,9 @@ async function order_manage(req: Request, res: Response) {
                   )
                 );
               order.promo_code = new_promo_object._id; // Cast string to ObjectId
+              // Update the order data accordingly
+              order.discount_amount = parseFloat((order.total_amount * (new_promo_object.discount_percentage / 100)).toString()).toFixed(2); 
+              order.final_amount = parseFloat((order.total_amount - order.discount_amount).toString()).toFixed(2);
             }
           }
         }
@@ -455,3 +477,4 @@ async function order_manage(req: Request, res: Response) {
   return res.json(what_is(what.private.order, order));
 }
 export { order_list, order_manage };
+

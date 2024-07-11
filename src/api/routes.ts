@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express"; // Our routing machine
 import * as admin from "firebase-admin";
-import serviceAccount from '../config/service_account.json'; // Our service account
+import serviceAccount from "../config/service_account.json"; // Our service account
 import settings from "../config/settings.json";
 import { LogError, LogRoutes } from "../util/Logger";
 import {
@@ -11,9 +11,11 @@ import {
   Dynamic,
   Menu,
   Order,
+  Promo,
   Review,
   Search,
   User,
+  Data,
 } from "./models"; // Import our API models into memory
 import { initialize_engine as initialize_search } from "./models/Search";
 let engine_2: any; // Backup engine
@@ -37,7 +39,7 @@ let engine: any; // It's going to be assigned soon, anyway.
         LogError("Failed to initialize engine.");
       }
     }, // @ts-ignore
-    parseInt(settings.search["indexing-interval"]) * 1000 // In seconds
+    parseInt(settings.search["indexing-interval"]) * 1000, // In seconds
   );
 })();
 const router = Router(); // Initialize!
@@ -76,13 +78,13 @@ router.put(
   "/admin/user/manage/profile_picture",
   (req: Request, res: Response) => {
     Admin.User.Modify.Picture(req, res, "profile_picture");
-  }
+  },
 );
 router.put(
   "/admin/user/manage/banner_picture",
   (req: Request, res: Response) => {
     Admin.User.Modify.Picture(req, res, "banner");
-  }
+  },
 );
 
 // <Promo>
@@ -230,6 +232,11 @@ router.put("/order/place", (req: Request, res: Response) => {
   Order.Modify(req, res);
 });
 
+// <Promo> lookup. Only accessible to signed in users
+router.post("/promo/validate", (req: Request, res: Response) => {
+  Promo.Validate(req, res);
+});
+
 // <Review>
 router.post("/review/create", (req: Request, res: Response) => {
   Review.Create(req, res);
@@ -274,6 +281,12 @@ router.post("/user/messaging/send", (req: Request, res: Response) => {
 // View all interactions
 router.get("/user/messaging/interactions", (req: Request, res: Response) => {
   User.Messaging.View_Interactions(req, res);
+});
+
+// Data
+// <Reviews from a specific user>
+router.get("/data/reviews/:user_id", (req: Request, res: Response) => {
+  Data.User.Reviews.Read(req, res);
 });
 
 // Print the routes for reference

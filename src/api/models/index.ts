@@ -3,8 +3,21 @@ import {
   category_delete,
   category_modify,
 } from "./Admin/Categories";
+import {
+  feedback_create,
+  feedback_delete,
+  feedback_list,
+  feedback_modify,
+} from "./Admin/Feedback";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
 import { order_list as __order_list, order_manage } from "./Admin/Order";
+import {
+  post_create,
+  post_delete,
+  post_list,
+  post_lookup,
+  post_modify,
+} from "./Admin/Posts";
 import {
   promo_create,
   promo_delete,
@@ -13,22 +26,9 @@ import {
 } from "./Admin/Promos";
 import { review_delete, review_list, review_modify } from "./Admin/Reviews";
 import {
-  feedback_create,
-  feedback_delete,
-  feedback_list,
-  feedback_modify,
-} from "./Admin/Feedback";
-import {
-  post_lookup,
-  post_create,
-  post_delete,
-  post_list,
-  post_modify,
-} from "./Admin/Posts";
-import {
-  user_find,
   user_create,
   user_delete,
+  user_find,
   user_list,
   user_modify,
   user_modify_picture,
@@ -45,6 +45,7 @@ import { dash_list } from "./Dashboard";
 import { dynamic_banner } from "./Dynamic";
 import { menu_find, menu_list, menu_random, slug_exists } from "./Menu";
 import { order_create, order_delete, order_list, order_modify } from "./Order";
+import { promo_validate } from "./Promo";
 import { review_create } from "./Review";
 import { global_lookup } from "./Search";
 import {
@@ -57,6 +58,8 @@ import {
   user_messages_send,
   user_messages_view_interactions,
 } from "./User";
+
+import { public_data_user_reviews } from "./Data";
 
 class API {
   Authentication = {
@@ -160,6 +163,11 @@ class API {
     Modify: order_modify, // Yes
   };
 
+  Promo = {
+    // FE: 100% support
+    Validate: promo_validate, // Yes
+  };
+
   Review = {
     // FE: 100% support
     Create: review_create, // Yes
@@ -186,6 +194,13 @@ class API {
       View_Interactions: user_messages_view_interactions,
     },
   };
+  Data = {
+    User: {
+      Reviews: {
+        Read: public_data_user_reviews,
+      },
+    },
+  };
 }
 
 const api = new API();
@@ -194,8 +209,10 @@ export const Admin = api.Admin;
 export const Dash = api.Dash;
 export const Dynamic = api.Dynamic;
 export const Order = api.Order;
+export const Promo = api.Promo;
 export const Menu = api.Menu;
 export const Search = api.Search;
 export const Category = api.Category;
 export const Review = api.Review;
 export const User = api.User;
+export const Data = api.Data;

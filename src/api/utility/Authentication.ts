@@ -13,7 +13,7 @@ function get_authorization(req: Request): AuthorizationToken {
 
 // Get the header, return the user
 async function get_authorization_user(
-  req: Request
+  req: Request,
 ): Promise<typeof User | null> {
   const token: AuthorizationToken = get_authorization(req);
 

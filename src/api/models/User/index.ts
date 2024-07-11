@@ -359,7 +359,7 @@ async function user_messages_send(req: Request, res: Response) {
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
 
-  const message_obj: Message = wis_obj(req);
+  const message_obj: ServerMessage = wis_obj(req);
   if (message_obj == null) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
@@ -510,6 +510,12 @@ async function user_messages_read(req: Request, res: Response) {
   }
   // We should have the users now
   // Return all messages from the database
+  const user_id = mongoose.Types.ObjectId.createFromHexString(
+    user._id.toString(),
+  );
+  const to_user_id = mongoose.Types.ObjectId.createFromHexString(
+    to_user._id.toString(),
+  );
   const user_id = mongoose.Types.ObjectId.createFromHexString(
     user._id.toString()
   );

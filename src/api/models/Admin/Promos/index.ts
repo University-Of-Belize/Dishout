@@ -14,7 +14,7 @@ async function promo_list(req: Request, res: Response) {
     {
       path: "created_by",
       model: "Users",
-    }
+    },
   ]);
 }
 
