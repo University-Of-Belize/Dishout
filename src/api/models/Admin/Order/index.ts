@@ -280,6 +280,13 @@ async function order_manage(req: Request, res: Response) {
       {
         // Here you would handle the modifications to the order
         // This will depend on what fields of the order you want to allow modifying
+       // Get the user and update their credit
+       const order_from = await User.findById(order.order_from);
+       if (!order_from) {
+          return res
+                .status(404)
+                .json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+       }
         // @ts-ignore
         order.override_by = user._id;
         if (new_amount && new_amount != order.final_amount) {
@@ -314,13 +321,6 @@ async function order_manage(req: Request, res: Response) {
                 order_from.channel_id
               )
             );
-          // Get the user and update their credit
-          const order_from = await User.findById(order.order_from);
-          if (!order_from) {
-            return res
-              .status(404)
-              .json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
-          }
           if (new_amount < order.final_amount) {
             order_from.credit = // @ts-expect-error MongoDB should cast this automatically back to a Decimal128
               order_from.credit + (order.final_amount - new_amount);
