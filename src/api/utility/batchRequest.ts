@@ -92,9 +92,10 @@ async function __data_table_trigger_list(
   res: Response,
   Model: Model<any>,
   whats: string,
-  public_access: boolean | undefined,
-  staff_required: boolean | undefined,
-  populationArray: { path: string; model: string }[] | undefined,
+  public_access?: boolean | undefined,
+  staff_required?: boolean | undefined,
+  populationArray?: { path: string; model: string }[] | undefined,
+  condition?: { key: boolean } | object,
 ) {
   // We don't need a body since we're doing the 'what_is' this time
 
@@ -115,7 +116,7 @@ async function __data_table_trigger_list(
   }
 
   // Get all objects from the database
-  const object = await Model.find().populate(populationArray ?? []);
+  const object = await Model.find(condition).populate(populationArray ?? []);
 
   // Return the objects as a JSON response
   return res.json(what_is(whats, object));

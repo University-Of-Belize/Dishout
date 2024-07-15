@@ -16,9 +16,9 @@ import { delete_object, list_object } from "../../utility/batchRequest";
 const onelink_token = process.env.ONELINK_TOKEN ?? settings.transactions.token;
 const onelink_salt = process.env.ONELINK_SALT ?? settings.transactions.salt;
 
-async function order_list(req: Request, res: Response) {
-  await list_object(req, res, Order, what.public.order, true, false);
-}
+// async function order_list(req: Request, res: Response) {
+//   await list_object(req, res, Order, what.public.order, true, false, undefined, [{completed: false}]);
+// }
 
 // Calculate the total amount, and take in the promo code
 // Must be accessible to only registered users, as it will need the cart.
@@ -69,7 +69,7 @@ async function order_create(req: Request, res: Response) {
   if (discount_code) {
     // promo = await Promo.findById(promo_code);
     promo = await Promo.findOne({ code: discount_code }); // Accept codes instead of ObjectIds
-    if (!promo || (promo && ((promo?.expiry_date ?? 1) * 1000) < Date.now())) {
+    if (!promo || (promo && (promo?.expiry_date ?? 1) * 1000 < Date.now())) {
       return res.status(400).json(ErrorFormat(iwe_strings.Product.EBADPROMO));
     }
   }
@@ -83,7 +83,9 @@ async function order_create(req: Request, res: Response) {
   let discount = 0;
   if (promo) {
     // Calculate the discount from the percentage
-    discount = parseFloat((amount_to_pay * (promo.discount_percentage / 100)).toString()).toFixed(2); // Calculate the discount
+    discount = parseFloat(
+      (amount_to_pay * (promo.discount_percentage / 100)).toString()
+    ).toFixed(2); // Calculate the discount
   }
 
   /** Conduct the transaction if we chose card */
@@ -437,9 +439,8 @@ function check_values(
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
   if (
-    (promo_code &&
-      typeof promo_code != "string") ||
-      //|| !mongoose.Types.ObjectId.isValid(promo_code)
+    (promo_code && typeof promo_code != "string") ||
+    //|| !mongoose.Types.ObjectId.isValid(promo_code)
     (promo_code && typeof promo_code !== "string")
   ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.EBADPROMO));
@@ -455,4 +456,9 @@ function check_values(
   return 0;
 }
 
-export { order_create, order_delete, order_list, order_modify };
+export {
+  order_create,
+  order_delete,
+  //order_list,
+  order_modify,
+};

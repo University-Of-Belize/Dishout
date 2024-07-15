@@ -33,7 +33,7 @@ async function order_list(req: Request, res: Response) {
   if (!user?.staff) {
     // Regular users are allowed to query their own orders (orders that pertain to them)
     // @ts-ignore
-    const orders = await Order.find({ order_from: user._id }).populate([
+    const orders = await Order.find({ order_from: user._id, completed: false }).populate([
       {
         path: "order_from",
         model: "Users",
@@ -71,7 +71,7 @@ async function order_list(req: Request, res: Response) {
       path: "products.product",
       model: "Products",
     },
-  ]);
+  ], {completed: false});
 }
 
 async function order_manage(req: Request, res: Response) {
@@ -253,8 +253,17 @@ async function order_manage(req: Request, res: Response) {
         .json(what_is(what.private.order, iwe_strings.Order.IDELETE));
     }
     case "r": {
-      // Delete the order
-      await Order.findByIdAndDelete(orderId);
+      // ~~Delete the order~~
+      // await Order.findByIdAndDelete(orderId);
+      // Mark the order as ready
+      const order = await Order.findById(orderId);
+      if (!order) {
+        return res.status(404).json(ErrorFormat(iwe_strings.Order.EONOEXISTS));
+      }
+      order.completed = true;
+      await order.save();
+      
+      // Send the email
       await sendEmail(
         order_from.email,
         `${settings.server.nickname} — ${iwe_strings.Order.IOSTATUSREADYNOW}`,
