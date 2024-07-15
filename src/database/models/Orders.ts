@@ -47,7 +47,14 @@ const ordersSchema = new Schema({
     required: false, // We should not accept orders by default. Undefined means queued
     // Queued by default. false for declined, true for accepted
   },
-  delay_time: { // When will the product be delivered?
+  completed: {
+    // @audit @PEDRO_KUKUL: Audit this into Postgres
+    type: Boolean,
+    required: false, // We should not accept orders by default. Undefined means queued
+    // Queued by default. false for declined, true for accepted
+  },
+  delay_time: {
+    // When will the product be delivered?
     type: Number, // Seconds
     required: true,
     default: 0, // No delay
@@ -57,6 +64,11 @@ const ordersSchema = new Schema({
       {
         product: { type: Schema.Types.ObjectId, ref: "Products" },
         quantity: Number,
+        variations: [
+          {
+            variation: { type: Schema.Types.ObjectId, ref: "ProductVariation" },
+          },
+        ],
       },
     ], // Users don't have to have a cart. The cart is always cleared after orders are complete
     required: false,
