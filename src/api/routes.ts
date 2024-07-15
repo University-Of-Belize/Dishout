@@ -39,7 +39,7 @@ let engine: any; // It's going to be assigned soon, anyway.
         LogError("Failed to initialize engine.");
       }
     }, // @ts-ignore
-    parseInt(settings.search["indexing-interval"]) * 1000, // In seconds
+    parseInt(settings.search["indexing-interval"]) * 1000 // In seconds
   );
 })();
 const router = Router(); // Initialize!
@@ -78,13 +78,13 @@ router.put(
   "/admin/user/manage/profile_picture",
   (req: Request, res: Response) => {
     Admin.User.Modify.Picture(req, res, "profile_picture");
-  },
+  }
 );
 router.put(
   "/admin/user/manage/banner_picture",
   (req: Request, res: Response) => {
     Admin.User.Modify.Picture(req, res, "banner");
-  },
+  }
 );
 
 // <Promo>
@@ -175,6 +175,38 @@ router.delete("/admin/menu/manage", (req: Request, res: Response) => {
 router.put("/admin/menu/manage", (req: Request, res: Response) => {
   Admin.Menu.Modify(req, res);
 });
+// <Menu/Variations>
+router.post("/admin/menu/variation", (req: Request, res: Response) => {
+  Admin.Menu.Variation.Create(req, res);
+});
+router.delete(
+  "/admin/menu/variation/:variation_id",
+  (req: Request, res: Response) => {
+    Admin.Menu.Variation.Delete(req, res);
+  }
+);
+router.put(
+  "/admin/menu/variation/:variation_id",
+  (req: Request, res: Response) => {
+    Admin.Menu.Variation.Modify(req, res);
+  }
+);
+// <Menu/Variations/Categories>
+router.post("/admin/menu/variation/tag", (req: Request, res: Response) => {
+  Admin.Menu.Variation.Categories.Create(req, res);
+});
+router.delete(
+  "/admin/menu/variation/tag/:vcat_id",
+  (req: Request, res: Response) => {
+    Admin.Menu.Variation.Categories.Delete(req, res);
+  }
+);
+router.put(
+  "/admin/menu/variation/tag/:vcat_id",
+  (req: Request, res: Response) => {
+    Admin.Menu.Variation.Categories.Modify(req, res);
+  }
+);
 
 // <<User-API>>
 // <Dashboard>

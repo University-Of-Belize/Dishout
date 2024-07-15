@@ -65,8 +65,8 @@ const ordersSchema = new Schema({
         product: { type: Schema.Types.ObjectId, ref: "Products" },
         quantity: Number,
         variations: [
-          {
-            variation: { type: Schema.Types.ObjectId, ref: "ProductVariation" },
+          { // @note Currently bugs-out if inputted with a variation that does not belong to the product
+            variation_id: { type: Schema.Types.ObjectId, ref: "ProductVariation" },
           },
         ],
       },

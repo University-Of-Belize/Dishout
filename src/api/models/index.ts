@@ -10,6 +10,16 @@ import {
   feedback_modify,
 } from "./Admin/Feedback";
 import { menu_create, menu_delete, menu_modify } from "./Admin/Menu";
+import {
+  vmenu_create,
+  vmenu_delete,
+  vmenu_modify,
+} from "./Admin/Menu/Variation";
+import {
+  vcategory_create,
+  vcategory_delete,
+  vcategory_modify,
+} from "./Admin/Menu/Variation/Category";
 import { order_list as __order_list, order_manage } from "./Admin/Order";
 import {
   post_create,
@@ -44,7 +54,12 @@ import { category_list } from "./Categories";
 import { dash_list } from "./Dashboard";
 import { dynamic_banner } from "./Dynamic";
 import { menu_find, menu_list, menu_random, slug_exists } from "./Menu";
-import { order_create, order_delete, order_list, order_modify } from "./Order";
+import {
+  order_create,
+  order_delete,
+  //order_list,
+  order_modify,
+} from "./Order";
 import { promo_validate } from "./Promo";
 import { review_create } from "./Review";
 import { global_lookup } from "./Search";
@@ -129,6 +144,17 @@ class API {
       Create: menu_create, // Yes
       Delete: menu_delete, // Yes
       Modify: menu_modify, // Yes
+
+      Variation: {
+        Categories: {
+          Create: vcategory_create,
+          Delete: vcategory_delete,
+          Modify: vcategory_modify,
+        },
+        Create: vmenu_create,
+        Delete: vmenu_delete,
+        Modify: vmenu_modify,
+      },
     },
   };
   Dash = {
@@ -156,7 +182,7 @@ class API {
   };
   Order = {
     // FE: 100% support
-    List: order_list, // Yes
+    // List: order_list, // Yes
     // Lookup: order_lookup,
     Create: order_create, // Yes
     Delete: order_delete, // Yes

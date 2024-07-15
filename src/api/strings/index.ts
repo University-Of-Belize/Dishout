@@ -143,6 +143,22 @@ class IWEU_STRINGS {
       "Your request contains an invalid promo code ID. Please remove the offending code and try again.",
     ERESERVEDSLUG:
       "This slug is reserved by the system. Please choose another slug.",
+    Variation: {
+      Category: {
+        ENOTFOUND: "Category not found.",
+        EEXISTS: "Category exists.",
+        EINVALID: "Invalid category.",
+        ICREATE: "Category created successfully.",
+        IMODIFY: "Category modified successfully.",
+        IDELETE: "Category deleted successfully.",
+      },
+      ENOTFOUND: "Product variation not found.",
+      EEXISTS: "Product variation exists.",
+      EINVALID: "Invalid product variation.",
+      ICREATE: "Product variation created successfully.",
+      IMODIFY: "Product variation modified successfully.",
+      IDELETE: "Product variation deleted successfully.",
+    },
   };
   Search = {
     UTOKENIZE: /[^a-zA-Z0-9]/,
@@ -166,7 +182,7 @@ function createNotification(
   title: string,
   body: string,
   channel: string,
-  icon?: string,
+  icon?: string
 ) {
   return {
     notification: {
