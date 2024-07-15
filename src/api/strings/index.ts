@@ -148,6 +148,8 @@ class IWEU_STRINGS {
         ENOTFOUND: "Category not found.",
         EEXISTS: "Category exists.",
         EINVALID: "Invalid category.",
+        EHASVARIATION:
+          "Product variation category has variations. Cannot delete.",
         ICREATE: "Category created successfully.",
         IMODIFY: "Category modified successfully.",
         IDELETE: "Category deleted successfully.",

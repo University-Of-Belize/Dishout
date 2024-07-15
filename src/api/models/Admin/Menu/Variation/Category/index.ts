@@ -73,7 +73,59 @@ async function vcategory_create(req: Request, res: Response) {
   return res.json(newCatVariation);
 }
 
-async function vcategory_delete(req: Request, res: Response) {}
+async function vcategory_delete(req: Request, res: Response) {
+  // We want to delete a VCategory only if there aren't any variations associated with it
+  // Note: URL is formatted as /api/admin/menu/variation/tag/:vcat_id
+  const vcat_id = req.params.vcat_id;
+
+  // Do not check what_is, as we are only deleting a VCategory
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
+  // verify (using the ID checking function)
+  const testFailed = check_values(res, "unused", vcat_id);
+  if (testFailed) return;
+
+  // Check if the vcategory exists
+  const existing_category = await CatProductVariation.findById(vcat_id);
+  if (!existing_category) {
+    return res.status(400).json({
+      status: false,
+      message: iwe_strings.Product.Variation.Category.ENOTFOUND,
+    });
+  }
+
+  // Check if there are any variations associated with this VCategory
+  const existing_variation = await ProductVariation.findOne({
+    VCategory_id: vcat_id,
+  });
+
+  if (existing_variation) {
+    return res.status(400).json({
+      status: false,
+      message: iwe_strings.Product.Variation.Category.EHASVARIATION,
+    });
+  }
+
+  // Delete the VCategory
+  await CatProductVariation.findByIdAndDelete(vcat_id);
+
+  return res.json({
+    status: true,
+  });
+}
 
 async function vcategory_modify(req: Request, res: Response) {}
 

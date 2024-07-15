@@ -76,8 +76,49 @@ async function variation_create(req: Request, res: Response) {
   });
 }
 
-// Delete a new product variation
-async function variation_delete(req: Request, res: Response) {}
+// Delete a product variation
+async function variation_delete(req: Request, res: Response) {
+  // We want to delete the product variation
+  // Note: URL is formatted as /api/admin/menu/variation/:variation_id
+  const variation_id = req.params.variation_id;
+
+  // Do not check what_is, as we are only deleting a Variation
+  // Check our authentication token and see if it matches up to a staff member
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // Is this person a staff member?
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
+  // verify (using the ID checking function)
+  const testFailed = check_values(res, "unused", variation_id);
+  if (testFailed) return;
+
+  // Check if the variation exists
+  const variation = await ProductVariation.findById(variation_id);
+
+  if (!variation) {
+    return res.status(404).json({
+      status: false,
+      message: iwe_strings.Product.Variation.ENOTFOUND,
+    });
+  }
+
+  // Delete the variation
+  await ProductVariation.findByIdAndDelete(variation_id);
+
+  return res.json({
+    status: true,
+  });
+}
 
 // Modify a new product variation
 async function variation_modify(req: Request, res: Response) {}
