@@ -68,7 +68,7 @@ async function variation_create(req: Request, res: Response) {
   });
 
   await newVariation.save();
-  return res.json(newVariation);
+  return res.json([iwe_strings.Product.Variation.ICREATE, newVariation]);
 }
 
 // Delete a product variation
@@ -111,6 +111,7 @@ async function variation_delete(req: Request, res: Response) {
   await ProductVariation.findByIdAndDelete(variation_id);
 
   return res.json({
+    message: iwe_strings.Product.Variation.IDELETE,
     status: true,
   });
 }
@@ -164,7 +165,9 @@ async function variation_modify(req: Request, res: Response) {
   });
 
   if (duplicate_variation) {
-    if (duplicate_variation._id.toString() === existing_variation._id.toString()) {
+    if (
+      duplicate_variation._id.toString() === existing_variation._id.toString()
+    ) {
       return res.status(400).json({
         status: false,
         message: iwe_strings.Product.Variation.EISEXACT,
@@ -193,7 +196,10 @@ async function variation_modify(req: Request, res: Response) {
   }
 
   await existing_variation.save();
-  return res.json(existing_variation);
+  return res.json([
+    iwe_strings.Product.Variation.IMODIFY,
+    existing_variation,
+  ]);
 }
 
 function check_values(

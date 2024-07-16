@@ -1,16 +1,14 @@
 // Import our proper types
 import { Request, Response } from "express";
 // Import the schemas
+import mongoose from "mongoose";
+import CatProductVariation from "../../../../../../database/models/CatProductVariation";
 import Menu from "../../../../../../database/models/Products";
 import ProductVariation from "../../../../../../database/models/ProductVariation";
-import CatProductVariation from "../../../../../../database/models/CatProductVariation";
 import { ErrorFormat, iwe_strings } from "../../../../../strings";
 import { get_authorization_user } from "../../../../../utility/Authentication";
+import { wis_array } from "../../../../../utility/What_Is";
 import what from "../../../../../utility/Whats";
-import { what_is, wis_array } from "../../../../../utility/What_Is";
-import { delete_object } from "../../../../../utility/batchRequest";
-import settings from "../../../../../../config/settings.json";
-import mongoose from "mongoose";
 
 async function vcategory_create(req: Request, res: Response) {
   // Check our 'what_is'
@@ -70,7 +68,10 @@ async function vcategory_create(req: Request, res: Response) {
   });
 
   await newCatVariation.save();
-  return res.json(newCatVariation);
+  return res.json([
+    iwe_strings.Product.Variation.Category.ICREATE,
+    newCatVariation,
+  ]);
 }
 
 async function vcategory_delete(req: Request, res: Response) {
@@ -123,6 +124,7 @@ async function vcategory_delete(req: Request, res: Response) {
   await CatProductVariation.findByIdAndDelete(vcat_id);
 
   return res.json({
+    message: iwe_strings.Product.Variation.Category.IDELETE,
     status: true,
   });
 }
@@ -206,7 +208,10 @@ async function vcategory_modify(req: Request, res: Response) {
   }
 
   await existing_vcat.save();
-  return res.json(existing_vcat);
+  return res.json([
+    iwe_strings.Product.Variation.Category.IMODIFY,
+    existing_vcat,
+  ]);
 }
 
 function check_values(
