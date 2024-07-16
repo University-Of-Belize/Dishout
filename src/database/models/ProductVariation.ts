@@ -8,13 +8,12 @@ const variationSchema = new Schema({
   Name: {
     type: String,
     required: true,
-    unique: true, // Nope, not gonna allow that
   },
   VCategory_id: {
     type: SchemaTypes.ObjectId,
     ref: "CatProductVariation",
     required: true,
-  }
+  },
 });
 export default mongoose.model("ProductVariation", variationSchema);
 export { variationSchema };

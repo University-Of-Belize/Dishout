@@ -42,10 +42,16 @@ const usersSchema = new Schema({
     default: 0.0,
   },
   cart: {
+    // @audit @PEDRO_KUKUL Audit into Dotcom
     type: [
       {
         product: { type: Schema.Types.ObjectId, ref: "Products" },
         quantity: Number,
+        variations: [
+          // @note Currently bugs-out if inputted with a variation that does not belong to the product
+          { type: Schema.Types.ObjectId, ref: "ProductVariation" },
+          { default: [] },
+        ],
       },
     ],
     // Users don't have to have a cart. The cart is always cleared after orders are complete
@@ -56,7 +62,7 @@ const usersSchema = new Schema({
     // Personal order status/notification channel in format `user_${user._id}`
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   firstAlert: {
     type: Boolean,

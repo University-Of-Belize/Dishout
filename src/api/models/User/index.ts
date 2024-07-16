@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import mongoose from "mongoose";
-import Users from "../../../database/models/Users";
-import Messages from "../../../database/models/Messages";
+import settings from "../../../config/settings.json";
 import type { ServerMessage } from "../../../database/models/Messages";
+import Messages from "../../../database/models/Messages";
 import Product from "../../../database/models/Products";
 import ProductResearch from "../../../database/models/research/ProductData";
-import settings from "../../../config/settings.json";
+import Users from "../../../database/models/Users";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
-import { what_is, wis_array, wis_string, wis_obj } from "../../utility/What_Is";
+import { what_is, wis_array, wis_obj, wis_string } from "../../utility/What_Is";
 import what from "../../utility/Whats";
 // Add to the cart
 // Note (unrelated to API): Frontend groups array of productIds
@@ -30,7 +30,7 @@ async function cart_modify(req: Request, res: Response) {
   }
 
   // Value check. Does this belong here?
-  const [item, quantity] = wis_array(req);
+  const [item, quantity, variation_ids] = wis_array(req);
 
   let product;
   let productresearch;
@@ -46,6 +46,10 @@ async function cart_modify(req: Request, res: Response) {
   if (!quantity || typeof quantity != "number") {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
+  if (typeof variation_ids !== "object" || !Array.isArray(variation_ids)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
   // Does this product even exist?
   if (!product) {
     return res.status(400).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
@@ -70,7 +74,9 @@ async function cart_modify(req: Request, res: Response) {
 
   // Check to see if the product is already in the cart
   // @ts-expect-error We want to find the product in the cart
-  const cart_item = user.cart.find((item) => item.product._id.toString() == product._id.toString());
+  const cart_item = user.cart.find(
+    (item) => item.product._id.toString() == product._id.toString()
+  );
 
   // If it is, increase the quantity
   // @follow-up This math is buggy
@@ -89,7 +95,11 @@ async function cart_modify(req: Request, res: Response) {
 
     // Populate the cart with the product
     // @ts-expect-error The cart is an array of objects
-    user.cart.push({ product: product._id, quantity: quantity });
+    user.cart.push({
+      product: product._id,
+      quantity: quantity,
+      variations: variation_ids,
+    });
     productresearch.carted += 1;
   }
   // Save and return
@@ -138,6 +148,7 @@ async function cart_sync(req: Request, res: Response) {
       user.cart.push({
         product,
         quantity: item.quantity,
+        variations: item.variations,
       });
     });
 
@@ -511,10 +522,10 @@ async function user_messages_read(req: Request, res: Response) {
   // We should have the users now
   // Return all messages from the database
   const user_id = mongoose.Types.ObjectId.createFromHexString(
-    user._id.toString(),
+    user._id.toString()
   );
   const to_user_id = mongoose.Types.ObjectId.createFromHexString(
-    to_user._id.toString(),
+    to_user._id.toString()
   );
   const message_response = await Messages.aggregate([
     {

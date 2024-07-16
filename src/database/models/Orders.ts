@@ -60,14 +60,15 @@ const ordersSchema = new Schema({
     default: 0, // No delay
   },
   products: {
+    // @audit @PEDRO_KUKUL Audit into Dotcom
     type: [
       {
         product: { type: Schema.Types.ObjectId, ref: "Products" },
         quantity: Number,
         variations: [
-          { // @note Currently bugs-out if inputted with a variation that does not belong to the product
-            variation_id: { type: Schema.Types.ObjectId, ref: "ProductVariation" },
-          },
+          // @note Currently bugs-out if inputted with a variation that does not belong to the product
+          { type: Schema.Types.ObjectId, ref: "ProductVariation" },
+          { default: [] },
         ],
       },
     ], // Users don't have to have a cart. The cart is always cleared after orders are complete
