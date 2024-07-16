@@ -23,13 +23,11 @@ async function vmenu_find(req: Request, res: Response) {
     return res.json(what_is(what.public.variation, []));
   }
   // Get all the product variations from the IDs
-  const variations = await ProductVariation.find({
+  let variations = await ProductVariation.find({
     VCategory_id: { $in: catVariation.map((x) => x._id) },
   });
   if (!variations || variations.length === 0) {
-    return res
-      .status(400)
-      .json(ErrorFormat(iwe_strings.Product.Variation.ENOTFOUND));
+    variations = [];
   }
 
   return res.json(what_is(what.public.variation, [catVariation, variations]));
