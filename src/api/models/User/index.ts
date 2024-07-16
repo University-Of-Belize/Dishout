@@ -89,6 +89,11 @@ async function cart_modify(req: Request, res: Response) {
 
     // Finally, set the new quantity
     cart_item.quantity = quantity;
+
+    if(variation_ids.length > 0) {
+      cart_item.variations = variation_ids;
+    }
+
   } else {
     // If this is a new item, decrease the quantity
     product.in_stock -= quantity;
