@@ -146,17 +146,19 @@ class IWEU_STRINGS {
     Variation: {
       Category: {
         ENOTFOUND: "Category not found.",
-        EEXISTS: "Category exists.",
+        EEXISTS: "Category already exists.",
         EINVALID: "Invalid category.",
         EHASVARIATION:
           "Product variation category has variations. Cannot delete.",
+        EISEXACT: "Cannot modify category to the same name.",
         ICREATE: "Category created successfully.",
         IMODIFY: "Category modified successfully.",
         IDELETE: "Category deleted successfully.",
       },
       ENOTFOUND: "Product variation not found.",
-      EEXISTS: "Product variation exists.",
+      EEXISTS: "Product variation already exists.",
       EINVALID: "Invalid product variation.",
+      EISEXACT: "Cannot modify product variation to the same name.",
       ICREATE: "Product variation created successfully.",
       IMODIFY: "Product variation modified successfully.",
       IDELETE: "Product variation deleted successfully.",

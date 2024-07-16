@@ -159,6 +159,23 @@ async function variation_modify(req: Request, res: Response) {
     });
   }
 
+  const duplicate_variation = await ProductVariation.findOne({
+    Name: variation_name.trim().toLowerCase(),
+  });
+
+  if (duplicate_variation) {
+    if (duplicate_variation._id.toString() === existing_variation._id.toString()) {
+      return res.status(400).json({
+        status: false,
+        message: iwe_strings.Product.Variation.EISEXACT,
+      });
+    }
+    return res.status(400).json({
+      status: false,
+      message: iwe_strings.Product.Variation.EEXISTS,
+    });
+  }
+
   // Check if the vcategory exists
   const existing_category = await CatProductVariation.findById(category_id);
   if (!existing_category) {
@@ -168,7 +185,7 @@ async function variation_modify(req: Request, res: Response) {
     });
   }
 
-  if (variation_name) {
+  if (variation_name.trim() != "") {
     existing_variation.Name = variation_name;
   }
   if (category_id) {
