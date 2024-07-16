@@ -40,8 +40,8 @@
     }
   },
   "api": {
-    "API_VERSION": "v1.1",
-    "API_SVERSION": "v1"
+    "API_VERSION": "v2.1.0",
+    "API_SVERSION": "v2"
   },
   "database": {
     "mongoURI": "mongodb://127.0.0.1:27017/dishout"
