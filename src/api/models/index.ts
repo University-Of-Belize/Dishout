@@ -55,6 +55,9 @@ import { dash_list } from "./Dashboard";
 import { dynamic_banner } from "./Dynamic";
 import { menu_find, menu_list, menu_random, slug_exists } from "./Menu";
 import {
+  vmenu_find
+} from "./Menu/Variation";
+import {
   order_create,
   order_delete,
   //order_list,
@@ -175,6 +178,9 @@ class API {
       // FE: 100% support
       Exist: slug_exists, // List all the slugs -- Yes
     },
+    Variation: {
+      Find: vmenu_find, // Yes
+    }
   };
   Category = {
     // FE: 100% support

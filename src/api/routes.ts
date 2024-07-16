@@ -228,6 +228,10 @@ router.get("/menu/lookup", (req: Request, res: Response) => {
 router.get("/menu/", (req: Request, res: Response) => {
   Menu.List(req, res);
 });
+// <Variation>
+router.get("/menu/variation/:variation_id", (req: Request, res: Response) => {
+  Menu.Variation.Find(req, res);
+});
 // <Check> if a specific <item> exists
 router.get("/menu/slug", (req: Request, res: Response) => {
   Menu.Slug.Exist(req, res);
