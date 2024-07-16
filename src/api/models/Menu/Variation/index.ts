@@ -20,9 +20,7 @@ async function vmenu_find(req: Request, res: Response) {
   // Start from the category product variation
   const catVariation = await CatProductVariation.find({ Product_id: id });
   if (!catVariation) {
-    return res
-      .status(400)
-      .json(ErrorFormat(iwe_strings.Product.Variation.Category.ENOTFOUND));
+    return res.json(what_is(what.public.variation, []));
   }
   // Get all the product variations from the IDs
   const variations = await ProductVariation.find({
