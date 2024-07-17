@@ -196,10 +196,7 @@ async function variation_modify(req: Request, res: Response) {
   }
 
   await existing_variation.save();
-  return res.json([
-    iwe_strings.Product.Variation.IMODIFY,
-    existing_variation,
-  ]);
+  return res.json([iwe_strings.Product.Variation.IMODIFY, existing_variation]);
 }
 
 function check_values(
@@ -209,11 +206,11 @@ function check_values(
   //OTHER ...
 ) {
   if (
+    typeof variation_name != "string" ||
+    typeof category_id != "string" ||
     variation_name.trim() === "" ||
     category_id.trim() === "" ||
-    !mongoose.Types.ObjectId.isValid(category_id) ||
-    typeof variation_name != "string" ||
-    typeof category_id != "string"
+    !mongoose.Types.ObjectId.isValid(category_id)
   ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }

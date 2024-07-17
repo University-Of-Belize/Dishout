@@ -10,6 +10,12 @@ import { get_authorization_user } from "../../../../../utility/Authentication";
 import { wis_array } from "../../../../../utility/What_Is";
 import what from "../../../../../utility/Whats";
 
+// https://stackoverflow.com/a/1026087/10976415
+function capitalizeFirstLetter(string: string) {
+  string = string.toLowerCase();
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 async function vcategory_create(req: Request, res: Response) {
   // Check our 'what_is'
   if (req.body["what"] != what.private.variation) {
@@ -41,7 +47,7 @@ async function vcategory_create(req: Request, res: Response) {
 
   // Check if a document with the same name and product_id already exists
   const existing_vcat = await CatProductVariation.findOne({
-    Name: vcat_name.trim().toLowerCase(),
+    Name: capitalizeFirstLetter(vcat_name.trim()),
     Product_id: product_id,
   });
 
@@ -63,7 +69,7 @@ async function vcategory_create(req: Request, res: Response) {
 
   // Create the VCategory
   const newCatVariation = new CatProductVariation({
-    Name: vcat_name.trim().toLowerCase(),
+    Name: capitalizeFirstLetter(vcat_name.trim()),
     Product_id: product_id,
   });
 
@@ -174,7 +180,7 @@ async function vcategory_modify(req: Request, res: Response) {
   }
 
   const duplicate_vcat = await CatProductVariation.findOne({
-    Name: vcat_name.trim().toLowerCase(),
+    Name: capitalizeFirstLetter(vcat_name.trim()),
   });
 
   if (duplicate_vcat) {
@@ -200,7 +206,7 @@ async function vcategory_modify(req: Request, res: Response) {
   }
 
   if (vcat_name.trim() != "") {
-    existing_vcat.Name = vcat_name.trim().toLowerCase();
+    existing_vcat.Name = capitalizeFirstLetter(vcat_name.trim());
   }
 
   if (product_id) {
@@ -221,11 +227,11 @@ function check_values(
   //OTHER ...
 ) {
   if (
+    typeof vcat_name != "string" ||
+    typeof product_id != "string" ||
     vcat_name.trim() === "" ||
     product_id.trim() === "" ||
-    !mongoose.Types.ObjectId.isValid(product_id) ||
-    typeof vcat_name != "string" ||
-    typeof product_id != "string"
+    !mongoose.Types.ObjectId.isValid(product_id)
   ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
