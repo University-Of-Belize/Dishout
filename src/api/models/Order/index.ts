@@ -161,6 +161,7 @@ async function order_create(req: Request, res: Response) {
     // @ts-expect-error The mongoDB schema has a bug somewhere
     order_from: user._id, // @ts-expect-error The mongoDB schema has a bug somewhere
     products: user.cart,
+    completed: false,
   });
 
   // @ts-expect-error The mongoDB schema has a bug somewhere

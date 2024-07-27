@@ -23,17 +23,23 @@ import { isValidTimeZone } from "../../../utility/time";
 
 // List all orders
 async function order_list(req: Request, res: Response) {
+  // Check the query
+  const completed: boolean = req.query["completed"]?.toString() === "true";
+
   const user = await get_authorization_user(req);
   if (!user) {
     return res
       .status(403)
       .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
   }
-  // @ts-ignore
+  // @ts-expect-error 'staff' actually does exist, just a bug in the schemas
   if (!user?.staff) {
     // Regular users are allowed to query their own orders (orders that pertain to them)
-    // @ts-ignore
-    const orders = await Order.find({ order_from: user._id, completed: false }).populate([
+    const orders = await Order.find({
+      // @ts-expect-error '_id' actually does exist, just a bug in the schemas
+      order_from: user._id,
+      completed: false,
+    }).populate([
       {
         path: "order_from",
         model: "Users",
@@ -54,24 +60,33 @@ async function order_list(req: Request, res: Response) {
     return res.json(what_is(what.private.order, orders));
   }
   // Staff members are allowed to query all orders
-  await list_object(req, res, Order, what.private.order, false, true, [
-    {
-      path: "order_from",
-      model: "Users",
-    },
-    {
-      path: "override_by",
-      model: "Users",
-    },
-    {
-      path: "promo_code",
-      model: "Promos",
-    },
-    {
-      path: "products.product",
-      model: "Products",
-    },
-  ], {completed: false});
+  await list_object(
+    req,
+    res,
+    Order,
+    what.private.order,
+    false,
+    true,
+    [
+      {
+        path: "order_from",
+        model: "Users",
+      },
+      {
+        path: "override_by",
+        model: "Users",
+      },
+      {
+        path: "promo_code",
+        model: "Promos",
+      },
+      {
+        path: "products.product",
+        model: "Products",
+      },
+    ],
+    { completed: completed }
+  );
 }
 
 async function order_manage(req: Request, res: Response) {
@@ -262,7 +277,7 @@ async function order_manage(req: Request, res: Response) {
       }
       order.completed = true;
       await order.save();
-      
+
       // Send the email
       await sendEmail(
         order_from.email,
@@ -289,13 +304,11 @@ async function order_manage(req: Request, res: Response) {
       {
         // Here you would handle the modifications to the order
         // This will depend on what fields of the order you want to allow modifying
-       // Get the user and update their credit
-       const order_from = await User.findById(order.order_from);
-       if (!order_from) {
-          return res
-                .status(404)
-                .json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
-       }
+        // Get the user and update their credit
+        const order_from = await User.findById(order.order_from);
+        if (!order_from) {
+          return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+        }
         // @ts-ignore
         order.override_by = user._id;
         if (new_amount && new_amount != order.final_amount) {
@@ -363,8 +376,15 @@ async function order_manage(req: Request, res: Response) {
               );
             order.promo_code = new_promo_object._id; // Cast string to ObjectId
             // Update the order data accordingly
-            order.discount_amount = parseFloat((order.total_amount * (new_promo_object.discount_percentage / 100)).toString()).toFixed(2); 
-            order.final_amount = parseFloat((order.total_amount - order.discount_amount).toString()).toFixed(2);
+            order.discount_amount = parseFloat(
+              (
+                order.total_amount *
+                (new_promo_object.discount_percentage / 100)
+              ).toString()
+            ).toFixed(2);
+            order.final_amount = parseFloat(
+              (order.total_amount - order.discount_amount).toString()
+            ).toFixed(2);
           } else {
             const _p = await Promo.findById(order.promo_code);
             if (_p) {
@@ -387,8 +407,15 @@ async function order_manage(req: Request, res: Response) {
                 );
               order.promo_code = new_promo_object._id; // Cast string to ObjectId
               // Update the order data accordingly
-              order.discount_amount = parseFloat((order.total_amount * (new_promo_object.discount_percentage / 100)).toString()).toFixed(2); 
-              order.final_amount = parseFloat((order.total_amount - order.discount_amount).toString()).toFixed(2);
+              order.discount_amount = parseFloat(
+                (
+                  order.total_amount *
+                  (new_promo_object.discount_percentage / 100)
+                ).toString()
+              ).toFixed(2);
+              order.final_amount = parseFloat(
+                (order.total_amount - order.discount_amount).toString()
+              ).toFixed(2);
             }
           }
         }
