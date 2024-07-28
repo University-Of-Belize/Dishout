@@ -15,5 +15,5 @@ const variationSchema = new Schema({
     required: true,
   },
 });
-export default mongoose.model("ProductVariation", variationSchema);
+export default mongoose.model("ProductVariations", variationSchema);
 export { variationSchema };

@@ -49,7 +49,7 @@ const usersSchema = new Schema({
         quantity: Number,
         variations: [
           // @note Currently bugs-out if inputted with a variation that does not belong to the product
-          { type: Schema.Types.ObjectId, ref: "ProductVariation" },
+          { type: Schema.Types.ObjectId, ref: "ProductVariations" },
           { default: [] },
         ],
       },

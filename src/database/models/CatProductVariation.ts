@@ -16,5 +16,5 @@ const catVariationSchema = new Schema({
     required: true,
   }
 });
-export default mongoose.model("CatProductVariation", catVariationSchema);
+export default mongoose.model("CatProductVariations", catVariationSchema);
 export { catVariationSchema };
