@@ -150,7 +150,9 @@ async function order_manage(req: Request, res: Response) {
   if (!order_from) {
     return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
   }
-
+  if(order.completed){
+    return res.status(400).json(ErrorFormat(iwe_strings.Order.EREADONLY));
+  }
   // Handle the different actions
   switch (action) {
     case "a":

@@ -95,6 +95,7 @@ class IWEU_STRINGS {
     IOSTATUSMODIFIED: "A staff member has issued an update your order.",
     EEMPTYCART: "The shopping cart is empty",
     ENOPERMS: "You do not own this order.",
+    EREADONLY: "This order is read-only. You cannot make changes to it.",
   };
   Promo = {
     ECODEEXISTS: "Promo code already exists.",
@@ -201,6 +202,6 @@ function createNotification(
 export {
   createError as ErrorFormat,
   createNotification as NotifyFormat,
-  iwe_strings,
+  iwe_strings
 };
 export default iwe_strings;
