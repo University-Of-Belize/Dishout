@@ -38,7 +38,7 @@ async function order_list(req: Request, res: Response) {
     const orders = await Order.find({
       // @ts-expect-error '_id' actually does exist, just a bug in the schemas
       order_from: user._id,
-      completed: false,
+      completed: completed,
     }).populate([
       {
         path: "order_from",
@@ -55,6 +55,10 @@ async function order_list(req: Request, res: Response) {
       {
         path: "products.product",
         model: "Products",
+      },
+      {
+        path: "products.variations",
+        model: "ProductVariations", // Assholes adding an 's' to the end of the model name
       },
     ]); // Mongoose casts strings to ObjectIds automatically
     return res.json(what_is(what.private.order, orders));
@@ -83,6 +87,10 @@ async function order_list(req: Request, res: Response) {
       {
         path: "products.product",
         model: "Products",
+      },
+      {
+        path: "products.variations",
+        model: "ProductVariations", // Assholes adding an 's' to the end of the model name
       },
     ],
     { completed: completed }
@@ -513,4 +521,3 @@ async function order_manage(req: Request, res: Response) {
   return res.json(what_is(what.private.order, order));
 }
 export { order_list, order_manage };
-
