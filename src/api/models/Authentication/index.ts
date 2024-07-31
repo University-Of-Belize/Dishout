@@ -175,13 +175,13 @@ async function auth_verify(req: Request, res: Response) {
       return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
     }
 
-    // Send the congrats email
+    // Send the welcome email
     await sendEmail(
       user.email,
-      iwe_strings.Email.ICLAIMBONUS,
+      iwe_strings.Email.IWELCOMEABOARD,
       null,
       EmailTemplate(
-        "BONUS_CLAIM",
+        "WELCOME",
         user.username,
         undefined,
         user.credit.toString(),

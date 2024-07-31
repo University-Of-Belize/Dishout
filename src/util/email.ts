@@ -103,7 +103,12 @@ function EmailTemplate(
       subtitle = extra;
       // ---------------------------------------------------
       return eval("`" + BonusTemplate.toString() + "`"); // Evaluate the template and return it
+    case "WELCOME":
+      const WelcomeTemplate = fs.readFileSync(path.join(__dirname, "welcome.html"));
+      // ---------------------------------------------------
+      return eval("`" + WelcomeTemplate.toString() + "`"); // Evaluate the template and return it
   }
 }
 
 export { EmailTemplate, generateActivationToken, sendEmail };
+
