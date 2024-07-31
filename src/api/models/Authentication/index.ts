@@ -107,10 +107,13 @@ async function auth_register(req: Request, res: Response) {
       staff: username === "root", // Make user 'staff' if they are root
       // credit: 0.0, @remind Remove after 100 users sign-up
       credit: 0, // Set to 0
-      channel_id: cryptoRandomString({
-        length: settings.auth["token-length"],
-        type: "alphanumeric",
-      }), // Unset
+      channel_id:
+        username.trim().toLowerCase().replace(/\s/g, "_") +
+        "_" +
+        cryptoRandomString({
+          length: settings.auth["channelid-length"],
+          type: "alphanumeric",
+        }), // Unset
       cart: undefined,
       activation_token: null,
       token: null,

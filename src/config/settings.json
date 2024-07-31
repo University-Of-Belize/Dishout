@@ -26,7 +26,8 @@
     "reset": {
       "token-length": 128
     },
-    "token-length": 64
+    "token-length": 64,
+    "channelid-length": 6
   },
   "email": {
     "username": "cafeteria",
