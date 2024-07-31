@@ -103,7 +103,7 @@ async function auth_register(req: Request, res: Response) {
       id: userID,
       email,
       password: hashedPassword,
-      username,
+      username: username.trim().toLowerCase().replace(/\s/g, "_"),
       staff: username === "root", // Make user 'staff' if they are root
       // credit: 0.0, @remind Remove after 100 users sign-up
       credit: 0, // Set to 0
