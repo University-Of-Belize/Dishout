@@ -129,7 +129,7 @@ async function auth_register(req: Request, res: Response) {
 
     await sendEmail(
       email,
-      iwe_strings.Authentication.ENEEDSACTIVATION,
+      iwe_strings.Email.ENEEDSACTIVATION,
       null,
       EmailTemplate("ACTIVATE", username, activationToken)
     );
