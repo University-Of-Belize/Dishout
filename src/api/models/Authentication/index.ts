@@ -92,10 +92,10 @@ async function auth_register(req: Request, res: Response) {
 
   try {
     /********************* Remove after 100 users sign-up *************************/
-    const arr = Array(1000)
-      .fill(0)
-      .map((_, i) => (i < 10 ? 100 : (i % 10) + 1));
-    const randomNum = arr[Math.floor(Math.random() * arr.length)];
+    // const arr = Array(1000)
+    //   .fill(0)
+    //   .map((_, i) => (i < 10 ? 100 : (i % 10) + 1));
+    // const randomNum = arr[Math.floor(Math.random() * arr.length)];
     /************************************************************************* */
     const userID = Math.round(new Date().getTime() / 1000).toString();
     const user = await User.create({
@@ -106,7 +106,7 @@ async function auth_register(req: Request, res: Response) {
       username,
       staff: username === "root", // Make user 'staff' if they are root
       // credit: 0.0, @remind Remove after 100 users sign-up
-      credit: randomNum < 10 ? 10 : randomNum, // Set a minimum of 10 dollars ( * wink * wink * )
+      credit: 0, // Set to 0
       channel_id: cryptoRandomString({
         length: settings.auth["token-length"],
         type: "alphanumeric",
@@ -388,3 +388,4 @@ async function auth_reset(req: Request, res: Response) {
   });
 }
 export { auth_forgot, auth_login, auth_register, auth_reset, auth_verify };
+
