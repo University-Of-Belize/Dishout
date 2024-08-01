@@ -148,6 +148,7 @@ class IWEU_STRINGS {
       "Your request contains an invalid promo code ID. Please remove the offending code and try again.",
     ERESERVEDSLUG:
       "This slug is reserved by the system. Please choose another slug.",
+    ELOCKED: "This product is locked and cannot be modified.",
     Variation: {
       Category: {
         ENOTFOUND: "Category not found.",
