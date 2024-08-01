@@ -12,7 +12,7 @@ import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
 import { what_is, wis_array } from "../../utility/What_Is";
 import what from "../../utility/Whats";
-import { delete_object, list_object } from "../../utility/batchRequest";
+import { delete_object } from "../../utility/batchRequest";
 const onelink_token = process.env.ONELINK_TOKEN ?? settings.transactions.token;
 const onelink_salt = process.env.ONELINK_SALT ?? settings.transactions.salt;
 
@@ -435,7 +435,8 @@ function check_values(
   if (
     (orderID && Number.isNaN(orderID)) ||
     (index && Number.isNaN(index)) ||
-    (quantity && Number.isNaN(quantity))
+    (quantity && Number.isNaN(quantity)) ||
+    (quantity && quantity > 2147483647)
   ) {
     return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
   }
@@ -461,5 +462,6 @@ export {
   order_create,
   order_delete,
   //order_list,
-  order_modify,
+  order_modify
 };
+

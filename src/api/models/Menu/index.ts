@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { list_object } from "../../utility/batchRequest";
+import mongoose from "mongoose";
 import Product from "../../../database/models/Products";
 import ProductResearch from "../../../database/models/research/ProductData";
-import what from "../../utility/Whats";
 import { ErrorFormat, iwe_strings } from "../../strings";
+import { list_object } from "../../utility/batchRequest";
 import { what_is } from "../../utility/What_Is";
-import mongoose from "mongoose";
+import what from "../../utility/Whats";
 
 async function menu_find(req: Request, res: Response) {
   // We can also search by ID
@@ -117,6 +117,9 @@ async function menu_random_internal(limit: number) {
     if (isNaN(limit)) {
       limit = 1;
     }
+    if (limit > 10) {
+      limit = 10;
+    }
 
     const count = await Product.countDocuments();
     const random = Math.floor(Math.random() * count);
@@ -145,4 +148,4 @@ async function menu_random_internal(limit: number) {
   }
 }
 
-export { menu_find, menu_list, slug_exists, menu_random, menu_random_internal };
+export { menu_find, menu_list, menu_random, menu_random_internal, slug_exists };

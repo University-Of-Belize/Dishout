@@ -571,5 +571,6 @@ export {
   user_find,
   user_list,
   user_modify,
-  user_modify_picture,
+  user_modify_picture
 };
+

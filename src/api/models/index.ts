@@ -54,9 +54,7 @@ import { category_list } from "./Categories";
 import { dash_list } from "./Dashboard";
 import { dynamic_banner } from "./Dynamic";
 import { menu_find, menu_list, menu_random, slug_exists } from "./Menu";
-import {
-  vmenu_find
-} from "./Menu/Variation";
+import { vmenu_find } from "./Menu/Variation";
 import {
   order_create,
   order_delete,
@@ -72,6 +70,7 @@ import {
   cart_modify,
   cart_sync,
   notifications_subscribe,
+  user_credit_modify,
   user_messages_read,
   user_messages_send,
   user_messages_view_interactions,
@@ -101,6 +100,10 @@ class API {
         default: user_modify,
         // Modify settings (soon-to-be)
         Picture: user_modify_picture,
+        Credit: {
+          // FE: 100% support
+          Modify: user_credit_modify, // Yes
+        },
       },
     },
     Promo: {
@@ -180,7 +183,7 @@ class API {
     },
     Variation: {
       Find: vmenu_find, // Yes
-    }
+    },
   };
   Category = {
     // FE: 100% support

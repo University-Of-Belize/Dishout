@@ -90,10 +90,9 @@ async function cart_modify(req: Request, res: Response) {
     // Finally, set the new quantity
     cart_item.quantity = quantity;
 
-    if(variation_ids.length > 0) {
+    if (variation_ids.length > 0) {
       cart_item.variations = variation_ids;
     }
-
   } else {
     // If this is a new item, decrease the quantity
     product.in_stock -= quantity;
@@ -656,13 +655,64 @@ async function user_messages_view_interactions(req: Request, res: Response) {
   return res.json(what_is(what.public.user, message_response));
 }
 
+// Modify a user's credit balance
+async function user_credit_modify(req: Request, res: Response) {
+  // Check our 'what_is'
+  if (req.body["what"] !== what.private.user) {
+    // This is a public function
+    return res.status(400).send(ErrorFormat(iwe_strings.Generic.EFOLLOWRULES));
+  }
+
+  // Check our authentication token and see if it matches up to a user
+  const user = await get_authorization_user(req);
+  if (!user) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.EBADAUTH));
+  }
+
+  // @ts-expect-error Dumb schemas have issues
+  if(!user.staff){
+    return res.status(403).json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  }
+
+  // Get the credit balance to modify
+  const [user_username, credit_balance] = wis_array(req);
+  const user_to_modify = await Users.findOne({ username: user_username });
+
+  // Reject if credit_balance is not a number
+  if (isNaN(credit_balance)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  // Reject if credit_balance is above a 32-bit integer
+  if (credit_balance > 2147483647) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  if (!user_to_modify) {
+    return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
+  }
+
+  if (credit_balance == "") {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
+
+  // Modify the user's credit balance
+  user_to_modify.credit = credit_balance;
+  await user_to_modify.save();
+  return res.json(what_is(what.private.user, user_to_modify));
+}
+
 export {
   cart_delete,
   cart_list,
   cart_modify,
   cart_sync,
   notifications_subscribe,
+  user_credit_modify,
   user_messages_read,
   user_messages_send,
-  user_messages_view_interactions,
+  user_messages_view_interactions
 };
+

@@ -8,6 +8,7 @@ import {
   Authentication,
   Category,
   Dash,
+  Data,
   Dynamic,
   Menu,
   Order,
@@ -15,7 +16,6 @@ import {
   Review,
   Search,
   User,
-  Data,
 } from "./models"; // Import our API models into memory
 import { initialize_engine as initialize_search } from "./models/Search";
 let engine_2: any; // Backup engine
@@ -73,6 +73,9 @@ router.delete("/admin/user/manage", (req: Request, res: Response) => {
 });
 router.put("/admin/user/manage", (req: Request, res: Response) => {
   Admin.User.Modify.default(req, res);
+});
+router.put("/admin/user/manage/credit", (req: Request, res: Response) => {
+  Admin.User.Modify.Credit.Modify(req, res);
 });
 router.put(
   "/admin/user/manage/profile_picture",
