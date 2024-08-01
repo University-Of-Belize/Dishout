@@ -2,14 +2,14 @@
 import { Request, Response } from "express";
 // Import the promotion
 import mongoose from "mongoose";
+import { v4 } from "uuid";
 import settings from "../../../../config/settings.json";
 import Menu from "../../../../database/models/Products";
-import Reviews from "../../../../database/models/Reviews";
 import { ErrorFormat, iwe_strings } from "../../../strings";
 import { get_authorization_user } from "../../../utility/Authentication";
 import { what_is, wis_array, wis_string } from "../../../utility/What_Is";
 import what from "../../../utility/Whats";
-import { delete_object } from "../../../utility/batchRequest";
+
 
 // Create a new product
 async function menu_create(req: Request, res: Response) {
@@ -111,17 +111,38 @@ async function menu_delete(req: Request, res: Response) {
     return res.status(401).json(ErrorFormat(iwe_strings.Product.ELOCKED));
   }
 
-  await delete_object(
-    req,
-    res,
-    Menu,
-    "slug",
-    what.private.menu,
-    iwe_strings.Product.ENOTFOUND,
-    true,
-    Reviews,
-    "product"
-  );
+  // Find the product and mark as deleted
+  const menu = await Menu.findOne({ slug: product_slug });
+  if (!menu) {
+    return res.status(404).json(ErrorFormat(iwe_strings.Product.ENOTFOUND));
+  }
+
+  // Mark as deleted
+  menu.deleted = true;
+
+  // Add a random hash after the slug and productName to make these usable again
+  menu.slug = `${menu.slug}-${v4().substring(0, 13)} (deleted)`;
+  menu.productName = `${menu.productName}-${v4().substring(0, 13)} (deleted)`;
+  
+  await menu.save();
+
+  return res.json({
+    status: true,
+  });
+
+
+
+  // await delete_object(
+  //   req,
+  //   res,
+  //   Menu,
+  //   "slug",
+  //   what.private.menu,
+  //   iwe_strings.Product.ENOTFOUND,
+  //   true,
+  //   Reviews,
+  //   "product"
+  // );
 }
 
 // modify menu

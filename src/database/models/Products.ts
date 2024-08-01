@@ -37,6 +37,11 @@ const menuSchema = new Schema({
     ref: "Categories",
     required: true,
   },
+  deleted: {
+    type: Boolean,
+    required: true,
+    default: false, // We don't want to delete products, just mark them as deleted
+  },
   reviews: {
     type: [{ type: Schema.Types.ObjectId, ref: "Reviews" }], // IDs of all reviews ever created on a product
     required: false,
@@ -49,3 +54,4 @@ const menuSchema = new Schema({
 });
 export default mongoose.model("Products", menuSchema);
 export { menuSchema as productsSchema };
+

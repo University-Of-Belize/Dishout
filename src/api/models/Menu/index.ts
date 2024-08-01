@@ -29,7 +29,6 @@ async function menu_find(req: Request, res: Response) {
   }
 
   // Menu will always be defined beyond this point
-  // @ts-ignore
   await menu.populate([
     {
       path: "category",
@@ -44,17 +43,27 @@ async function menu_find(req: Request, res: Response) {
     },
   ]);
 
-  // @ts-ignore
   return res.json(what_is(what.public.menu, menu));
 }
 
 async function menu_list(req: Request, res: Response) {
-  await list_object(req, res, Product, what.public.menu, true, false, [
+  await list_object(
+    req,
+    res,
+    Product,
+    what.public.menu,
+    true,
+    false,
+    [
+      {
+        path: "category",
+        model: "Categories",
+      },
+    ],
     {
-      path: "category",
-      model: "Categories",
-    },
-  ]);
+      deleted: false,
+    }
+  );
 }
 
 async function slug_exists(req: Request, res: Response) {
@@ -149,3 +158,4 @@ async function menu_random_internal(limit: number) {
 }
 
 export { menu_find, menu_list, menu_random, menu_random_internal, slug_exists };
+
