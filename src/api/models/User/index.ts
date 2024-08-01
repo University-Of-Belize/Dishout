@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import * as admin from "firebase-admin";
 import mongoose from "mongoose";
 import settings from "../../../config/settings.json";
+import Category from "../../../database/models/Categories";
 import type { ServerMessage } from "../../../database/models/Messages";
 import Messages from "../../../database/models/Messages";
+import Order from "../../../database/models/Orders";
 import Product from "../../../database/models/Products";
 import ProductResearch from "../../../database/models/research/ProductData";
 import Users from "../../../database/models/Users";
@@ -703,13 +705,73 @@ async function user_credit_modify(req: Request, res: Response) {
   // Modify the user's credit balance
   const newBalance =
     parseFloat(user_to_modify.credit) + parseFloat(credit_balance);
+
+  // Check if newBalance is 'NaN'
+  if (isNaN(newBalance)) {
+    return res.status(400).json(ErrorFormat(iwe_strings.Generic.EBADPARAMS));
+  }
   if (newBalance < 0) {
     return res
       .status(400)
       .json(ErrorFormat(iwe_strings.Users.Credit.ENEGATIVEBALANCE));
   }
+
   user_to_modify.credit = newBalance;
   await user_to_modify.save();
+
+  // Create a new order
+  // Check to see if the "credit-refill" product exists
+  let credit_refill_product = await Product.findOne({ slug: "credit-refill" });
+
+  // If the product doesn't exist, create it
+  if (!credit_refill_product) {
+    const new_credit_refill_category = await Category.create({
+      name: "Credit Refill",
+      description:
+        "Refill your credit balance. This category is system-generated.",
+      alias: "credit-refill",
+      hidden: true,
+    });
+
+    const new_credit_refill_product = await Product.create({
+      slug: "credit-refill",
+      productName: "Credit Refill",
+      price: 0,
+      in_stock: 0,
+      description:
+        "Refill your credit balance. This product is system-generated.",
+      category: new_credit_refill_category, // This is a dummy category
+      keywords: ["credit", "refill"],
+    });
+
+    await new_credit_refill_category.save();
+    await new_credit_refill_product.save();
+
+
+    // Update the credit_refill_product
+    credit_refill_product = new_credit_refill_product;
+  }
+
+  const new_order = await Order.create({
+    order_code: "CREDITREFILL" + Date.now(),
+    order_date: Math.floor(Date.now() / 1000),
+    order_from: user_to_modify,
+    products: [
+      {
+        product: credit_refill_product,
+        quantity: 1,
+        variations: [],
+      },
+    ],
+    total_amount: credit_balance,
+    final_amount: credit_balance,
+    discount_amount: 0,
+    completed: true, // Automatically complete the order--this turns the order into a receipt
+  });
+
+  // Save the order
+  await new_order.save();
+
   return res.json(what_is(what.private.user, user_to_modify));
 }
 
