@@ -672,8 +672,10 @@ async function user_credit_modify(req: Request, res: Response) {
   }
 
   // @ts-expect-error Dumb schemas have issues
-  if(!user.staff){
-    return res.status(403).json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
+  if (!user.staff) {
+    return res
+      .status(403)
+      .json(ErrorFormat(iwe_strings.Authentication.ENOACCESS));
   }
 
   // Get the credit balance to modify
@@ -699,7 +701,14 @@ async function user_credit_modify(req: Request, res: Response) {
   }
 
   // Modify the user's credit balance
-  user_to_modify.credit = credit_balance;
+  const newBalance =
+    parseFloat(user_to_modify.credit) + parseFloat(credit_balance);
+  if (newBalance < 0) {
+    return res
+      .status(400)
+      .json(ErrorFormat(iwe_strings.Users.Credit.ENEGATIVEBALANCE));
+  }
+  user_to_modify.credit = newBalance;
   await user_to_modify.save();
   return res.json(what_is(what.private.user, user_to_modify));
 }

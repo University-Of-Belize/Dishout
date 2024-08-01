@@ -76,6 +76,9 @@ class IWEU_STRINGS {
     EBADRESOURCE:
       "The resource you provided is invalid or is an unauthorized storage bucket",
     EINSUFFICIENTFUNDS: "You do not have enough funds to complete this action.",
+    Credit: {
+      ENEGATIVEBALANCE: "Accounts cannot have a negative balance.",
+    }
   };
   Order = {
     EONOEXISTS: "Order not found.",
