@@ -62,12 +62,12 @@ async function global_lookup(
 
 async function initialize_engine() {
   // Get all objects from the database
-  const allCategories = await Categories.find();
+  const allCategories = await Categories.find({ hidden: false });
   const allOrders = await Orders.find().populate([
     { path: "order_from", model: "Users" },
     { path: "override_by", model: "Users" },
   ]);
-  const allProducts = await Products.find().populate([
+  const allProducts = await Products.find({deleted: false}).populate([
     {
       path: "category",
       model: "Categories",
@@ -150,3 +150,4 @@ async function initialize_engine() {
 }
 
 export { global_lookup, initialize_engine };
+
