@@ -97,7 +97,7 @@ async function menu_random(req: Request, res: Response) {
     const count = await Product.countDocuments();
     const random = Math.floor(Math.random() * count);
 
-    const menu = await Product.find()
+    const menu = await Product.find({ deleted: false })
       .populate([
         {
           path: "category",
