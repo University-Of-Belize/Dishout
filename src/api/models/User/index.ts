@@ -747,7 +747,6 @@ async function user_credit_modify(req: Request, res: Response) {
     await new_credit_refill_category.save();
     await new_credit_refill_product.save();
 
-
     // Update the credit_refill_product
     credit_refill_product = new_credit_refill_product;
   }
@@ -767,6 +766,15 @@ async function user_credit_modify(req: Request, res: Response) {
     final_amount: credit_balance,
     discount_amount: 0,
     completed: true, // Automatically complete the order--this turns the order into a receipt
+  });
+
+  // Send a notification to the user that their balance has been updated accordingly
+  await admin.messaging().send({
+    notification: {
+      title: `${settings.server.nickname} - Credit Refill`,
+      body: `Your credit balance has been updated by ${credit_balance}. Your new balance is ${newBalance}.`,
+    },
+    topic: user_to_modify.channel_id,
   });
 
   // Save the order
