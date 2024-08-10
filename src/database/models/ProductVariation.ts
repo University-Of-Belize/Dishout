@@ -14,6 +14,10 @@ const variationSchema = new Schema({
     ref: "CatProductVariation",
     required: true,
   },
+  Cycles_on: {
+    type: String,
+    required: false,
+  },
 });
 export default mongoose.model("ProductVariations", variationSchema);
 export { variationSchema };
