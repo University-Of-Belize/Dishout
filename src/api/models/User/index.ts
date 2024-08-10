@@ -9,6 +9,7 @@ import Order from "../../../database/models/Orders";
 import Product from "../../../database/models/Products";
 import ProductResearch from "../../../database/models/research/ProductData";
 import Users from "../../../database/models/Users";
+import { LogWarn } from "../../../util/Logger";
 import { ErrorFormat, iwe_strings } from "../../strings";
 import { get_authorization_user } from "../../utility/Authentication";
 import { what_is, wis_array, wis_obj, wis_string } from "../../utility/What_Is";
@@ -345,6 +346,14 @@ async function notifications_subscribe(req: Request, res: Response) {
       }
       // Return true if everything's 'ok'
       return res.json({ status: true });
+    })
+    .catch((error) => {
+      LogWarn(
+        "[FIREBASE]: Failed to subscribe user to topic with error: " + error
+      );
+      return res
+        .status(500)
+        .json(ErrorFormat(iwe_strings.Generic.EINTERNALERROR));
     });
 }
 

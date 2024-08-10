@@ -18,6 +18,10 @@ const variationSchema = new Schema({
     type: String,
     required: false,
   },
+  AddOn_Fee: {
+    type: SchemaTypes.Decimal128,
+    required: false
+  }
 });
 export default mongoose.model("ProductVariations", variationSchema);
 export { variationSchema };

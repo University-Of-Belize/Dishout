@@ -141,7 +141,7 @@ async function variation_modify(req: Request, res: Response) {
   }
 
   // Extract information from the 'what_is' object
-  const [variation_name, category_id, cycle_on] = wis_array(req);
+  const [variation_name, category_id, cycle_on, addon_fee] = wis_array(req);
 
   // verify
   const testFailed = check_values(res, variation_name, category_id);
@@ -426,6 +426,11 @@ async function variation_modify(req: Request, res: Response) {
   if (cycles_on) {
     //     Cycles_on: cycles_on,
     existing_variation.Cycles_on = cycles_on;
+  }
+
+  if (addon_fee && typeof addon_fee === "number") {
+    // @ts-expect-error Casting is done automatically for us
+    existing_variation.AddOn_Fee = JSON.parse(addon_fee);
   }
 
   await existing_variation.save();
