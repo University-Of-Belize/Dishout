@@ -150,7 +150,7 @@ async function order_manage(req: Request, res: Response) {
   if (!order_from) {
     return res.status(404).json(ErrorFormat(iwe_strings.Users.ENOTFOUND));
   }
-  if(order.completed){
+  if (order.completed) {
     return res.status(400).json(ErrorFormat(iwe_strings.Order.EREADONLY));
   }
   // Handle the different actions
@@ -251,8 +251,9 @@ async function order_manage(req: Request, res: Response) {
         return res.status(404).json(ErrorFormat(iwe_strings.Order.EONOEXISTS));
       } // @ts-expect-error There is a bug in the TypeScript definitions for the server
       order_from.credit =
-        parseInt(order_from.credit.toString()) +
-        parseInt(order.final_amount.toString());
+        parseFloat(order_from.credit.toString()) +
+        parseFloat(order.final_amount.toString());
+      await order_from.save();
       // Delete the order
       await order.deleteOne();
       await sendEmail(
@@ -523,3 +524,4 @@ async function order_manage(req: Request, res: Response) {
   return res.json(what_is(what.private.order, order));
 }
 export { order_list, order_manage };
+

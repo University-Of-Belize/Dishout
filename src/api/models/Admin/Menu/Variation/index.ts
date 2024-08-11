@@ -421,12 +421,11 @@ async function variation_modify(req: Request, res: Response) {
     ].includes(cycle_on)
   ) {
     cycles_on = undefined;
+  } else {
+    cycles_on = cycle_on;
   }
-  cycles_on = cycle_on;
-  if (cycles_on) {
-    //     Cycles_on: cycles_on,
-    existing_variation.Cycles_on = cycles_on;
-  }
+
+  existing_variation.Cycles_on = cycles_on;
 
   if (addon_fee && typeof addon_fee === "number") {
     // @ts-expect-error Casting is done automatically for us

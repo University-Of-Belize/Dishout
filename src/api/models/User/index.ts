@@ -289,13 +289,20 @@ async function cart_list(req: Request, res: Response) {
   }
 
   // Populate the "product" field in the cart
-  // @ts-ignore
-  await user.populate({
-    path: "cart.product",
-    model: "Products",
-  });
+  // @ts-expect-error No options required
+  await user.populate([
+    {
+      path: "cart.product",
+      model: "Products",
+    },
+    {
+      path: "cart.variations",
+      model: "ProductVariations", // Assholes adding an 's' to the end of the model name
+    },
+  ]);
+  // Mongoose casts strings to ObjectIds automatically
 
-  // @ts-ignore
+  // @ts-expect-error Cart does exist
   return res.json(what_is(what.public.user, user.cart));
 }
 
