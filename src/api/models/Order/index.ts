@@ -74,16 +74,17 @@ async function order_create(req: Request, res: Response) {
     }
   }
 
-  let cart_total_cache: { [key: string]: any } = {}; // Cache the total of each item in the cart
+  // Cache the total of each item in the cart
+  let cart_total_cache: { [key: string]: any } = {};
+  // Cache the extra costs calculated from variations' AddOn_Fee
   let extra_costs_cache: { [key: string]: any } = {};
 
   // Populate Cart Variations
   await user.populate({
     path: "cart.variations",
-    model: "ProductVariations", // Assholes adding an 's' to the end of the model name
+    model: "ProductVariations",
   });
 
-  //console.log(user.cart.variations);
   // Calculate 'extra_costs' from the variations 'AddOn_Fee's
   await user.cart.reduce((accumulator, currentValue) => {
     const variationCost = currentValue.variations.reduce(
@@ -93,6 +94,7 @@ async function order_create(req: Request, res: Response) {
     extra_costs_cache[currentValue._id] = variationCost;
   }, 0);
 
+  // Calculate the total amount for each item in the cart
   await user.cart.reduce((accumulator, currentValue) => {
     cart_total_cache[currentValue._id] =
       (parseFloat(currentValue.product.price) +
@@ -100,6 +102,7 @@ async function order_create(req: Request, res: Response) {
       currentValue.quantity;
   }, 0);
 
+  // Calculate the total amount to pay by summing up all the item totals
   const amount_to_pay = Object.values(cart_total_cache).reduce(
     (a, b) => a + b,
     0
