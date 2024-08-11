@@ -8,13 +8,13 @@ const catVariationSchema = new Schema({
   Name: {
     type: String,
     required: true,
-    unique: true, // Nope, not gonna allow that
   },
   Product_id: {
     type: SchemaTypes.ObjectId,
     ref: "Product",
     required: true,
-  }
+    unique: true, // Nope, not gonna allow that
+  },
 });
 export default mongoose.model("CatProductVariations", catVariationSchema);
 export { catVariationSchema };
