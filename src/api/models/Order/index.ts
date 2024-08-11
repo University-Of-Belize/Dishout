@@ -74,9 +74,34 @@ async function order_create(req: Request, res: Response) {
     }
   }
 
-  const amount_to_pay = user.cart.reduce(
-    (accumulator, currentValue) =>
-      accumulator + currentValue.product.price * currentValue.quantity,
+  let cart_total_cache: { [key: string]: any } = {}; // Cache the total of each item in the cart
+  let extra_costs_cache: { [key: string]: any } = {};
+
+  // Populate Cart Variations
+  await user.populate({
+    path: "cart.variations",
+    model: "ProductVariations", // Assholes adding an 's' to the end of the model name
+  });
+
+  //console.log(user.cart.variations);
+  // Calculate 'extra_costs' from the variations 'AddOn_Fee's
+  await user.cart.reduce((accumulator, currentValue) => {
+    const variationCost = currentValue.variations.reduce(
+      (acc, curr) => acc + JSON.parse(curr.AddOn_Fee ?? 0),
+      0
+    );
+    extra_costs_cache[currentValue._id] = variationCost;
+  }, 0);
+
+  await user.cart.reduce((accumulator, currentValue) => {
+    cart_total_cache[currentValue._id] =
+      (parseFloat(currentValue.product.price) +
+        (extra_costs_cache[currentValue._id.toString()] ?? 0)) *
+      currentValue.quantity;
+  }, 0);
+
+  const amount_to_pay = Object.values(cart_total_cache).reduce(
+    (a, b) => a + b,
     0
   );
 
